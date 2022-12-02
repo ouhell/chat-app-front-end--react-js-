@@ -1,0 +1,53 @@
+.NavBar {
+  min-width: 20rem;
+  width: 20rem;
+  height: 100%;
+  background-color: hsl(200deg 33% 98%);
+
+  .TopNavigation {
+    height: 5 rem;
+
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 0.15rem 0.5rem rgb(219, 214, 214);
+
+    .TopNavigationItem {
+      color: hsl(203deg 12% 65%);
+      cursor: pointer;
+      svg {
+        width: 1.6rem;
+      }
+
+      &.active {
+        color: var(--primary-hard);
+      }
+
+      &[data-title]:hover:after {
+        opacity: 1;
+        transition: all 0.1s ease 0.5s;
+        visibility: visible;
+      }
+      &[data-title]:after {
+        content: attr(data-title);
+        background-color: #cccc;
+        color: rgb(49, 47, 47);
+        position: absolute;
+        padding: 1px 5px 2px 5px;
+        bottom: -100%;
+        left: 50%;
+        font-weight: 700;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        box-shadow: 1px 1px 3px #222222;
+        opacity: 0;
+        z-index: 99999;
+        visibility: none;
+      }
+      &[data-title] {
+        position: relative;
+      }
+    }
+  }
+}

@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import reactLogo from "./assets/react.svg";
-import "./App.css";
+import classes from "./App.module.scss";
+import Chat from "./containers/Chat/Chat";
 
 function App() {
-  useEffect(() => {});
-
-  return <div className="App"></div>;
+  return (
+    <div className={classes.App}>
+      <Chat />
+    </div>
+  );
 }
 
 export default App;
