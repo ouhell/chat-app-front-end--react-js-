@@ -1,24 +1,50 @@
 .ChatDisplayer {
-  --nav-chat-left-pad: 0.8rem;
-
+  --nav-chat-side-pad: 0.8rem;
+  // padding: 0 var(--nav-chat-side-pad);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
   .Header {
     font-size: 1.6rem;
     font-weight: 900;
     letter-spacing: 0.05rem;
-    padding: 1.4rem var(--nav-chat-left-pad);
+    padding: 1.4rem var(--nav-chat-side-pad);
   }
+
   .ChatTypes {
     display: flex;
     gap: 1rem;
-    padding: 0.2rem var(--nav-chat-left-pad) 1rem var(--nav-chat-left-pad);
+    padding: 0.2rem var(--nav-chat-side-pad) 1rem var(--nav-chat-side-pad);
     .ChatType {
       font-weight: 500;
       color: var(--main-blank);
       cursor: pointer;
+      transition: transform 0.1s ease;
+
+      .underline {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 120%;
+        height: 0.3rem;
+        background-color: var(--primary-hard);
+      }
+      &:not(.active):hover {
+        transform: scale(1.04);
+      }
       &.active {
         color: inherit;
         font-weight: 700;
+        position: relative;
       }
     }
+  }
+
+  .Content {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 }

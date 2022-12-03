@@ -2,22 +2,34 @@
   min-width: 20rem;
   width: 20rem;
   height: 100%;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background-color: hsl(200deg 33% 98%);
+  padding: 0;
 
   .TopNavigation {
-    height: 5 rem;
-
+    height: 4rem;
+    width: 100%;
     padding: 0.5rem 0;
     display: flex;
     align-items: center;
     justify-content: space-around;
     box-shadow: 0 0.15rem 0.5rem rgb(219, 214, 214);
+    background-color: var(--primary-light);
 
     .TopNavigationItem {
-      color: hsl(203deg 12% 65%);
+      color: var(--primary-grey);
+      padding: 0.5rem;
       cursor: pointer;
+      transition: transform 0.3s ease;
+
       svg {
         width: 1.6rem;
+      }
+      &:hover {
+        transform: scale(1.15);
       }
 
       &.active {
@@ -35,8 +47,8 @@
         color: rgb(49, 47, 47);
         position: absolute;
         padding: 1px 5px 2px 5px;
-        bottom: -100%;
-        left: 50%;
+        bottom: -50%;
+        left: -10%;
         font-weight: 700;
         font-size: 0.9rem;
         white-space: nowrap;
@@ -49,5 +61,12 @@
         position: relative;
       }
     }
+  }
+
+  .Content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
   }
 }

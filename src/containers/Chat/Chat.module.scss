@@ -4,6 +4,8 @@
   .MainSection {
     height: 100%;
     display: flex;
+    gap: 0.2rem;
+    background-color: hsl(200deg 33% 98%);
 
     .MainContent {
       height: 100%;

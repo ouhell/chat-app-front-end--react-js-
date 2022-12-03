@@ -4,10 +4,35 @@
   //color: #222;
   font-family: "Roboto", Courier, monospace;
   box-sizing: border-box;
+  color: inherit;
+  /* width */
+  &::-webkit-scrollbar {
+    width: 0.4rem;
+    height: 0.4rem;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
+
 :root {
   --primary-hard: #6d54e5;
   --main-blank: #bcc6cb;
+  --primary-grey: hsl(203deg 12% 65%);
+  --primary-dark: #303341;
+  --primary-light: #ffff;
 }
 
 .App {
