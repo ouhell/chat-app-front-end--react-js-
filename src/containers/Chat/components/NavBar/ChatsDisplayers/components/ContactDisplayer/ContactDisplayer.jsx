@@ -20,12 +20,12 @@ const ContactDisplayer = () => {
 
   const fetchContacts = useCallback(() => {
     setIsLoading(true);
+    let auth = "Bearer " + JSON.parse(localStorage.getItem("token"));
+    console.log("authorization : ", auth);
     axios
       .get("api/userapi/user-contact", {
         headers: {
-          authorization:
-            "Bearer " +
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzhiMjM0ZjQ4YmE2ZDFhMzFlNGZiMjMiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTY3MDA3MjMxNH0.sNjev8TgIJCALw_gzTH0jrIO97q5cy48R00D4H2gvzw",
+          authorization: "Bearer " + JSON.parse(localStorage.getItem("token")),
         },
       })
       .then((res) => {
@@ -75,7 +75,7 @@ const ContactDisplayer = () => {
               }}
             >
               <NavLink
-                to={"/chats/private/" + contact._id}
+                to={"/chats/private/" + contact.conversation_id}
                 className={({ isActive }) =>
                   classes.ContactLink + (isActive ? ` ${classes.active}` : "")
                 }

@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import classes from "./Chat.module.scss";
 import NavBar from "./components/NavBar/NavBar";
-import PublicConversation from "./pages/PublicConversation/PublicConverdation";
+import PublicConversation from "./pages/PublicConversation/PublicConversation";
 
 export default function Chat() {
   return (

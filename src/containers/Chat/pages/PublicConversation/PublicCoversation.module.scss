@@ -1,9 +1,16 @@
 .Conversation {
   height: 100%;
-  background-color: aqua;
+  min-width: 25rem;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--primary-light);
 
   .ContactHeader {
-    height: 4rem;
+    min-height: 4rem;
     background-color: var(--primary-light);
+    box-shadow: 0 0.15rem 0.5rem rgb(219, 214, 214);
+  }
+  .ChatInterface {
+    height: 100%;
   }
 }

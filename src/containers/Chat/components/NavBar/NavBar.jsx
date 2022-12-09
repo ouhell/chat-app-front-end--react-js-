@@ -14,6 +14,7 @@ const topNavigationItems = [
     title: "chats",
     path: "/chats",
     icon: ChatSvg,
+    render: <ChatsDisplayer />,
   },
   {
     title: "calls",
@@ -41,31 +42,23 @@ function NavBar() {
       <div className={classes.TopNavigation}>
         {topNavigationItems.map((topNavItem) => {
           return (
-            <NavLink key={topNavItem.title} end to={topNavItem.path}>
-              <div
-                key={topNavItem.title}
-                className={
-                  classes.TopNavigationItem +
-                  (selectedNavigation.title === topNavItem.title
-                    ? ` ${classes.active}`
-                    : "")
-                }
-                onClick={() => setSelectedNavigation(topNavItem)}
-                data-title={topNavItem.title}
-              >
-                {<topNavItem.icon />}
-              </div>
-            </NavLink>
+            <div
+              key={topNavItem.title}
+              className={
+                classes.TopNavigationItem +
+                (selectedNavigation.title === topNavItem.title
+                  ? ` ${classes.active}`
+                  : "")
+              }
+              onClick={() => setSelectedNavigation(topNavItem)}
+              data-title={topNavItem.title}
+            >
+              {<topNavItem.icon />}
+            </div>
           );
         })}
       </div>
-      <div className={classes.Content}>
-        <Routes>
-          {["/", "/chats/*"].map((path) => (
-            <Route path={path} key={path} element={<ChatsDisplayer />} />
-          ))}
-        </Routes>
-      </div>
+      <div className={classes.Content}>{selectedNavigation.render}</div>
     </div>
   );
 }

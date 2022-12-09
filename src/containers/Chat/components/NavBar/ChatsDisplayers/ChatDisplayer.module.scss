@@ -28,7 +28,11 @@
         right: 0;
         top: 120%;
         height: 0.3rem;
-        background-color: var(--primary-hard);
+        background: linear-gradient(
+          to right,
+          var(--primary-hard),
+          var(--primary-soft)
+        );
       }
       &:not(.active):hover {
         transform: scale(1.04);

@@ -29,13 +29,18 @@
 
 :root {
   --primary-hard: #6d54e5;
+  --primary-soft: #b750fd;
   --main-blank: #bcc6cb;
+  --main-blank-deeper: #b2b3b4;
   --primary-grey: hsl(203deg 12% 65%);
+  --primary-grey-deeper: #8e8e8f;
   --primary-dark: #303341;
   --primary-light: #ffff;
+  --primary-topography: #313139;
 }
 
 .App {
+  max-height: 100vh;
   font-size: 1rem;
-  color: #313139;
+  color: var(--primary-topography);
 }

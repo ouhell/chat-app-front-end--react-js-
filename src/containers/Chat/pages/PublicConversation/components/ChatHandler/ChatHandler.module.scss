@@ -1,0 +1,62 @@
+.ChatHandler {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: border-radius 0.1s ease;
+
+  .NoLoad {
+    margin: auto;
+    font-weight: bold;
+    font-size: 1.3rem;
+    text-transform: capitalize;
+  }
+
+  .TextMessage {
+    background-color: #e7eff7;
+    padding: 1rem;
+    width: fit-content;
+    height: fit-content;
+
+    overflow-wrap: break-word;
+    max-width: 40rem;
+    min-height: fit-content;
+
+    &:is(:first-child):not(.SelfSent):not(:last-child) {
+      border-top-left-radius: 2rem;
+    }
+    &:is(:last-child):not(.SelfSent) {
+      border-bottom-left-radius: 2rem;
+    }
+    &:not(.SelfSent) {
+      border-top-right-radius: 2rem;
+      border-bottom-right-radius: 2rem;
+    }
+    &:not(.SelfSent) + .SelfSent:not(:last-child) {
+      border-top-right-radius: 2rem;
+    }
+
+    &.SelfSent {
+      margin-left: auto;
+      border-top-left-radius: 2rem;
+      border-bottom-left-radius: 2rem;
+      color: #ffff;
+      background: linear-gradient(
+        to right,
+        var(--primary-hard),
+        var(--primary-soft)
+      );
+      &:is(:first-child) {
+        border-top-right-radius: 2rem;
+      }
+      &:is(:last-child):not(:first-child) {
+        border-bottom-right-radius: 2rem;
+      }
+      & + .TextMessage:not(.SelfSent):not(:last-child) {
+        border-top-left-radius: 2rem;
+      }
+    }
+  }
+}
