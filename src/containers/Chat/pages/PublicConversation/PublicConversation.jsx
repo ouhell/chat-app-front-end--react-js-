@@ -14,7 +14,9 @@ function PublicConversation() {
     axios
       .get("api/messagerie/messages/" + id, {
         headers: {
-          authorization: "Bearer " + JSON.parse(localStorage.getItem("token")),
+          authorization:
+            "Bearer " +
+            JSON.parse(localStorage.getItem("userData")).access_token,
         },
       })
       .then((res) => setMessages(res.data))

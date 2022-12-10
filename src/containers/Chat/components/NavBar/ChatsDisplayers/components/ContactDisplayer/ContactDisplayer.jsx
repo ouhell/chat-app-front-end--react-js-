@@ -25,7 +25,9 @@ const ContactDisplayer = () => {
     axios
       .get("api/userapi/user-contact", {
         headers: {
-          authorization: "Bearer " + JSON.parse(localStorage.getItem("token")),
+          authorization:
+            "Bearer " +
+            JSON.parse(localStorage.getItem("userData")).access_token,
         },
       })
       .then((res) => {

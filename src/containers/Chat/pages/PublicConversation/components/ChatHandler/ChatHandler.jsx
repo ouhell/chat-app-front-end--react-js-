@@ -1,6 +1,7 @@
 import classes from "./ChatHandler.module.scss";
-const userId = JSON.parse(localStorage.getItem("userId"));
+
 const renderMessages = (data) => {
+  const userId = JSON.parse(localStorage.getItem("userData")).userId;
   if (!data)
     return <div className={classes.NoLoad}>Countdn't Load Messages</div>;
   if (data.length === 0)

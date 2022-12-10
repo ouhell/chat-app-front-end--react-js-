@@ -26,7 +26,8 @@ const InputHandler = () => {
           {
             headers: {
               authorization:
-                "Bearer " + JSON.parse(localStorage.getItem("token")),
+                "Bearer " +
+                JSON.parse(localStorage.getItem("userData")).access_token,
             },
           }
         )

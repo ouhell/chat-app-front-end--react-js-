@@ -71,6 +71,20 @@
     height: 100%;
   }
 
+  .Logout {
+    text-align: center;
+    padding: 0.5rem;
+    background-color: var(--primary-light);
+    box-shadow: 0 0 1rem var(--primary-grey);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.1s ease;
+
+    &:hover {
+      font-weight: bolder;
+    }
+  }
+
   @media screen and (max-width: 1000px) {
     display: none;
   }
