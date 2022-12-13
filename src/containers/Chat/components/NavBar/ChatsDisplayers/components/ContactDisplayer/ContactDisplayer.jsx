@@ -31,12 +31,9 @@ const ContactDisplayer = () => {
         },
       })
       .then((res) => {
-        console.log("fetched contact data :", res.data);
         setContactData(res.data);
       })
-      .catch((err) => {
-        console.log("contact fetch error :", err);
-      })
+      .catch((err) => {})
       .finally(() => {
         setIsLoading(false);
       });

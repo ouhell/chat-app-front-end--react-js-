@@ -5,6 +5,8 @@
   font-family: "Roboto", Courier, monospace;
   box-sizing: border-box;
   color: inherit;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
   /* width */
   &::-webkit-scrollbar {
     width: 0.4rem;

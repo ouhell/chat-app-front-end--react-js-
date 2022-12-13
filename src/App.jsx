@@ -8,7 +8,6 @@ function App() {
   const userData = localStorage.getItem("userData");
   let mainElement = userData ? <Chat /> : <Signin />;
 
-  console.log("data", userData);
   return (
     <div className={classes.App}>
       <Routes>

@@ -10,7 +10,7 @@
     .MainContent {
       height: 100%;
       width: 100%;
-      max-width: 100%;
+      overflow: hidden;
       background-color: blueviolet;
     }
     .SideContent {
@@ -18,7 +18,7 @@
       min-width: 20rem;
       width: 20rem;
 
-      @media screen and (max-width: 1000px) {
+      @media screen and (max-width: 1200px) {
         display: none;
       }
     }

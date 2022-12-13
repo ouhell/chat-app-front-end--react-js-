@@ -6,6 +6,7 @@
   flex-direction: column;
   gap: 0.5rem;
   transition: border-radius 0.1s ease;
+  scroll-behavior: smooth;
 
   .NoLoad {
     margin: auto;
@@ -17,14 +18,14 @@
   .TextMessage {
     background-color: #e7eff7;
     padding: 1rem;
-    width: fit-content;
-    height: fit-content;
+    width: max-content;
 
     overflow-wrap: break-word;
-    max-width: 40rem;
+    max-width: 80%;
     min-height: fit-content;
+    transition: border-radius 0.05s ease-in-out;
 
-    &:is(:first-child):not(.SelfSent):not(:last-child) {
+    &:not(.SelfSent):not(:last-child) {
       border-top-left-radius: 2rem;
     }
     &:is(:last-child):not(.SelfSent) {
@@ -33,9 +34,6 @@
     &:not(.SelfSent) {
       border-top-right-radius: 2rem;
       border-bottom-right-radius: 2rem;
-    }
-    &:not(.SelfSent) + .SelfSent:not(:last-child) {
-      border-top-right-radius: 2rem;
     }
 
     &.SelfSent {
@@ -48,14 +46,11 @@
         var(--primary-hard),
         var(--primary-soft)
       );
-      &:is(:first-child) {
+      &:not(:last-child) {
         border-top-right-radius: 2rem;
       }
-      &:is(:last-child):not(:first-child) {
+      &:is(:last-child) {
         border-bottom-right-radius: 2rem;
-      }
-      & + .TextMessage:not(.SelfSent):not(:last-child) {
-        border-top-left-radius: 2rem;
       }
     }
   }

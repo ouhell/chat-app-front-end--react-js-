@@ -1,16 +1,21 @@
 import axios from "axios";
+import { useCallback } from "react";
 import { useEffect } from "react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ChatHandler from "./components/ChatHandler/ChatHandler";
 import InputHandler from "./components/InputHandler/InputHandler";
 import classes from "./PublicCoversation.module.scss";
-
-function PublicConversation() {
+import { useSelector } from "react-redux";
+function PublicConversation({}) {
   const { id } = useParams();
-  const [messages, setMessages] = useState();
-  useEffect(() => {
-    setMessages(null);
+  const [messages, setMessages] = useState([]);
+  const [loadStatus, setLoadStatus] = useState("loading");
+  const chatSocket = useSelector((state) => state.chatSocket);
+  const chatContainer = useRef();
+
+  const fetchMessages = useCallback((id) => {
+    setLoadStatus("loading");
     axios
       .get("api/messagerie/messages/" + id, {
         headers: {
@@ -19,17 +24,39 @@ function PublicConversation() {
             JSON.parse(localStorage.getItem("userData")).access_token,
         },
       })
-      .then((res) => setMessages(res.data))
+      .then((res) => {
+        chatSocket.emit("private chat", id);
+        chatSocket.on("receive message", (message) => {
+          setMessages((prevMessages) => {
+            const newMessages = [...prevMessages, message];
+            return newMessages;
+          });
+        });
+        setLoadStatus("success");
+        setMessages(res.data);
+      })
       .catch((err) => {
         console.log("fetch messages error", err);
+        setLoadStatus("failed");
       });
+  });
+
+  useEffect(() => {
+    fetchMessages(id);
   }, [id]);
 
+  useEffect(() => {
+    chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
+  }, [messages]);
   return (
     <div className={classes.Conversation}>
       <div className={classes.ContactHeader}></div>
-      <ChatHandler data={messages} />
-      <InputHandler />
+      <ChatHandler
+        loadStatus={loadStatus}
+        chatContainer={chatContainer}
+        data={messages}
+      />
+      <InputHandler chatSocket={chatSocket} setMessages={setMessages} />
     </div>
   );
 }

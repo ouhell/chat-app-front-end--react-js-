@@ -1,9 +1,22 @@
 import classes from "./ChatHandler.module.scss";
+import { Spin } from "antd";
 
-const renderMessages = (data) => {
+const renderMessages = (data, loadStatus) => {
   const userId = JSON.parse(localStorage.getItem("userData")).userId;
-  if (!data)
-    return <div className={classes.NoLoad}>Countdn't Load Messages</div>;
+  if (loadStatus === "loading")
+    return <div className={classes.NoLoad}>Loading...</div>;
+
+  if (loadStatus === "failed")
+    return (
+      <div
+        className={classes.NoLoad}
+        style={{
+          color: "red",
+        }}
+      >
+        couldn't load
+      </div>
+    );
   if (data.length === 0)
     return <div className={classes.NoLoad}>no conversation yet</div>;
 
@@ -22,10 +35,12 @@ const renderMessages = (data) => {
   });
 };
 
-const ChatHandler = ({ data }) => {
-  console.log("message data", data);
-
-  return <div className={classes.ChatHandler}>{renderMessages(data)}</div>;
+const ChatHandler = ({ data, loadStatus, chatContainer }) => {
+  return (
+    <div ref={chatContainer} className={classes.ChatHandler}>
+      {renderMessages(data, loadStatus)}
+    </div>
+  );
 };
 
 export default ChatHandler;

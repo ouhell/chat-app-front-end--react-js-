@@ -14,10 +14,10 @@ const Signin = () => {
   const signIn = () => {
     axios
       .post("api/auth/login", {
-        ...signinData,
+        identifier: signinData.identifier.trim(),
+        password: signinData.password.trim(),
       })
       .then((res) => {
-        console.log(res);
         localStorage.setItem("userData", JSON.stringify(res.data));
         navigate("/", {
           replace: true,
