@@ -1,5 +1,5 @@
 import classes from "./ContactDisplayer.module.scss";
-import { SearchSvg } from "../../../../../../../shared/assets/svg/SvgProvider";
+import { SearchSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import { useCallback, useEffect, useState } from "react";
 import { Avatar } from "antd";
 import { motion } from "framer-motion";
@@ -20,8 +20,7 @@ const ContactDisplayer = () => {
 
   const fetchContacts = useCallback(() => {
     setIsLoading(true);
-    let auth = "Bearer " + JSON.parse(localStorage.getItem("token"));
-    console.log("authorization : ", auth);
+
     axios
       .get("api/userapi/user-contact", {
         headers: {
@@ -42,7 +41,7 @@ const ContactDisplayer = () => {
   useEffect(() => {
     fetchContacts();
   }, []);
-  console.log(contactData.length);
+
   return (
     <div className={classes.ContactDisplayer}>
       <div className={classes.SearchBarContainer}>

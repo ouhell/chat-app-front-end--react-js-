@@ -5,14 +5,6 @@
   display: flex;
   align-items: center;
   padding: 0 1rem;
-  svg {
-    width: 1.5rem;
-    min-width: 1.5rem;
-    cursor: pointer;
-    &:hover {
-      scale: 1.1;
-    }
-  }
 
   .InputHolder {
     padding: 0.5rem;
@@ -24,6 +16,16 @@
     align-items: center;
     gap: 0.5rem;
     color: var(--primary-grey-deeper);
+
+    svg {
+      width: 1.5rem;
+      min-width: 1.5rem;
+      cursor: pointer;
+      &:hover {
+        scale: 1.1;
+      }
+    }
+
     input {
       background-color: transparent;
       display: block;

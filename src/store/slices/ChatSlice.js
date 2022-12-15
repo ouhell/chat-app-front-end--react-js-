@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { io } from "socket.io-client";
+import { HostName } from "../../client/ApiClient";
 
 const ChatSlice = createSlice({
   name: "chatReducer",
   initialState: {
-    chatSocket: io("http://localhost:5000"),
+    chatSocket: io(HostName),
     counter: 50000,
   },
   reducers: {

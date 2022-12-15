@@ -1,13 +1,14 @@
 import { useState } from "react";
-import ChatsDisplayer from "./ChatsDisplayers/ChatsDisplayer.jsx";
+import ChatsDisplayer from "./components/ChatsDisplayers/ChatsDisplayer";
 import { Route, Routes, NavLink, useNavigate } from "react-router-dom";
 import {
   PhoneSvg,
   GroupSvg,
   ChatSvg,
-  MailSvg,
+  NotificationBellSvg,
 } from "../../../../shared/assets/svg/SvgProvider.jsx";
 import classes from "./NavBar.module.scss";
+import NotificationDisplayer from "./components/NotificationDisplayer/NotificationDisplayer";
 
 const topNavigationItems = [
   {
@@ -22,9 +23,10 @@ const topNavigationItems = [
     icon: PhoneSvg,
   },
   {
-    title: "mails",
-    path: "/mails",
-    icon: MailSvg,
+    title: "notifications",
+    path: "/notifications",
+    icon: NotificationBellSvg,
+    render: <NotificationDisplayer />,
   },
   {
     title: "groups",

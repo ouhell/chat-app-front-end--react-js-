@@ -1,0 +1,87 @@
+.ContactAdder {
+  .Content {
+    margin-top: 1.5rem;
+  }
+  .CancelButton {
+    &:hover {
+      color: var(--primary-soft);
+      border-color: var(--primary-soft);
+    }
+  }
+  .SearchBar {
+    padding-bottom: 1rem;
+
+    button {
+      &:hover {
+        border-color: var(--primary-soft);
+        svg {
+          color: var(--primary-soft);
+          fill: var(--primary-soft);
+        }
+      }
+    }
+
+    input:hover,
+    input:focus {
+      border-color: var(--primary-soft);
+      box-shadow: none;
+    }
+  }
+
+  .Candidates {
+    max-height: 60vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0.5rem 1rem;
+    .Candidate {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background-color: var(--primary-light);
+      box-shadow: 0 0rem 0.5rem rgb(235, 232, 232);
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      transition: transform 0.2s ease;
+      &:hover {
+        transform: scale(1.01) translateY(-2%);
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 0.5rem;
+      }
+
+      .NameHolder {
+        .UserName {
+          font-size: 1.2rem;
+          font-weight: 500;
+          line-height: normal;
+        }
+        .PersonalName {
+          font-size: 0.8rem;
+          color: var(--main-blank);
+          line-height: normal;
+        }
+      }
+
+      .ActionHolder {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        .ActionButton {
+          font-size: 0.9rem;
+          &:hover {
+            color: rgb(13, 199, 13);
+            border-color: rgb(13, 199, 13);
+          }
+        }
+        .SentButton {
+          font-size: 0.9rem;
+
+          color: rgb(13, 199, 13);
+        }
+      }
+    }
+  }
+}

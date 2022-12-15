@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { NavLink, Route, Routes } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Input, Modal } from "antd";
 import classes from "./ChatDisplayer.module.scss";
 import ContactDisplayer from "./components/ContactDisplayer/ContactDisplayer";
+import { PluxCircleSvg } from "../../../../../../shared/assets/svg/SvgProvider";
+import ContactAdder from "./components/ContactAdder/ContactAdder";
 
 const chatTypes = [
   {
@@ -24,9 +27,27 @@ const chatTypes = [
 
 const ChatsDisplayer = () => {
   const [selectedChatType, setSelectedChatType] = useState(chatTypes[0]);
+  const [showContactAdder, setShowContactAdder] = useState(false);
   return (
     <div className={classes.ChatDisplayer}>
-      <header className={classes.Header}>Chats</header>
+      <header className={classes.Header}>
+        <ContactAdder
+          open={showContactAdder}
+          onCancel={() => {
+            setShowContactAdder(false);
+          }}
+        ></ContactAdder>
+        <div className={classes.HeaderText}> Chats</div>
+        <div
+          className={classes.AddButton}
+          onClick={() => {
+            setShowContactAdder(true);
+          }}
+        >
+          {<PluxCircleSvg />}
+        </div>
+      </header>
+
       <div className={classes.ChatTypes}>
         {chatTypes.map((type) => {
           const isSelected = selectedChatType.title === type.title;

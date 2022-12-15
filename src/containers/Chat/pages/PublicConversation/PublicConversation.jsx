@@ -13,33 +13,40 @@ function PublicConversation({}) {
   const [loadStatus, setLoadStatus] = useState("loading");
   const chatSocket = useSelector((state) => state.chatSocket);
   const chatContainer = useRef();
+  const previousId = useRef(null);
 
-  const fetchMessages = useCallback((id) => {
-    setLoadStatus("loading");
-    axios
-      .get("api/messagerie/messages/" + id, {
-        headers: {
-          authorization:
-            "Bearer " +
-            JSON.parse(localStorage.getItem("userData")).access_token,
-        },
-      })
-      .then((res) => {
-        chatSocket.emit("private chat", id);
-        chatSocket.on("receive message", (message) => {
-          setMessages((prevMessages) => {
-            const newMessages = [...prevMessages, message];
-            return newMessages;
+  const fetchMessages = useCallback(
+    (id) => {
+      setLoadStatus("loading");
+
+      axios
+        .get("api/messagerie/messages/" + id, {
+          headers: {
+            authorization:
+              "Bearer " +
+              JSON.parse(localStorage.getItem("userData")).access_token,
+          },
+        })
+        .then((res) => {
+          chatSocket.emit("private chat", id);
+          chatSocket.off("receive message");
+          chatSocket.on("receive message", (message) => {
+            if (message.conversation !== id) return;
+            setMessages((prevMessages) => {
+              const newMessages = [...prevMessages, message];
+              return newMessages;
+            });
           });
+          setLoadStatus("success");
+          setMessages(res.data);
+        })
+        .catch((err) => {
+          console.log("fetch messages error", err);
+          setLoadStatus("failed");
         });
-        setLoadStatus("success");
-        setMessages(res.data);
-      })
-      .catch((err) => {
-        console.log("fetch messages error", err);
-        setLoadStatus("failed");
-      });
-  });
+    },
+    [id]
+  );
 
   useEffect(() => {
     fetchMessages(id);

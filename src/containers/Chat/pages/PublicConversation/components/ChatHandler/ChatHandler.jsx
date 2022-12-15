@@ -1,5 +1,6 @@
 import classes from "./ChatHandler.module.scss";
 import { Spin } from "antd";
+import TextMessage from "./components/TextMessage/TextMessage";
 
 const renderMessages = (data, loadStatus) => {
   const userId = JSON.parse(localStorage.getItem("userData")).userId;
@@ -20,19 +21,9 @@ const renderMessages = (data, loadStatus) => {
   if (data.length === 0)
     return <div className={classes.NoLoad}>no conversation yet</div>;
 
-  return data.map((message) => {
-    return (
-      <div
-        key={message._id}
-        className={
-          classes.TextMessage +
-          (userId === message.sender ? ` ${classes.SelfSent}` : "")
-        }
-      >
-        {message.message}
-      </div>
-    );
-  });
+  return data.map((message) => (
+    <TextMessage message={message} userId={userId} key={message._id} />
+  ));
 };
 
 const ChatHandler = ({ data, loadStatus, chatContainer }) => {

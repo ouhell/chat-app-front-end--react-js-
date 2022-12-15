@@ -31,6 +31,9 @@ const Signin = () => {
       <div className={classes.SigninBox}>
         <div className={classes.InputHolder}>
           <Input
+            onKeyDown={(e) => {
+              if (e.key === "Enter") signIn();
+            }}
             value={signinData.identifier}
             onChange={(e) => {
               setSigninData((oldvalue) => {
@@ -43,6 +46,9 @@ const Signin = () => {
         </div>
         <div className={classes.InputHolder}>
           <Input.Password
+            onKeyDown={(e) => {
+              if (e.key === "Enter") signIn();
+            }}
             value={signinData.password}
             onChange={(e) => {
               setSigninData((oldvalue) => {
@@ -53,8 +59,9 @@ const Signin = () => {
             placeholder="password"
           />
         </div>
+
         <Button className={classes.Button} onClick={signIn}>
-          Signin
+          signin
         </Button>
       </div>
     </section>

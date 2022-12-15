@@ -10,43 +10,63 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useRef } from "react";
+
 const InputHandler = ({ setMessages }) => {
   const [message, setMessage] = useState("");
   const pathParams = useParams();
   const chatSocket = useSelector((state) => state.chatSocket);
+  const { id } = useParams();
   const fileInput = useRef();
 
   const sendMessage = () => {
+    const userId = JSON.parse(localStorage.getItem("userData")).userId;
     const readyMessage = message.trim();
-    if (readyMessage) {
-      axios
-        .post(
-          "api/messagerie/messages",
-          {
-            message: readyMessage,
-            conversation_id: pathParams.id,
+    if (!readyMessage) return;
+    const generatedId = Math.random() * 10;
+
+    axios
+      .post(
+        "api/messagerie/messages",
+        {
+          message: readyMessage,
+          conversation_id: pathParams.id,
+        },
+        {
+          headers: {
+            authorization:
+              "Bearer " +
+              JSON.parse(localStorage.getItem("userData")).access_token,
           },
-          {
-            headers: {
-              authorization:
-                "Bearer " +
-                JSON.parse(localStorage.getItem("userData")).access_token,
-            },
-          }
-        )
-        .then((res) => {
-          chatSocket.emit("send message", res.data);
-          setMessages((prevMessages) => {
-            const newMessages = [...prevMessages, res.data];
-            return newMessages;
+        }
+      )
+      .then((res) => {
+        chatSocket.emit("send message", res.data);
+        setMessages((prevMessages) => {
+          const newMessages = [...prevMessages];
+          const index = newMessages.findIndex((message) => {
+            return message._id === generatedId;
           });
-        })
-        .catch((err) => console.log("err", err));
-    }
+          newMessages[index] = res.data;
+          return newMessages;
+        });
+      })
+      .catch((err) => console.log("err", err));
+
+    setMessages((prevMessages) => {
+      const message = {
+        _id: generatedId,
+        sender: userId,
+        message: readyMessage,
+        conversation: id,
+        temporary: true,
+      };
+      message.temporary = true;
+      const newMessages = [...prevMessages, message];
+      return newMessages;
+    });
     setMessage("");
   };
   const sendFile = (file) => {
-    console.log("sending file", file);
     const data = new FormData();
     data.append("file", file);
 
@@ -80,7 +100,6 @@ const InputHandler = ({ setMessages }) => {
             display: "none",
           }}
           onChange={(e) => {
-            console.log("chose file : ", e.target.files);
             sendFile(e.target.files[0]);
           }}
         />

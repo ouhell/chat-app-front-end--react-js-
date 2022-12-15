@@ -6,10 +6,26 @@
   height: 100%;
   overflow: hidden;
   .Header {
-    font-size: 1.6rem;
-    font-weight: 900;
-    letter-spacing: 0.05rem;
+    display: flex;
+    justify-content: space-between;
     padding: 1.4rem var(--nav-chat-side-pad);
+    .HeaderText {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: 0.05rem;
+    }
+    .AddButton {
+      cursor: pointer;
+      color: var(--primary-soft);
+      transition: scale 0.15s ease;
+      svg {
+        width: 1.8rem;
+      }
+
+      &:hover {
+        scale: 1.1;
+      }
+    }
   }
 
   .ChatTypes {
