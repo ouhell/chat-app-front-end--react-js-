@@ -11,7 +11,7 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useRef } from "react";
 
-const InputHandler = ({ setMessages }) => {
+const InputHandler = ({ setMessages, sendAllowed }) => {
   const [message, setMessage] = useState("");
   const pathParams = useParams();
   const chatSocket = useSelector((state) => state.chatSocket);
@@ -19,6 +19,7 @@ const InputHandler = ({ setMessages }) => {
   const fileInput = useRef();
 
   const sendMessage = () => {
+    if (!sendAllowed) return;
     const userId = JSON.parse(localStorage.getItem("userData")).userId;
     const readyMessage = message.trim();
     if (!readyMessage) return;

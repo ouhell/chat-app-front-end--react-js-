@@ -69,7 +69,11 @@ function PublicConversation({}) {
         data={messages}
         fetchMessages={fetchMessages}
       />
-      <InputHandler chatSocket={chatSocket} setMessages={setMessages} />
+      <InputHandler
+        sendAllowed={!isError && !isLoading}
+        chatSocket={chatSocket}
+        setMessages={setMessages}
+      />
     </div>
   );
 }

@@ -9,7 +9,7 @@ const renderMessages = (data, isLoading, isError, fetchMessages) => {
   if (isLoading)
     return (
       <div className={classes.NoLoad}>
-        <BasicSpinner spinning={true} />
+        <BasicSpinner size="large" spinning={true} />
       </div>
     );
 
