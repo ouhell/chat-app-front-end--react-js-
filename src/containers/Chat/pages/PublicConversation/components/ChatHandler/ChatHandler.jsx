@@ -1,35 +1,51 @@
 import classes from "./ChatHandler.module.scss";
-import { Spin } from "antd";
+import { Button, Empty, Result, Spin } from "antd";
 import TextMessage from "./components/TextMessage/TextMessage";
+import BasicSpinner from "../../../../../../shared/components/BasicSpinner/BasicSpinner";
 
-const renderMessages = (data, loadStatus) => {
+const renderMessages = (data, isLoading, isError, fetchMessages) => {
   const userId = JSON.parse(localStorage.getItem("userData")).userId;
-  if (loadStatus === "loading")
-    return <div className={classes.NoLoad}>Loading...</div>;
 
-  if (loadStatus === "failed")
+  if (isLoading)
     return (
-      <div
-        className={classes.NoLoad}
-        style={{
-          color: "red",
-        }}
-      >
-        couldn't load
+      <div className={classes.NoLoad}>
+        <BasicSpinner spinning={true} />
       </div>
     );
+
+  if (isError)
+    return (
+      <Result
+        className={classes.NoLoad}
+        status={"error"}
+        title="couldnt load"
+        extra={[<Button onClick={fetchMessages}>Try Again</Button>]}
+      />
+    );
   if (data.length === 0)
-    return <div className={classes.NoLoad}>no conversation yet</div>;
+    return (
+      <Empty
+        className={classes.NoLoad}
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description="no conversation yet"
+      />
+    );
 
   return data.map((message) => (
     <TextMessage message={message} userId={userId} key={message._id} />
   ));
 };
 
-const ChatHandler = ({ data, loadStatus, chatContainer }) => {
+const ChatHandler = ({
+  data,
+  isLoading,
+  isError,
+  chatContainer,
+  fetchMessages,
+}) => {
   return (
     <div ref={chatContainer} className={classes.ChatHandler}>
-      {renderMessages(data, loadStatus)}
+      {renderMessages(data, isLoading, isError, fetchMessages)}
     </div>
   );
 };

@@ -5,6 +5,7 @@ import c from "./ContactAdder.module.scss";
 
 const ContactAdder = ({ open, onCancel }) => {
   const [isLoading, setIsLoading] = useState(false);
+
   const [data, setData] = useState([]);
   const [searchtext, setSearchtext] = useState("");
   const [candidateState, setCandidateState] = useState({});
@@ -177,7 +178,9 @@ const ContactAdder = ({ open, onCancel }) => {
       }}
     >
       <div className={c.Content}>
+        <div className={c.Title}>Add Contact</div>
         <Input.Search
+          placeholder="search username / personal name"
           onKeyDown={(e) => {
             if (e.key !== "Enter") return;
             setIsLoading(true);

@@ -1,14 +1,16 @@
 import classes from "./ContactDisplayer.module.scss";
 import { SearchSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import { useCallback, useEffect, useState } from "react";
-import { Avatar } from "antd";
+import { Avatar, Empty, Result } from "antd";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
+import BasicSpinner from "../../../../../../../../shared/components/BasicSpinner/BasicSpinner";
 const ContactDisplayer = () => {
   const [seachtext, setSearchtext] = useState("");
   const [contactData, setContactData] = useState([]);
   const [isloading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const filterContact = () => {
     return contactData.filter(
@@ -20,7 +22,7 @@ const ContactDisplayer = () => {
 
   const fetchContacts = useCallback(() => {
     setIsLoading(true);
-
+    setIsError(false);
     axios
       .get("api/userapi/user-contact", {
         headers: {
@@ -32,7 +34,9 @@ const ContactDisplayer = () => {
       .then((res) => {
         setContactData(res.data);
       })
-      .catch((err) => {})
+      .catch((err) => {
+        setIsError(true);
+      })
       .finally(() => {
         setIsLoading(false);
       });
@@ -57,6 +61,11 @@ const ContactDisplayer = () => {
           ></input>
         </div>
       </div>
+      <BasicSpinner spinning={isloading} />
+
+      {!isloading && !isError && contactData.length === 0 ? (
+        <Empty description="No contact" />
+      ) : null}
 
       <div className={classes.ContactList}>
         {filterContact().map((contact, i) => {

@@ -10,14 +10,16 @@ import { useSelector } from "react-redux";
 function PublicConversation({}) {
   const { id } = useParams();
   const [messages, setMessages] = useState([]);
-  const [loadStatus, setLoadStatus] = useState("loading");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
   const chatSocket = useSelector((state) => state.chatSocket);
   const chatContainer = useRef();
   const previousId = useRef(null);
 
   const fetchMessages = useCallback(
     (id) => {
-      setLoadStatus("loading");
+      setIsLoading(true);
+      setIsError(false);
 
       axios
         .get("api/messagerie/messages/" + id, {
@@ -37,12 +39,14 @@ function PublicConversation({}) {
               return newMessages;
             });
           });
-          setLoadStatus("success");
           setMessages(res.data);
         })
         .catch((err) => {
           console.log("fetch messages error", err);
-          setLoadStatus("failed");
+          setIsError(true);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     },
     [id]
@@ -59,9 +63,11 @@ function PublicConversation({}) {
     <div className={classes.Conversation}>
       <div className={classes.ContactHeader}></div>
       <ChatHandler
-        loadStatus={loadStatus}
+        isLoading={isLoading}
+        isError={isError}
         chatContainer={chatContainer}
         data={messages}
+        fetchMessages={fetchMessages}
       />
       <InputHandler chatSocket={chatSocket} setMessages={setMessages} />
     </div>

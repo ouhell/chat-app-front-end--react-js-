@@ -2,6 +2,7 @@ import { Avatar, Button, Spin } from "antd";
 import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
+import BasicSpinner from "../../../../../../shared/components/BasicSpinner/BasicSpinner";
 import c from "./NotificationDisplayer.module.scss";
 
 const NotificationDisplayer = () => {
@@ -142,6 +143,8 @@ const NotificationDisplayer = () => {
   return (
     <div className={c.NotificationDisplayer}>
       <div className={c.RequestList}>
+        <BasicSpinner spinning={isLoading} />
+
         {requests.map((req) => {
           const userIsSender = req.requester._id === userId;
           const opponent = userIsSender ? req.destinator : req.requester;
@@ -152,7 +155,7 @@ const NotificationDisplayer = () => {
             isAcceptLoading = requestStates[req._id].isAcceptLoading;
           }
           return (
-            <div className={c.Request}>
+            <div className={c.Request} key={req._id}>
               <Avatar>{opponent.username[0]}</Avatar>
               <div className={c.IdentityHolder}>
                 <div className={c.Username}>{opponent.username}</div>
@@ -162,7 +165,7 @@ const NotificationDisplayer = () => {
                 {!userIsSender && !isCancelLoading ? (
                   <Button
                     disabled={isCancelLoading}
-                    type="primary"
+                    type="default"
                     className={c.AcceptButton}
                     onClick={() => acceptRequest(req._id)}
                     loading={isAcceptLoading}

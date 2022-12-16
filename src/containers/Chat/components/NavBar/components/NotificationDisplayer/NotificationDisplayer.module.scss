@@ -4,6 +4,12 @@
   display: flex;
   flex-direction: column;
 
+  .Spinner {
+    i {
+      background-color: var(--primary-soft);
+    }
+  }
+
   .RequestList {
     padding: 1rem;
     height: 100%;
@@ -47,8 +53,8 @@
         }
 
         .AcceptButton {
-          background-color: rgb(40, 211, 40);
-          color: #ffff;
+          border-color: rgb(40, 211, 40);
+          color: rgb(40, 211, 40);
         }
       }
     }

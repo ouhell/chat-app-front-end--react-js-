@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ChatsDisplayer from "./components/ChatsDisplayers/ChatsDisplayer";
 import { Route, Routes, NavLink, useNavigate } from "react-router-dom";
+import { DownOutlined, SmileOutlined } from "@ant-design/icons";
 import {
   PhoneSvg,
   GroupSvg,
@@ -9,6 +10,20 @@ import {
 } from "../../../../shared/assets/svg/SvgProvider.jsx";
 import classes from "./NavBar.module.scss";
 import NotificationDisplayer from "./components/NotificationDisplayer/NotificationDisplayer";
+import { Avatar, Dropdown } from "antd";
+
+const DropDownItems = [
+  {
+    key: "settings",
+    label: <NavLink to="/settings">edit settings</NavLink>,
+  },
+
+  {
+    key: "logout",
+    danger: true,
+    label: "logout",
+  },
+];
 
 const topNavigationItems = [
   {
@@ -28,11 +43,6 @@ const topNavigationItems = [
     icon: NotificationBellSvg,
     render: <NotificationDisplayer />,
   },
-  {
-    title: "groups",
-    path: "/groups",
-    icon: GroupSvg,
-  },
 ];
 
 function NavBar() {
@@ -40,6 +50,16 @@ function NavBar() {
     topNavigationItems[0]
   );
   const navigate = useNavigate();
+
+  const menuOnClick = ({ key }) => {
+    switch (key) {
+      case "logout":
+        localStorage.removeItem("userData");
+        navigate("/");
+        navigate(0);
+    }
+  };
+
   return (
     <div className={classes.NavBar}>
       <div className={classes.TopNavigation}>
@@ -60,18 +80,18 @@ function NavBar() {
             </div>
           );
         })}
+        <div className={classes.topNavItem}>
+          <Dropdown
+            menu={{
+              items: DropDownItems,
+              onClick: menuOnClick,
+            }}
+          >
+            <Avatar>U</Avatar>
+          </Dropdown>
+        </div>
       </div>
       <div className={classes.Content}>{selectedNavigation.render}</div>
-      <div
-        className={classes.Logout}
-        onClick={() => {
-          localStorage.removeItem("userData");
-          navigate("/signin");
-          navigate(0);
-        }}
-      >
-        logout
-      </div>
     </div>
   );
 }
