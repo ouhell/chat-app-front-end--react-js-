@@ -1,0 +1,99 @@
+.Profile {
+  background-color: var(--primary-light);
+  height: 100%;
+  max-height: 100%;
+  overflow: auto;
+  padding: 2rem;
+  padding-left: 6rem;
+  padding-top: 6rem;
+  @media (max-height: 800px) {
+    padding-top: 1rem;
+  }
+  @media (max-width: 900px) {
+    padding-left: 2rem;
+  }
+  .Header {
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: var(--exotic-topography);
+    letter-spacing: 0.2rem;
+  }
+
+  .ProfilPicHolder {
+    padding: 1rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 0.1rem solid #e6e8e9;
+
+    .ProfilPic {
+      display: block;
+    }
+  }
+
+  @media (max-width: 800px) {
+    .Header {
+      text-align: center;
+    }
+
+    .ProfilPicHolder {
+      .ProfilPic {
+        margin: 0 auto;
+      }
+    }
+  }
+
+  .ProfilInfoHolder {
+    padding: 2rem 0;
+
+    @media (min-width: 1600px) {
+      width: 60%;
+    }
+    .DataChanger {
+      &:not(:last-child) {
+        margin-bottom: 1rem;
+      }
+
+      .Label {
+        text-transform: capitalize;
+        display: inline-block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        font-size: 1rem;
+        color: var(--exotic-topography);
+      }
+
+      .InputHolder {
+        height: 2.5rem;
+
+        input {
+          height: 100%;
+          font-size: 1rem;
+
+          &:is([meta-status="normal"]):hover,
+          &:is([meta-status="normal"]):focus {
+            border-color: var(--primary-soft);
+            box-shadow: none;
+          }
+        }
+      }
+    }
+
+    .EditButton {
+      display: block;
+      margin-left: auto;
+
+      @media (max-width: 800px) {
+        margin: auto;
+        margin-top: 2rem;
+      }
+      &:hover {
+        border-color: var(--primary-soft);
+        color: var(--primary-soft);
+      }
+    }
+  }
+}
+
+.wrapper {
+  width: fit-content;
+}

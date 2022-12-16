@@ -39,11 +39,12 @@
   --primary-dark: #303341;
   --primary-light: #ffff;
   --primary-topography: #313139;
+  --exotic-topography: #222e3d;
   font-size: 0.9rem;
 }
 
 .App {
   max-height: 100vh;
   font-size: 1rem;
-  color: var(--primary-topography);
+  color: var(--exotic-topography);
 }

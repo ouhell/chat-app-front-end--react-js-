@@ -8,6 +8,7 @@ import { useRef } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ChatActions } from "../../store/slices/ChatSlice";
+import Profile from "./pages/Profile/Profile";
 
 export default function Chat() {
   const counter = useSelector((state) => state.counter);
@@ -22,6 +23,7 @@ export default function Chat() {
         <div className={classes.MainContent}>
           <Routes>
             <Route path="/chats/private/:id" element={<PublicConversation />} />
+            <Route path="/settings" element={<Profile />} />
           </Routes>
         </div>
         <div
