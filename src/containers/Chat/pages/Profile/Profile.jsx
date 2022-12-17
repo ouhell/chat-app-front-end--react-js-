@@ -6,14 +6,27 @@ import c from "./Profile.module.scss";
 
 const initialFromData = {
   feilds: {
-    username: { value: "", istouched: false, validation: {}, isValid: false },
+    username: {
+      value: "",
+      istouched: false,
+      validation: {},
+      isValid: false,
+      object_name: "username", // the name of the feild in the fetched data
+    },
     "personal name": {
       value: "",
       istouched: false,
       validation: {},
       isValid: false,
+      object_name: "personal_name", // the name of the feild in the fetched data
     },
-    "E-mail": { value: "", istouched: false, validation: {}, isValid: false },
+    "E-mail": {
+      value: "",
+      istouched: false,
+      validation: {},
+      isValid: false,
+      object_name: "email", // the name of the feild in the fetched data
+    },
   },
   isFormValid: false,
 };
@@ -41,16 +54,20 @@ const Profile = () => {
       .then((res) => {
         console.log("fetched profile :", res.data);
         setProfilePicture(res.data.profile_picture);
-        setFormData({
-          ...formData,
-          feilds: {
-            username: { ...formData.feilds.username, value: res.data.username },
-            "personal name": {
-              ...formData.feilds["personal name"],
-              value: res.data.personal_name,
-            },
-            "E-mail": { ...formData.feilds["E-mail"], value: res.data.email },
-          },
+
+        setFormData((prevFormData) => {
+          const newFormData = { ...prevFormData };
+          const newFeilds = { ...newFormData.feilds };
+          for (let key in newFeilds) {
+            console.log("key ", newFeilds[key].object_name);
+            const newFeild = {
+              ...newFeilds[key],
+              value: res.data[newFeilds[key].object_name],
+            };
+            newFeilds[key] = newFeild;
+          }
+          newFormData.feilds = newFeilds;
+          return newFormData;
         });
       })
       .catch((err) => {
@@ -59,6 +76,33 @@ const Profile = () => {
       })
       .finally(() => {
         setIsLoading(false);
+      });
+  }
+
+  function updateData() {
+    setIsUpdatingInfo(true);
+    const updateData = {};
+    for (let feild in formData.feilds) {
+      console.log("update key ", feild);
+      updateData[formData.feilds[feild].object_name] =
+        formData.feilds[feild].value;
+    }
+    axios
+      .put("api/userapi/profile", updateData, {
+        headers: {
+          authorization:
+            "Bearer " +
+            JSON.parse(localStorage.getItem("userData")).access_token,
+        },
+      })
+      .then((res) => {
+        console.log("update profile res :", res.data);
+      })
+      .catch((err) => {
+        console.log("update profile err", err);
+      })
+      .finally(() => {
+        setIsUpdatingInfo(false);
       });
   }
 
@@ -86,16 +130,24 @@ const Profile = () => {
           <Skeleton.Avatar className={c.ProfilPic} active size={90} />
         ) : null}
         {displayReady ? (
-          <Avatar
-            size={90}
-            src={profilePicture}
+          <div
             style={{
-              fontSize: "2rem",
+              width: "fit-content",
+              borderRadius: "100%",
+              backgroundColor: "grey",
             }}
-            className={"util-pointer " + c.ProfilPic}
           >
-            U
-          </Avatar>
+            <Avatar
+              size={90}
+              src={profilePicture}
+              style={{
+                fontSize: "2rem",
+              }}
+              className={"util-pointer " + c.ProfilPic}
+            >
+              U
+            </Avatar>
+          </div>
         ) : null}
       </div>
       <div className={c.ProfilInfoHolder}>
@@ -123,7 +175,11 @@ const Profile = () => {
             })
           : null}
         {displayReady ? (
-          <Button className={c.EditButton} loading={isUpdatingInfo}>
+          <Button
+            className={c.EditButton}
+            loading={isUpdatingInfo}
+            onClick={updateData}
+          >
             Edit Profile
           </Button>
         ) : null}

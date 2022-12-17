@@ -87,7 +87,7 @@ function NavBar() {
               onClick: menuOnClick,
             }}
           >
-            <Avatar>U</Avatar>
+            <Avatar className="util-pointer">U</Avatar>
           </Dropdown>
         </div>
       </div>
