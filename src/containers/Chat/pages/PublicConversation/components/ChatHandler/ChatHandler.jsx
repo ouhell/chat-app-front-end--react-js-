@@ -2,6 +2,7 @@ import classes from "./ChatHandler.module.scss";
 import { Button, Empty, Result, Spin } from "antd";
 import TextMessage from "./components/TextMessage/TextMessage";
 import BasicSpinner from "../../../../../../shared/components/BasicSpinner/BasicSpinner";
+import ImageMessage from "./components/ImageMessage/ImageMessage";
 
 const renderMessages = (data, isLoading, isError, fetchMessages) => {
   const userId = JSON.parse(localStorage.getItem("userData")).userId;
@@ -31,9 +32,22 @@ const renderMessages = (data, isLoading, isError, fetchMessages) => {
       />
     );
 
-  return data.map((message) => (
-    <TextMessage message={message} userId={userId} key={message._id} />
-  ));
+  return data.map((message, i) => {
+    switch (message.content_type) {
+      case "text":
+        return (
+          <TextMessage message={message} userId={userId} key={message._id} />
+        );
+
+      case "image":
+        return (
+          <ImageMessage message={message} userId={userId} key={message._id} />
+        );
+
+      default:
+        return null;
+    }
+  });
 };
 
 const ChatHandler = ({

@@ -6,18 +6,23 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
 import BasicSpinner from "../../../../../../../../shared/components/BasicSpinner/BasicSpinner";
+import { useDispatch } from "react-redux";
+import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 const ContactDisplayer = () => {
   const [seachtext, setSearchtext] = useState("");
   const [contactData, setContactData] = useState([]);
   const [isloading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const dispatch = useDispatch();
 
   const filterContact = () => {
-    return contactData.filter(
-      (contact) =>
-        contact.username.includes(seachtext) ||
-        contact.personal_name.includes(seachtext)
-    );
+    return contactData.filter((contact, i) => {
+      console.log(i + ")", contact);
+      return (
+        contact.user.username.includes(seachtext) ||
+        contact.user.personal_name.includes(seachtext)
+      );
+    });
   };
 
   const fetchContacts = useCallback(() => {
@@ -32,6 +37,7 @@ const ContactDisplayer = () => {
         },
       })
       .then((res) => {
+        console.log("contatcs", res.data);
         setContactData(res.data);
       })
       .catch((err) => {
@@ -69,6 +75,7 @@ const ContactDisplayer = () => {
 
       <div className={classes.ContactList}>
         {filterContact().map((contact, i) => {
+          console.log("c :", contact);
           return (
             <motion.div
               key={contact._id}
@@ -82,26 +89,30 @@ const ContactDisplayer = () => {
               }}
             >
               <NavLink
-                to={"/chats/private/" + contact.conversation_id}
+                to={"/chats/private/" + contact._id}
                 className={({ isActive }) =>
                   classes.ContactLink + (isActive ? ` ${classes.active}` : "")
                 }
+                onClick={() => {
+                  dispatch(ChatActions.OpenNav());
+                }}
               >
                 <motion.div className={classes.Contact}>
                   <Avatar
+                    src={contact.user.profile_picture}
                     size={40}
                     style={{
                       fontSize: "1rem",
                     }}
                   >
-                    {contact.username[0]}
+                    {contact.user.username[0]}
                   </Avatar>
                   <div>
                     <div className={classes.UsernameHolder}>
-                      {contact.username}
+                      {contact.user.username}
                     </div>
                     <div className={classes.PersonalnameHolder}>
-                      {contact.personal_name}
+                      {contact.user.personal_name}
                     </div>
                   </div>
                 </motion.div>

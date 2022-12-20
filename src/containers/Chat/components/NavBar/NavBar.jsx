@@ -2,6 +2,7 @@ import { useState } from "react";
 import ChatsDisplayer from "./components/ChatsDisplayers/ChatsDisplayer";
 import { Route, Routes, NavLink, useNavigate } from "react-router-dom";
 import { DownOutlined, SmileOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
 import {
   PhoneSvg,
   GroupSvg,
@@ -49,6 +50,7 @@ function NavBar() {
   const [selectedNavigation, setSelectedNavigation] = useState(
     topNavigationItems[0]
   );
+  const isOpen = useSelector((state) => state.isNavOpen);
   const navigate = useNavigate();
 
   const menuOnClick = ({ key }) => {
@@ -59,9 +61,10 @@ function NavBar() {
         navigate(0);
     }
   };
+  console.log("open :", isOpen);
 
   return (
-    <div className={classes.NavBar}>
+    <div className={classes.NavBar} isopen={isOpen}>
       <div className={classes.TopNavigation}>
         {topNavigationItems.map((topNavItem) => {
           return (

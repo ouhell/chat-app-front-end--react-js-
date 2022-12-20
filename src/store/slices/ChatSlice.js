@@ -6,11 +6,15 @@ const ChatSlice = createSlice({
   name: "chatReducer",
   initialState: {
     chatSocket: io(HostName),
-    counter: 50000,
+    isNavOpen: "false",
   },
   reducers: {
-    increment: (state, action) => {
-      state.counter = state.counter + 1;
+    OpenNav: (state, action) => {
+      if (state.isNavOpen === "false") {
+        state.isNavOpen = "true";
+        return;
+      }
+      state.isNavOpen = "false";
     },
   },
 });

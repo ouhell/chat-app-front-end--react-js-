@@ -6,13 +6,16 @@ import { useParams } from "react-router-dom";
 import ChatHandler from "./components/ChatHandler/ChatHandler";
 import InputHandler from "./components/InputHandler/InputHandler";
 import classes from "./PublicCoversation.module.scss";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { ChatActions } from "../../../../store/slices/ChatSlice";
+
 function PublicConversation({}) {
   const { id } = useParams();
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const chatSocket = useSelector((state) => state.chatSocket);
+  const dispatch = useDispatch();
   const chatContainer = useRef();
   const previousId = useRef(null);
 
@@ -40,6 +43,7 @@ function PublicConversation({}) {
             });
           });
           setMessages(res.data);
+          console.log("fetched messages :", res.data);
         })
         .catch((err) => {
           console.log("fetch messages error", err);
@@ -61,7 +65,12 @@ function PublicConversation({}) {
   }, [messages]);
   return (
     <div className={classes.Conversation}>
-      <div className={classes.ContactHeader}></div>
+      <div
+        className={classes.ContactHeader}
+        onClick={() => {
+          dispatch(ChatActions.OpenNav());
+        }}
+      ></div>
       <ChatHandler
         isLoading={isLoading}
         isError={isError}

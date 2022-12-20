@@ -1,0 +1,40 @@
+.ImageMessage {
+  overflow-wrap: break-word;
+  max-width: min(35rem, 60%);
+
+  transition: border-radius 0.05s ease-in-out;
+
+  img {
+    /*   max-width: fit-content;
+    max-height: fit-content; */
+  }
+
+  &:not(.SelfSent):not(:last-child) {
+    border-top-left-radius: 2rem;
+  }
+  &:is(:last-child):not(.SelfSent) {
+    border-bottom-left-radius: 2rem;
+  }
+  &:not(.SelfSent) {
+    border-top-right-radius: 2rem;
+    border-bottom-right-radius: 2rem;
+  }
+
+  &.SelfSent {
+    margin-left: auto;
+    border-top-left-radius: 2rem;
+    border-bottom-left-radius: 2rem;
+    color: #ffff;
+
+    &:not(:last-child) {
+      border-top-right-radius: 2rem;
+    }
+    &:is(:last-child) {
+      border-bottom-right-radius: 2rem;
+    }
+  }
+
+  &.Temporary {
+    opacity: 0.5;
+  }
+}

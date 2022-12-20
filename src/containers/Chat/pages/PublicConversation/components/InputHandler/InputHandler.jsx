@@ -58,6 +58,7 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
         _id: generatedId,
         sender: userId,
         message: readyMessage,
+        content_type: "text",
         conversation: id,
         temporary: true,
       };
@@ -67,13 +68,21 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
     });
     setMessage("");
   };
-  const sendFile = (file) => {
+  const sendFile = (file, value) => {
+    console.log(value);
+    console.log(file);
+    console.log("url ", URL.createObjectURL(file));
+
+    const userId = JSON.parse(localStorage.getItem("userData")).userId;
+
+    const generatedId = Math.random() * 10;
+
     const data = new FormData();
     data.append("file", file);
 
     axios
       .post(
-        "api/messagerie/file",
+        "api/messagerie/image/" + id,
 
         data,
         {
@@ -85,12 +94,37 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
         }
       )
       .then((res) => {
-        console.log("response", res);
+        chatSocket.emit("send message", res.data);
+        setMessages((prevMessages) => {
+          const newMessages = [...prevMessages];
+          const index = newMessages.findIndex((message) => {
+            return message._id === generatedId;
+          });
+          res.data.content = newMessages[index].content;
+          newMessages[index] = res.data;
+
+          return newMessages;
+        });
       })
       .catch((err) => {
         console.log(err);
       });
+
+    setMessages((prevMessages) => {
+      const message = {
+        _id: generatedId,
+        sender: userId,
+        content: URL.createObjectURL(file),
+        conversation: id,
+        content_type: "image",
+        temporary: true,
+      };
+      message.temporary = true;
+      const newMessages = [...prevMessages, message];
+      return newMessages;
+    });
   };
+
   return (
     <div className={classes.InputHandler}>
       <div className={classes.InputHolder}>
@@ -101,7 +135,7 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
             display: "none",
           }}
           onChange={(e) => {
-            sendFile(e.target.files[0]);
+            sendFile(e.target.files[0], e.target.value);
           }}
         />
         <AttatchmentSvg

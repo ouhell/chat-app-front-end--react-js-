@@ -156,7 +156,9 @@ const NotificationDisplayer = () => {
           }
           return (
             <div className={c.Request} key={req._id}>
-              <Avatar>{opponent.username[0]}</Avatar>
+              <Avatar src={opponent.profile_picture}>
+                {opponent.username[0]}
+              </Avatar>
               <div className={c.IdentityHolder}>
                 <div className={c.Username}>{opponent.username}</div>
                 <div className={c.Personalname}>{opponent.personal_name}</div>

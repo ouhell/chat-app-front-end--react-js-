@@ -11,11 +11,6 @@ import { ChatActions } from "../../store/slices/ChatSlice";
 import Profile from "./pages/Profile/Profile";
 
 export default function Chat() {
-  const counter = useSelector((state) => state.counter);
-
-  const dispatch = useDispatch();
-  useEffect(() => {}, []);
-
   return (
     <div className={classes.Chat}>
       <section className={classes.MainSection}>
@@ -26,12 +21,7 @@ export default function Chat() {
             <Route path="/settings" element={<Profile />} />
           </Routes>
         </div>
-        <div
-          className={classes.SideContent}
-          onClick={() => {
-            dispatch(ChatActions.increment());
-          }}
-        ></div>
+        <div className={classes.SideContent}></div>
       </section>
     </div>
   );

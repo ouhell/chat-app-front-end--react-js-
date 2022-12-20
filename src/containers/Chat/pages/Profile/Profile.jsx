@@ -1,7 +1,7 @@
 import { Avatar, Button, Input, Skeleton, Spin } from "antd";
 import axios from "axios";
-import { useState } from "react";
-import { useEffect } from "react";
+import { LoadingOutlined } from "@ant-design/icons";
+import { useEffect, useRef, useState } from "react";
 import c from "./Profile.module.scss";
 
 const initialFromData = {
@@ -38,6 +38,7 @@ const Profile = () => {
   const [isError, setIsError] = useState(false);
   const [isUpdatingInfo, setIsUpdatingInfo] = useState(false);
   const [isUpdatingPic, setIsUpdatingPic] = useState(false);
+  const fileUploader = useRef();
 
   function fetchProfileData() {
     if (isLoading) return;
@@ -106,6 +107,29 @@ const Profile = () => {
       });
   }
 
+  function updatePic(image) {
+    if (isUpdatingPic || !image) return;
+    setIsUpdatingPic(true);
+    const data = new FormData();
+    data.append("profile_pic", image);
+    axios
+      .put("api/userapi/profile/picture", data, {
+        headers: {
+          authorization:
+            "Bearer " +
+            JSON.parse(localStorage.getItem("userData")).access_token,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        setProfilePicture(res.data.newUrl);
+      })
+      .catch((err) => {})
+      .finally(() => {
+        setIsUpdatingPic(false);
+      });
+  }
+
   useEffect(() => {
     fetchProfileData();
   }, []);
@@ -134,19 +158,43 @@ const Profile = () => {
             style={{
               width: "fit-content",
               borderRadius: "100%",
-              backgroundColor: "grey",
+              backgroundColor: "var(--main-blank)",
             }}
           >
-            <Avatar
-              size={90}
-              src={profilePicture}
+            <input
+              ref={fileUploader}
+              type={"file"}
               style={{
-                fontSize: "2rem",
+                display: "none",
               }}
-              className={"util-pointer " + c.ProfilPic}
+              onChange={(e) => {
+                updatePic(e.target.files[0]);
+              }}
+            />
+            <Spin
+              spinning={isUpdatingPic}
+              indicator={
+                <LoadingOutlined
+                  style={{
+                    color: "var(--primary-soft)",
+                  }}
+                />
+              }
             >
-              U
-            </Avatar>
+              <Avatar
+                onClick={() => {
+                  fileUploader.current.click();
+                }}
+                size={90}
+                src={profilePicture}
+                style={{
+                  fontSize: "2rem",
+                }}
+                className={"util-pointer " + c.ProfilPic}
+              >
+                U
+              </Avatar>
+            </Spin>
           </div>
         ) : null}
       </div>
