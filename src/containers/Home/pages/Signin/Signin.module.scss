@@ -11,6 +11,8 @@
   background-color: hsl(200deg 33% 98%);
 
   .SigninBox {
+    display: flex;
+    flex-direction: column;
     width: min(30rem, 95vw);
     min-width: fit-content;
 
@@ -68,7 +70,7 @@
     display: block;
     height: 2.5rem;
     font-weight: bold;
-    margin: auto;
+
     width: 100%;
     border-radius: 2.5rem;
     background: linear-gradient(

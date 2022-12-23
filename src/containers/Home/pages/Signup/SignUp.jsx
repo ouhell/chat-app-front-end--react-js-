@@ -86,7 +86,7 @@ const SignUp = () => {
             errorMessage: "",
           };
 
-          if (testingValue < 4) {
+          if (testingValue.length < 4) {
             validation.isValid = false;
             validation.errorMessage = "name must be longer than 3 characters";
             return setValidation("personal_name", validation);
@@ -174,7 +174,7 @@ const SignUp = () => {
             return setValidation("password", validation);
           }
 
-          // check that it contains at least a character
+          // check that it contains at least a digit
           if (!/\d/.test(testingValue)) {
             validation.isValid = false;
             validation.errorMessage =
@@ -188,16 +188,9 @@ const SignUp = () => {
               "minimum eight characters, at least one uppercase letter, one lowercase letter and one number";
             return setValidation("password", validation);
           }
+
           // check that it contains at least one uppercase character
           if (!/[A-Z]/.test(testingValue)) {
-            validation.isValid = false;
-            validation.errorMessage =
-              "minimum eight characters, at least one uppercase letter, one lowercase letter and one number";
-            return setValidation("password", validation);
-          }
-
-          // check that it contains at least one digit
-          if (/[^0-9a-zA-Z]/.test(testingValue)) {
             validation.isValid = false;
             validation.errorMessage =
               "minimum eight characters, at least one uppercase letter, one lowercase letter and one number";
