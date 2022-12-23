@@ -1,7 +1,7 @@
 import classes from "./ContactDisplayer.module.scss";
 import { SearchSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import { useCallback, useEffect, useState } from "react";
-import { Avatar, Empty, Result } from "antd";
+import { Avatar, Button, Empty, Result } from "antd";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
@@ -68,6 +68,20 @@ const ContactDisplayer = () => {
         </div>
       </div>
       <BasicSpinner spinning={isloading} />
+
+      {isError ? (
+        <Result
+          status={"error"}
+          title="Error"
+          icon={null}
+          subTitle="couldn' t load contacts"
+          extra={[
+            <Button className={classes.Button} onClick={fetchContacts}>
+              retry
+            </Button>,
+          ]}
+        />
+      ) : null}
 
       {!isloading && !isError && contactData.length === 0 ? (
         <Empty description="No contact" />

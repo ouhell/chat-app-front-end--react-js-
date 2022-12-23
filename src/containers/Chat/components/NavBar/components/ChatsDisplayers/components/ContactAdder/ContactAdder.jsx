@@ -211,7 +211,7 @@ const ContactAdder = ({ open, onCancel }) => {
 
             return (
               <div className={c.Candidate} key={cand._id}>
-                <Avatar>{cand.username[0]}</Avatar>
+                <Avatar src={cand.profile_picture}>{cand.username[0]}</Avatar>
                 <div className={c.NameHolder}>
                   <div className={c.UserName}>{cand.username}</div>
                   <div className={c.PersonalName}>{cand.personal_name}</div>

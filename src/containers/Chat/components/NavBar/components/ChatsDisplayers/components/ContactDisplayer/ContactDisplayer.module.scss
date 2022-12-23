@@ -113,4 +113,11 @@
     }
     /* Handle */
   }
+
+  .Button {
+    &:hover {
+      color: var(--primary-soft);
+      border-color: var(--primary-soft);
+    }
+  }
 }

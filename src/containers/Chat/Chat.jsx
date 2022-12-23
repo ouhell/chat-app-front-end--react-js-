@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ChatActions } from "../../store/slices/ChatSlice";
 import Profile from "./pages/Profile/Profile";
+import PDFReader from "./pages/GroupConversation/PdfReader";
 
 export default function Chat() {
   return (
@@ -19,6 +20,7 @@ export default function Chat() {
           <Routes>
             <Route path="/chats/private/:id" element={<PublicConversation />} />
             <Route path="/settings" element={<Profile />} />
+            <Route path="/pdf" element={<PDFReader />} />
           </Routes>
         </div>
         <div className={classes.SideContent}></div>

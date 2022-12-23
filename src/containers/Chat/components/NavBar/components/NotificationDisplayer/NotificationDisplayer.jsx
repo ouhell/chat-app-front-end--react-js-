@@ -8,6 +8,7 @@ import c from "./NotificationDisplayer.module.scss";
 const NotificationDisplayer = () => {
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
   const [requestStates, setRequestStates] = useState({});
 
   const userId = JSON.parse(localStorage.getItem("userData")).userId;
