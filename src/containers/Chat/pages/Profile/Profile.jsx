@@ -1,103 +1,342 @@
-import { Avatar, Button, Input, Skeleton, Spin } from "antd";
+import { Avatar, Button, Input, Skeleton, Spin, notification } from "antd";
 import axios from "axios";
-import { LoadingOutlined } from "@ant-design/icons";
+
+import {
+  UnlockOutlined,
+  LockOutlined,
+  UserOutlined,
+  CheckOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
 import c from "./Profile.module.scss";
-
-const initialFromData = {
-  feilds: {
-    username: {
-      value: "",
-      istouched: false,
-      validation: {},
-      isValid: false,
-      object_name: "username", // the name of the feild in the fetched data
-    },
-    "personal name": {
-      value: "",
-      istouched: false,
-      validation: {},
-      isValid: false,
-      object_name: "personal_name", // the name of the feild in the fetched data
-    },
-    "E-mail": {
-      value: "",
-      istouched: false,
-      validation: {},
-      isValid: false,
-      object_name: "email", // the name of the feild in the fetched data
-    },
-  },
-  isFormValid: false,
-};
+import { useCallback } from "react";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
-  const [profilePicture, setProfilePicture] = useState("");
-  const [formData, setFormData] = useState(initialFromData);
+  const usernameCounter = useRef(0);
+  const emailCounter = useRef(0);
+  const currentProfile = useRef({});
+  const [notifApi, notifContextHolder] = notification.useNotification();
+  const [updateFormData, setUpdateFormData] = useState({
+    feilds: {
+      init: function () {
+        for (let i in this) {
+          if (typeof this[i] == "object") {
+            this[i].parent = this;
+          }
+        }
+        delete this.init;
+        return this;
+      },
+      username: {
+        label_name: "Username",
+        value: "",
+        validation: (value) => {
+          const testingValue = value.trim();
+          const validation = {
+            isValid: true,
+            errorMessage: "",
+          };
+
+          if (currentProfile.current.username.trim() === testingValue) return;
+
+          if (testingValue.length < 4) {
+            validation.isValid = false;
+            validation.errorMessage =
+              "username must be longer than 3 characters";
+            return setValidation("username", validation);
+          }
+
+          // check if username already exists
+          setloading("username", true);
+          usernameCounter.current++;
+          const counter = usernameCounter.current;
+
+          axios
+            .get("/api/auth/usernameExist/" + testingValue)
+            .then((res) => {
+              console.log("username exists?", res.data);
+
+              if (res.data) {
+                validation.isValid = false;
+                validation.errorMessage = "username already exists!";
+              }
+            })
+            .catch((err) => {
+              validation.isValid = false;
+              validation.errorMessage = "connection error";
+            })
+            .finally(() => {
+              if (usernameCounter.current !== counter) return;
+
+              setValidation("username", validation);
+            });
+        },
+        isValid: false,
+        errorMessage: "",
+        isTouched: false,
+        isLoading: false,
+        input_config: {
+          type: "text",
+          prefix: <UserOutlined className={c.PrefixIcon} />,
+          placeHolder: "Username",
+          maxLength: 25,
+        },
+      },
+      personal_name: {
+        label_name: "Personal Name",
+        value: "",
+        validation: (value) => {
+          const testingValue = value.trim();
+          const validation = {
+            isValid: true,
+            errorMessage: "",
+          };
+
+          if (testingValue.length < 4) {
+            validation.isValid = false;
+            validation.errorMessage = "name must be longer than 3 characters";
+            return setValidation("personal_name", validation);
+          }
+
+          setValidation("personal_name", validation);
+        },
+        isValid: false,
+        errorMessage: "",
+        isTouched: false,
+        isLoading: false,
+        input_config: {
+          type: "text",
+          prefix: <UserOutlined className={c.PrefixIcon} />,
+          placeHolder: "Personal Name",
+          maxLength: 25,
+        },
+      },
+      email: {
+        label_name: "E-mail",
+        value: "",
+        validation: (value) => {
+          const testingValue = value.trim();
+          const validation = {
+            isValid: true,
+            errorMessage: "",
+          };
+
+          if (currentProfile.current.email.trim() === testingValue)
+            return setValidation("email", validation);
+
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(testingValue)) {
+            validation.isValid = false;
+            validation.errorMessage = "invalid email";
+            return setValidation("email", validation);
+          }
+
+          setloading("email", true);
+          emailCounter.current++;
+          const counter = emailCounter.current;
+
+          axios
+            .get("/api/auth/emailExist/" + testingValue)
+            .then((res) => {
+              console.log("email exists?", res.data);
+
+              if (res.data) {
+                validation.isValid = false;
+                validation.errorMessage = "email already exists!";
+              }
+            })
+            .catch((err) => {
+              validation.isValid = false;
+              validation.errorMessage = "connection error";
+            })
+            .finally(() => {
+              if (emailCounter.current !== counter) return;
+              setValidation("email", validation);
+            });
+        },
+        isValid: false,
+        errorMessage: "",
+        isTouched: false,
+        isLoading: false,
+        input_config: {
+          type: "text",
+          prefix: <span className={c.PrefixIcon}>@</span>,
+          placeHolder: "Email",
+          maxLength: 60,
+        },
+      },
+    }.init(),
+  });
+
+  const [profilePicture, setProfilePicture] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isUpdatingInfo, setIsUpdatingInfo] = useState(false);
   const [isUpdatingPic, setIsUpdatingPic] = useState(false);
   const fileUploader = useRef();
+  const userData = useSelector((state) => state.auth.userData);
 
-  function fetchProfileData() {
-    if (isLoading) return;
-    setIsLoading(true);
-    setIsError(false);
-    axios
-      .get("api/userapi/profile", {
-        headers: {
-          authorization:
-            "Bearer " +
-            JSON.parse(localStorage.getItem("userData")).access_token,
-        },
-      })
-      .then((res) => {
-        console.log("fetched profile :", res.data);
-        setProfilePicture(res.data.profile_picture);
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
 
-        setFormData((prevFormData) => {
-          const newFormData = { ...prevFormData };
-          const newFeilds = { ...newFormData.feilds };
-          for (let key in newFeilds) {
-            console.log("key ", newFeilds[key].object_name);
-            const newFeild = {
-              ...newFeilds[key],
-              value: res.data[newFeilds[key].object_name],
-            };
-            newFeilds[key] = newFeild;
-          }
-          newFormData.feilds = newFeilds;
-          return newFormData;
-        });
-      })
-      .catch((err) => {
-        console.log("fetch profile error :", err);
-        setIsError(true);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+  const isFormValid = function () {
+    for (let feild in updateFormData.feilds) {
+      if (!updateFormData.feilds[feild].isValid) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  function validateAll() {
+    for (let feild in updateFormData.feilds) {
+      if (!updateFormData.feilds[feild].isValid) {
+        updateFormData.feilds[feild].validation(
+          updateFormData.feilds[feild].value
+        );
+      }
+    }
   }
+
+  const resetFeildsParent = useCallback(function (feilds) {
+    (feilds.init = function () {
+      for (let i in this) {
+        if (typeof this[i] == "object") {
+          this[i].parent = this;
+        }
+      }
+      delete this.init;
+    }),
+      feilds.init();
+  }, []);
+
+  const setloading = useCallback(function (key, value) {
+    setUpdateFormData((prevFormData) => {
+      const newFormData = { ...prevFormData };
+      const newFeilds = { ...newFormData.feilds };
+      const selectedFeild = { ...newFeilds[key] };
+
+      selectedFeild.isTouched = true;
+      selectedFeild.isValid = false;
+      selectedFeild.isLoading = value;
+
+      newFeilds[key] = selectedFeild;
+
+      resetFeildsParent(newFeilds);
+
+      newFormData.feilds = newFeilds;
+      return newFormData;
+    });
+  }, []);
+
+  const setValidation = useCallback(function (key, validation) {
+    setUpdateFormData((prevFormData) => {
+      const newFormData = { ...prevFormData };
+      const newFeilds = { ...newFormData.feilds };
+      const selectedFeild = { ...newFeilds[key] };
+
+      selectedFeild.isTouched = true;
+      selectedFeild.isValid = validation.isValid;
+      selectedFeild.errorMessage = validation.errorMessage;
+      selectedFeild.isLoading = false;
+      newFeilds[key] = selectedFeild;
+      resetFeildsParent(newFeilds);
+      newFormData.feilds = newFeilds;
+      return newFormData;
+    });
+  }, []);
+
+  const fetchProfileData = useCallback(
+    function () {
+      if (isLoading) return;
+      setIsLoading(true);
+      setIsError(false);
+      axios
+        .get("api/userapi/profile", {
+          headers: {
+            authorization: "Bearer " + userData.access_token,
+          },
+        })
+        .then((res) => {
+          console.log("fetched profile :", res.data);
+          setProfilePicture(res.data.profile_picture);
+
+          setUpdateFormData((prevFormData) => {
+            const newFormData = { ...prevFormData };
+            const newFeilds = { ...newFormData.feilds };
+
+            for (let key in newFeilds) {
+              console.log("key :", key);
+              if (!res.data[key]) continue;
+              console.log("key :", key, "passed");
+              const selectedFeild = { ...newFeilds[key] };
+              selectedFeild.isTouched = false;
+              selectedFeild.isValid = false;
+              selectedFeild.isLoading = false;
+              selectedFeild.value = res.data[key];
+              newFeilds[key] = selectedFeild;
+            }
+
+            resetFeildsParent(newFeilds);
+            newFormData.feilds = newFeilds;
+            console.log("new form", newFormData);
+            return newFormData;
+          });
+
+          currentProfile.current = res.data;
+        })
+        .catch((err) => {
+          console.log("fetch profile error :", err);
+          setIsError(true);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    },
+    [isLoading, isError]
+  );
+
+  const changeValue = useCallback(function (key, newValue) {
+    setUpdateFormData((prevFormData) => {
+      const newFormData = { ...prevFormData };
+      const newFeilds = { ...newFormData.feilds };
+      const selectedFeild = { ...newFeilds[key] };
+
+      selectedFeild.isTouched = true;
+      selectedFeild.value = newValue;
+
+      newFeilds[key] = selectedFeild;
+      resetFeildsParent(newFeilds);
+      newFormData.feilds = newFeilds;
+      return newFormData;
+    });
+
+    updateFormData.feilds[key].validation(newValue);
+  }, []);
 
   function updateData() {
     setIsUpdatingInfo(true);
     const updateData = {};
-    for (let feild in formData.feilds) {
+    for (let feild in updateFormData.feilds) {
       console.log("update key ", feild);
-      updateData[formData.feilds[feild].object_name] =
-        formData.feilds[feild].value;
+      updateData[feild] = updateFormData.feilds[feild].value;
     }
     axios
       .put("api/userapi/profile", updateData, {
         headers: {
-          authorization:
-            "Bearer " +
-            JSON.parse(localStorage.getItem("userData")).access_token,
+          authorization: "Bearer " + userData.access_token,
         },
       })
       .then((res) => {
         console.log("update profile res :", res.data);
+        currentProfile.current = updateData;
+        notifApi.success({
+          message: "Profile info updated!",
+          duration: 2,
+        });
       })
       .catch((err) => {
         console.log("update profile err", err);
@@ -107,46 +346,35 @@ const Profile = () => {
       });
   }
 
-  function updatePic(image) {
-    if (isUpdatingPic || !image) return;
-    setIsUpdatingPic(true);
-    const data = new FormData();
-    data.append("profile_pic", image);
-    axios
-      .put("api/userapi/profile/picture", data, {
-        headers: {
-          authorization:
-            "Bearer " +
-            JSON.parse(localStorage.getItem("userData")).access_token,
-        },
-      })
-      .then((res) => {
-        console.log(res.data);
-        setProfilePicture(res.data.newUrl);
-      })
-      .catch((err) => {})
-      .finally(() => {
-        setIsUpdatingPic(false);
-      });
-  }
-
-  useEffect(() => {
-    fetchProfileData();
-  }, []);
-
-  function changeData(value, key) {
-    setFormData((prevData) => {
-      const newFormData = { ...prevData };
-      const newFeilds = { ...newFormData.feilds };
-      newFeilds[key] = { ...newFeilds[key], value, istouched: true };
-      newFormData.feilds = newFeilds;
-      return newFormData;
-    });
-  }
+  const updatePic = useCallback(
+    function (image) {
+      if (isUpdatingPic || !image) return;
+      setIsUpdatingPic(true);
+      const data = new FormData();
+      data.append("profile_pic", image);
+      axios
+        .put("api/userapi/profile/picture", data, {
+          headers: {
+            authorization: "Bearer " + userData.access_token,
+          },
+        })
+        .then((res) => {
+          console.log(res.data);
+          setProfilePicture(res.data.newUrl);
+        })
+        .catch((err) => {})
+        .finally(() => {
+          setIsUpdatingPic(false);
+        });
+    },
+    [isUpdatingPic]
+  );
 
   const displayReady = !isLoading && !isError;
+  console.log("formdata :", updateFormData);
   return (
     <div className={c.Profile}>
+      {notifContextHolder}
       <header className={c.Header}>My Profile</header>
 
       <div className={c.ProfilPicHolder}>
@@ -201,22 +429,52 @@ const Profile = () => {
       <div className={c.ProfilInfoHolder}>
         {isLoading ? <Skeleton active /> : null}
         {displayReady
-          ? Object.keys(formData.feilds).map((key) => {
-              const isValid =
-                !formData.feilds[key].istouched || formData.feilds[key].isValid;
+          ? Object.keys(updateFormData.feilds).map((key) => {
+              const feild = updateFormData.feilds[key];
+              const config = feild.input_config;
+
+              const props = {
+                onChange: (e) => {
+                  changeValue(key, e.target.value, key);
+                },
+                value: feild.value,
+                maxLength: config.maxLength,
+                placeholder: config.placeHolder,
+                className: c.Input,
+                status:
+                  !feild.isValid && feild.isTouched && !feild.isLoading
+                    ? "error"
+                    : "normal",
+                prefix: config.prefix,
+                suffix: feild.isValid ? (
+                  <CheckOutlined
+                    style={{
+                      color: "green",
+                    }}
+                  />
+                ) : feild.isLoading ? (
+                  <LoadingOutlined
+                    style={{
+                      color: "var(--primary-soft)",
+                    }}
+                  />
+                ) : null,
+              };
+
+              let InputType = Input;
+
+              if (config.type === "input.password") {
+                InputType = Input.Password;
+                props.visibilityToggle = config.visibilityToggle;
+              }
               return (
                 <div className={c.DataChanger} key={key}>
-                  <label className={c.Label}>{key}</label>
+                  <label className={c.Label}>{feild.label_name}</label>
                   <div className={c.InputHolder}>
-                    <Input
-                      placeholder={key}
-                      value={formData.feilds[key].value}
-                      meta-status={isValid ? "normal" : "error"}
-                      status={isValid ? "normal" : "error"}
-                      onChange={(e) => {
-                        changeData(e.target.value, key);
-                      }}
-                    />
+                    {feild.errorMessage ? (
+                      <div className={c.InputError}>{feild.errorMessage}</div>
+                    ) : null}
+                    <InputType {...props} />
                   </div>
                 </div>
               );

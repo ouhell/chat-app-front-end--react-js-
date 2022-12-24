@@ -4,13 +4,15 @@ import { useState } from "react";
 import axios from "axios";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AuthActions } from "../../../../store/slices/authenticationSlice";
 const Signin = () => {
   const [signinData, setSigninData] = useState({
     identifier: "",
     password: "",
   });
   const [isSigningIn, setIsSigningIn] = useState(false);
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const signIn = () => {
@@ -22,11 +24,12 @@ const Signin = () => {
         password: signinData.password.trim(),
       })
       .then((res) => {
-        localStorage.setItem("userData", JSON.stringify(res.data));
+        dispatch(AuthActions.login(res.data));
+        /* localStorage.setItem("userData", JSON.stringify(res.data));
         navigate("/", {
           replace: true,
         });
-        navigate(0);
+        navigate(0); */
       })
       .catch((err) => console.log(err))
       .finally(() => {

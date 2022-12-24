@@ -2,6 +2,7 @@ import { Avatar, Button, Spin } from "antd";
 import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import BasicSpinner from "../../../../../../shared/components/BasicSpinner/BasicSpinner";
 import c from "./NotificationDisplayer.module.scss";
 
@@ -10,7 +11,7 @@ const NotificationDisplayer = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [requestStates, setRequestStates] = useState({});
-
+  const userData = useSelector((state) => state.auth.userData);
   const userId = JSON.parse(localStorage.getItem("userData")).userId;
 
   const fetchNotifications = () => {
@@ -20,9 +21,7 @@ const NotificationDisplayer = () => {
     axios
       .get("/api/userapi/request", {
         headers: {
-          authorization:
-            "Bearer " +
-            JSON.parse(localStorage.getItem("userData")).access_token,
+          authorization: "Bearer " + userData.access_token,
         },
       })
       .then((res) => {
@@ -59,9 +58,7 @@ const NotificationDisplayer = () => {
     axios
       .delete("api/userapi/request/" + id, {
         headers: {
-          authorization:
-            "Bearer " +
-            JSON.parse(localStorage.getItem("userData")).access_token,
+          authorization: "Bearer " + userData.access_token,
         },
       })
       .then((res) => {
@@ -109,9 +106,7 @@ const NotificationDisplayer = () => {
     axios
       .post("api/userapi/user-contact/" + id, null, {
         headers: {
-          authorization:
-            "Bearer " +
-            JSON.parse(localStorage.getItem("userData")).access_token,
+          authorization: "Bearer " + userData.access_token,
         },
       })
       .then((res) => {

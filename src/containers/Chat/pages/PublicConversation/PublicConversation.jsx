@@ -14,10 +14,10 @@ function PublicConversation({}) {
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const chatSocket = useSelector((state) => state.chatSocket);
+  const chatSocket = useSelector((state) => state.chat.chatSocket);
   const dispatch = useDispatch();
   const chatContainer = useRef();
-  const previousId = useRef(null);
+  const userData = useSelector((state) => state.auth.userData);
 
   const fetchMessages = useCallback(
     (id) => {
@@ -27,9 +27,7 @@ function PublicConversation({}) {
       axios
         .get("api/messagerie/messages/" + id, {
           headers: {
-            authorization:
-              "Bearer " +
-              JSON.parse(localStorage.getItem("userData")).access_token,
+            authorization: "Bearer " + userData.access_token,
           },
         })
         .then((res) => {

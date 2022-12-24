@@ -6,6 +6,8 @@ import classes from "./ChatDisplayer.module.scss";
 import ContactDisplayer from "./components/ContactDisplayer/ContactDisplayer";
 import { PluxCircleSvg } from "../../../../../../shared/assets/svg/SvgProvider";
 import ContactAdder from "./components/ContactAdder/ContactAdder";
+import { useDispatch } from "react-redux";
+import { NotifActions } from "../../../../../../store/slices/NotificationSlice";
 
 const chatTypes = [
   {
@@ -28,6 +30,7 @@ const chatTypes = [
 const ChatsDisplayer = () => {
   const [selectedChatType, setSelectedChatType] = useState(chatTypes[0]);
   const [showContactAdder, setShowContactAdder] = useState(false);
+  const dispatch = useDispatch();
   return (
     <div className={classes.ChatDisplayer}>
       <header className={classes.Header}>
@@ -37,7 +40,20 @@ const ChatsDisplayer = () => {
             setShowContactAdder(false);
           }}
         ></ContactAdder>
-        <div className={classes.HeaderText}> Chats</div>
+        <div
+          className={classes.HeaderText}
+          onClick={() => {
+            dispatch(
+              NotifActions.notify({
+                type: "success",
+                message: "OK",
+              })
+            );
+          }}
+        >
+          {" "}
+          Chats
+        </div>
         <div
           className={classes.AddButton}
           onClick={() => {

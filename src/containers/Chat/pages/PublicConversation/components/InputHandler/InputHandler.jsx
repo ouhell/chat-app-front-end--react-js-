@@ -14,13 +14,15 @@ import { useRef } from "react";
 const InputHandler = ({ setMessages, sendAllowed }) => {
   const [message, setMessage] = useState("");
   const pathParams = useParams();
-  const chatSocket = useSelector((state) => state.chatSocket);
+  const chatSocket = useSelector((state) => state.chat.chatSocket);
+  console.log("chat socket", chatSocket);
   const { id } = useParams();
   const fileInput = useRef();
+  const userData = useSelector((state) => state.auth.userData);
 
   const sendMessage = () => {
     if (!sendAllowed) return;
-    const userId = JSON.parse(localStorage.getItem("userData")).userId;
+    const userId = userData.userId;
     const readyMessage = message.trim();
     if (!readyMessage) return;
     const generatedId = Math.random() * 10;
@@ -34,9 +36,7 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
         },
         {
           headers: {
-            authorization:
-              "Bearer " +
-              JSON.parse(localStorage.getItem("userData")).access_token,
+            authorization: "Bearer " + userData.access_token,
           },
         }
       )
@@ -73,7 +73,7 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
     console.log(file);
     console.log("url ", URL.createObjectURL(file));
 
-    const userId = JSON.parse(localStorage.getItem("userData")).userId;
+    const userId = userData.userId;
 
     const generatedId = Math.random() * 10;
 
@@ -87,9 +87,7 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
         data,
         {
           headers: {
-            authorization:
-              "Bearer " +
-              JSON.parse(localStorage.getItem("userData")).access_token,
+            authorization: "Bearer " + userData.access_token,
           },
         }
       )

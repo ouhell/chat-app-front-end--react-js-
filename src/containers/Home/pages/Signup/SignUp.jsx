@@ -377,7 +377,10 @@ const SignUp = () => {
               maxLength: config.maxLength,
               placeholder: config.placeHolder,
               className: classes.Input,
-              status: !feild.isValid && feild.isTouched ? "error" : "normal",
+              status:
+                !feild.isValid && feild.isTouched && !feild.isLoading
+                  ? "error"
+                  : "normal",
               prefix: config.prefix,
               suffix: feild.isValid ? (
                 <CheckOutlined

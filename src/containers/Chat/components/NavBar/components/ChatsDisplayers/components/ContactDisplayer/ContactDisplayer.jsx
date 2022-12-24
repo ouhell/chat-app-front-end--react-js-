@@ -6,13 +6,14 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
 import BasicSpinner from "../../../../../../../../shared/components/BasicSpinner/BasicSpinner";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 const ContactDisplayer = () => {
   const [seachtext, setSearchtext] = useState("");
   const [contactData, setContactData] = useState([]);
   const [isloading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const userData = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
 
   const filterContact = () => {
@@ -31,9 +32,7 @@ const ContactDisplayer = () => {
     axios
       .get("api/userapi/user-contact", {
         headers: {
-          authorization:
-            "Bearer " +
-            JSON.parse(localStorage.getItem("userData")).access_token,
+          authorization: "Bearer " + userData.access_token,
         },
       })
       .then((res) => {

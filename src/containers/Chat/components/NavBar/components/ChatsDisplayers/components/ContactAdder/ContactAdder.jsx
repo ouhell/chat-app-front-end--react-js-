@@ -1,24 +1,29 @@
 import { Input, Modal, Button, Avatar } from "antd";
 import axios from "axios";
+import { useEffect } from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import c from "./ContactAdder.module.scss";
 
 const ContactAdder = ({ open, onCancel }) => {
   const [isLoading, setIsLoading] = useState(false);
-
+  const userData = useSelector((state) => state.auth.userData);
   const [data, setData] = useState([]);
   const [searchtext, setSearchtext] = useState("");
   const [candidateState, setCandidateState] = useState({});
+
+  useEffect(() => {
+    if (open) fetchCandidates();
+  }, [open]);
+
   const fetchCandidates = () => {
     if (isLoading) return;
     setIsLoading(true);
-
+    console.log(userData);
     axios
       .get("/api/userapi/request/candidates?search=" + searchtext.trim(), {
         headers: {
-          authorization:
-            "Bearer " +
-            JSON.parse(localStorage.getItem("userData")).access_token,
+          authorization: "Bearer " + userData.access_token,
         },
       })
       .then((res) => {
@@ -113,9 +118,7 @@ const ContactAdder = ({ open, onCancel }) => {
     axios
       .delete("api/userapi/request/" + candidateState[id].request, {
         headers: {
-          authorization:
-            "Bearer " +
-            JSON.parse(localStorage.getItem("userData")).access_token,
+          authorization: "Bearer " + userData.access_token,
         },
       })
       .then((res) => {
