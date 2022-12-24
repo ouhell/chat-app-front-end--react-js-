@@ -18,7 +18,6 @@ const ContactDisplayer = () => {
 
   const filterContact = () => {
     return contactData.filter((contact, i) => {
-      console.log(i + ")", contact);
       return (
         contact.user.username.includes(seachtext) ||
         contact.user.personal_name.includes(seachtext)
@@ -36,7 +35,6 @@ const ContactDisplayer = () => {
         },
       })
       .then((res) => {
-        console.log("contatcs", res.data);
         setContactData(res.data);
       })
       .catch((err) => {
@@ -88,7 +86,6 @@ const ContactDisplayer = () => {
 
       <div className={classes.ContactList}>
         {filterContact().map((contact, i) => {
-          console.log("c :", contact);
           return (
             <motion.div
               key={contact._id}

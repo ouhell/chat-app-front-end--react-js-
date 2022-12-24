@@ -49,8 +49,6 @@ const SignUp = () => {
           axios
             .get("/api/auth/usernameExist/" + testingValue)
             .then((res) => {
-              console.log("username exists?", res.data);
-
               if (res.data) {
                 validation.isValid = false;
                 validation.errorMessage = "username already exists!";
@@ -263,7 +261,6 @@ const SignUp = () => {
     axios
       .post("api/auth/signup", userData)
       .then((res) => {
-        console.log("signup response :", res.data);
         navigate("/signin");
       })
       .catch((err) => {

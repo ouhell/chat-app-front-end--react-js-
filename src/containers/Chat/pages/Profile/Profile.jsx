@@ -56,8 +56,6 @@ const Profile = () => {
           axios
             .get("/api/auth/usernameExist/" + testingValue)
             .then((res) => {
-              console.log("username exists?", res.data);
-
               if (res.data) {
                 validation.isValid = false;
                 validation.errorMessage = "username already exists!";
@@ -139,8 +137,6 @@ const Profile = () => {
           axios
             .get("/api/auth/emailExist/" + testingValue)
             .then((res) => {
-              console.log("email exists?", res.data);
-
               if (res.data) {
                 validation.isValid = false;
                 validation.errorMessage = "email already exists!";
@@ -261,7 +257,6 @@ const Profile = () => {
           },
         })
         .then((res) => {
-          console.log("fetched profile :", res.data);
           setProfilePicture(res.data.profile_picture);
 
           setUpdateFormData((prevFormData) => {
@@ -269,9 +264,7 @@ const Profile = () => {
             const newFeilds = { ...newFormData.feilds };
 
             for (let key in newFeilds) {
-              console.log("key :", key);
               if (!res.data[key]) continue;
-              console.log("key :", key, "passed");
               const selectedFeild = { ...newFeilds[key] };
               selectedFeild.isTouched = false;
               selectedFeild.isValid = false;
@@ -282,14 +275,12 @@ const Profile = () => {
 
             resetFeildsParent(newFeilds);
             newFormData.feilds = newFeilds;
-            console.log("new form", newFormData);
             return newFormData;
           });
 
           currentProfile.current = res.data;
         })
         .catch((err) => {
-          console.log("fetch profile error :", err);
           setIsError(true);
         })
         .finally(() => {
@@ -318,10 +309,12 @@ const Profile = () => {
   }, []);
 
   function updateData() {
+    if (isUpdatingInfo) return;
+
+    if (!isFormValid()) return validateAll();
     setIsUpdatingInfo(true);
     const updateData = {};
     for (let feild in updateFormData.feilds) {
-      console.log("update key ", feild);
       updateData[feild] = updateFormData.feilds[feild].value;
     }
     axios
@@ -331,7 +324,6 @@ const Profile = () => {
         },
       })
       .then((res) => {
-        console.log("update profile res :", res.data);
         currentProfile.current = updateData;
         notifApi.success({
           message: "Profile info updated!",
@@ -359,7 +351,7 @@ const Profile = () => {
           },
         })
         .then((res) => {
-          console.log(res.data);
+          res.data;
           setProfilePicture(res.data.newUrl);
         })
         .catch((err) => {})
@@ -371,7 +363,6 @@ const Profile = () => {
   );
 
   const displayReady = !isLoading && !isError;
-  console.log("formdata :", updateFormData);
   return (
     <div className={c.Profile}>
       {notifContextHolder}

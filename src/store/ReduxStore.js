@@ -8,12 +8,12 @@ const Store = configureStore({
     auth: AuthenticationSlice.reducer,
     notif: NotificationSlice.reducer,
   },
-  /*  middleware: (getDefault) => {
+  middleware: (getDefault) => {
     return getDefault({
       serializableCheck: {
-        ignoreActions: [ChatSlice.actions.OpenNav],
+        ignoreActions: [ChatSlice.actions],
       },
     });
-  }, */
+  },
 });
 export default Store;

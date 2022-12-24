@@ -1,4 +1,5 @@
-import { Image } from "antd";
+import { Image, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 import c from "./ImageMessage.module.scss";
 
 const ImageMessage = ({ message, userId }) => {
@@ -7,11 +8,22 @@ const ImageMessage = ({ message, userId }) => {
       className={
         c.ImageMessage +
         (userId === message.sender ? ` ${c.SelfSent}` : "") +
-        (message.temporary ? " " + c.Temporary : "") +
+        /*  (message.temporary ? " " + c.Temporary : "") + */
         (message.error ? " " + c.Error : "")
       }
     >
-      <Image src={message.content} />
+      <Spin
+        indicator={
+          <LoadingOutlined
+            style={{
+              color: "var(--primary-soft)",
+            }}
+          />
+        }
+        spinning={message.temporary ? true : false}
+      >
+        <Image src={message.content} />
+      </Spin>
     </div>
   );
 };

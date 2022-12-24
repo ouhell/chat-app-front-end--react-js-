@@ -19,7 +19,7 @@ const ContactAdder = ({ open, onCancel }) => {
   const fetchCandidates = () => {
     if (isLoading) return;
     setIsLoading(true);
-    console.log(userData);
+
     axios
       .get("/api/userapi/request/candidates?search=" + searchtext.trim(), {
         headers: {
@@ -27,7 +27,6 @@ const ContactAdder = ({ open, onCancel }) => {
         },
       })
       .then((res) => {
-        console.log("cadidate data : ", res.data);
         setData(res.data);
       })
       .catch((err) => {
@@ -74,8 +73,6 @@ const ContactAdder = ({ open, onCancel }) => {
         });
       })
       .catch((err) => {
-        console.log("sending request error :", err);
-
         setCandidateState((prevState) => {
           const newState = { ...prevState };
           newState[id] = {
@@ -122,7 +119,6 @@ const ContactAdder = ({ open, onCancel }) => {
         },
       })
       .then((res) => {
-        console.log("cancel request res :", res.data);
         setCandidateState((prevState) => {
           const newState = { ...prevState };
           newState[id] = {

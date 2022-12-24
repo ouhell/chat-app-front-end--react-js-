@@ -25,7 +25,6 @@ const NotificationDisplayer = () => {
         },
       })
       .then((res) => {
-        console.log("fetched requests :", res.data);
         setRequests(res.data);
       })
       .catch((err) => {
@@ -62,7 +61,6 @@ const NotificationDisplayer = () => {
         },
       })
       .then((res) => {
-        console.log("cancel request res :", res.data);
         removerequest(id);
       })
       .catch((err) => {
@@ -70,7 +68,6 @@ const NotificationDisplayer = () => {
           if (err.response.data) {
             if (err.response.data.servedError) {
               if (err.response.data.code === 404) {
-                console.log("removinggggg");
                 removerequest(id);
                 return;
               }
@@ -110,7 +107,6 @@ const NotificationDisplayer = () => {
         },
       })
       .then((res) => {
-        console.log("res accept :", res.data);
         removerequest(id);
       })
       .catch((err) => {

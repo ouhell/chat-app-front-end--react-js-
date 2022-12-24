@@ -31,7 +31,7 @@ function PublicConversation({}) {
           },
         })
         .then((res) => {
-          chatSocket.emit("private chat", id);
+          /* chatSocket.emit("private chat", id);
           chatSocket.off("receive message");
           chatSocket.on("receive message", (message) => {
             if (message.conversation !== id) return;
@@ -39,9 +39,23 @@ function PublicConversation({}) {
               const newMessages = [...prevMessages, message];
               return newMessages;
             });
-          });
+          }); */
+
+          dispatch(ChatActions.emit({ event: "private chat", data: id }));
+          dispatch(ChatActions.off({ event: "receive message" }));
+          dispatch(
+            ChatActions.on({
+              event: "receive message",
+              callback: (message) => {
+                if (message.conversation !== id) return;
+                setMessages((prevMessages) => {
+                  const newMessages = [...prevMessages, message];
+                  return newMessages;
+                });
+              },
+            })
+          );
           setMessages(res.data);
-          console.log("fetched messages :", res.data);
         })
         .catch((err) => {
           console.log("fetch messages error", err);

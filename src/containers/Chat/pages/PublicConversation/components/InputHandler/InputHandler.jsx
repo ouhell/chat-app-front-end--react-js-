@@ -8,18 +8,18 @@ import {
 import { useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRef } from "react";
+import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 
 const InputHandler = ({ setMessages, sendAllowed }) => {
   const [message, setMessage] = useState("");
   const pathParams = useParams();
-  const chatSocket = useSelector((state) => state.chat.chatSocket);
-  console.log("chat socket", chatSocket);
+
   const { id } = useParams();
   const fileInput = useRef();
   const userData = useSelector((state) => state.auth.userData);
-
+  const dispatch = useDispatch();
   const sendMessage = () => {
     if (!sendAllowed) return;
     const userId = userData.userId;
@@ -41,7 +41,12 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
         }
       )
       .then((res) => {
-        chatSocket.emit("send message", res.data);
+        dispatch(
+          ChatActions.emit({
+            event: "send message",
+            data: res.data,
+          })
+        );
         setMessages((prevMessages) => {
           const newMessages = [...prevMessages];
           const index = newMessages.findIndex((message) => {
@@ -69,10 +74,6 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
     setMessage("");
   };
   const sendFile = (file, value) => {
-    console.log(value);
-    console.log(file);
-    console.log("url ", URL.createObjectURL(file));
-
     const userId = userData.userId;
 
     const generatedId = Math.random() * 10;
@@ -92,7 +93,13 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
         }
       )
       .then((res) => {
-        chatSocket.emit("send message", res.data);
+        /* chatSocket.emit("send message", res.data); */
+        dispatch(
+          ChatActions.emit({
+            event: "send message",
+            data: res.data,
+          })
+        );
         setMessages((prevMessages) => {
           const newMessages = [...prevMessages];
           const index = newMessages.findIndex((message) => {
