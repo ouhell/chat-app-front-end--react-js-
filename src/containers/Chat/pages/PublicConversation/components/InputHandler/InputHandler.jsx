@@ -11,6 +11,8 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useRef } from "react";
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
+import { Popover } from "antd";
+import EmojiPicker from "emoji-picker-react";
 
 const InputHandler = ({ setMessages, sendAllowed }) => {
   const [message, setMessage] = useState("");
@@ -164,7 +166,28 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
             setMessage(e.target.value);
           }}
         />
-        <MoodSvg />
+
+        <Popover
+          content={
+            <EmojiPicker
+              lazyLoadEmojis={true}
+              searchDisabled
+              skinTonesDisabled
+              previewConfig={{
+                showPreview: false,
+              }}
+              emojiStyle="facebook"
+              onEmojiClick={(emoji) => {
+                setMessage((prevMassage) => {
+                  return prevMassage + emoji.emoji;
+                });
+              }}
+            />
+          }
+          trigger={"click"} /* open={isPickerVisible} */
+        >
+          <MoodSvg />
+        </Popover>
         <MicSvg />
         <div className={classes.Sender} onClick={sendMessage}>
           <SendArrowSvg />
