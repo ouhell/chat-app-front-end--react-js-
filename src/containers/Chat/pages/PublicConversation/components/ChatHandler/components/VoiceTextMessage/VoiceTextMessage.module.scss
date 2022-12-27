@@ -1,0 +1,33 @@
+.VoiceTextMessage {
+  overflow-wrap: break-word;
+  max-width: min(15rem, 60%);
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  background-color: #e7eff7;
+  border-radius: 1rem;
+  padding: 0 0.5rem;
+
+  transition: border-radius 0.05s ease-in-out;
+
+  svg {
+    width: 2rem;
+    margin: auto;
+  }
+
+  &.SelfSent {
+    margin-left: auto;
+    border-top-left-radius: 2rem;
+    border-bottom-left-radius: 2rem;
+    color: #ffff;
+    background: linear-gradient(
+      to right,
+      var(--primary-hard),
+      var(--primary-soft)
+    );
+  }
+
+  &.Temporary {
+    opacity: 0.5;
+  }
+}

@@ -3,6 +3,7 @@ import { Button, Empty, Result, Spin } from "antd";
 import TextMessage from "./components/TextMessage/TextMessage";
 import BasicSpinner from "../../../../../../shared/components/BasicSpinner/BasicSpinner";
 import ImageMessage from "./components/ImageMessage/ImageMessage";
+import VoiceTextMessage from "./components/VoiceTextMessage/VoiceTextMessage";
 
 const renderMessages = (data, isLoading, isError, fetchMessages) => {
   const userId = JSON.parse(localStorage.getItem("userData")).userId;
@@ -42,6 +43,15 @@ const renderMessages = (data, isLoading, isError, fetchMessages) => {
       case "image":
         return (
           <ImageMessage message={message} userId={userId} key={message._id} />
+        );
+
+      case "voice":
+        return (
+          <VoiceTextMessage
+            message={message}
+            userId={userId}
+            key={message._id}
+          />
         );
 
       default:

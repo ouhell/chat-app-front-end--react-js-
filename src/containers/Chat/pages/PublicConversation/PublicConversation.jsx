@@ -14,7 +14,6 @@ function PublicConversation({}) {
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const chatSocket = useSelector((state) => state.chat.chatSocket);
   const dispatch = useDispatch();
   const chatContainer = useRef();
   const userData = useSelector((state) => state.auth.userData);
@@ -31,16 +30,6 @@ function PublicConversation({}) {
           },
         })
         .then((res) => {
-          /* chatSocket.emit("private chat", id);
-          chatSocket.off("receive message");
-          chatSocket.on("receive message", (message) => {
-            if (message.conversation !== id) return;
-            setMessages((prevMessages) => {
-              const newMessages = [...prevMessages, message];
-              return newMessages;
-            });
-          }); */
-
           dispatch(ChatActions.emit({ event: "private chat", data: id }));
           dispatch(ChatActions.off({ event: "receive message" }));
           dispatch(
@@ -92,7 +81,6 @@ function PublicConversation({}) {
       />
       <InputHandler
         sendAllowed={!isError && !isLoading}
-        chatSocket={chatSocket}
         setMessages={setMessages}
       />
     </div>

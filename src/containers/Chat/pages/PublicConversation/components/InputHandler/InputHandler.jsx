@@ -13,6 +13,7 @@ import { useRef } from "react";
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import { Popover } from "antd";
 import EmojiPicker from "emoji-picker-react";
+import VoiceRecorder from "./components/VoiceRecorder/VoiceRecorder";
 
 const InputHandler = ({ setMessages, sendAllowed }) => {
   const [message, setMessage] = useState("");
@@ -49,11 +50,13 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
             data: res.data,
           })
         );
+
         setMessages((prevMessages) => {
           const newMessages = [...prevMessages];
           const index = newMessages.findIndex((message) => {
             return message._id === generatedId;
           });
+          if (index < 0) return prevMessages;
           newMessages[index] = res.data;
           return newMessages;
         });
@@ -188,7 +191,7 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
         >
           <MoodSvg />
         </Popover>
-        <MicSvg />
+        <VoiceRecorder setMessages={setMessages} />
         <div className={classes.Sender} onClick={sendMessage}>
           <SendArrowSvg />
         </div>
