@@ -6,7 +6,7 @@ import {
   PlayCircleSvg,
   PauseCircleSvg,
 } from "../../../../../../../../shared/assets/svg/SvgProvider";
-import { Button, Spin } from "antd";
+import { Progress, Slider } from "antd";
 
 function formatTime(time) {
   const secs = `${parseInt(`${time % 60}`)}`.padStart(2, "0");
@@ -103,7 +103,7 @@ const VoiceTextMessage = ({ message, userId }) => {
         {isPlaying ? <PauseCircleSvg /> : <PlayCircleSvg />}
       </span>
 
-      <input
+      {/* <input
         style={{
           height: "100%",
           width: "100%",
@@ -114,6 +114,24 @@ const VoiceTextMessage = ({ message, userId }) => {
         onInput={(e) => {
           console.log("chosen val :", e.target.value);
           audio.current.currentTime = e.target.value;
+        }}
+      /> */}
+      <Slider
+        min={0}
+        max={metaDataConfig.full_duration}
+        onChange={(value) => {
+          if (!metaDataConfig.loaded) return;
+          audio.current.currentTime = value;
+        }}
+        value={metaDataConfig.currentTiming}
+        style={{
+          width: "100%",
+        }}
+        handleStyle={{
+          transform: "scale(0.8)",
+        }}
+        tooltip={{
+          open: false,
         }}
       />
       <span>

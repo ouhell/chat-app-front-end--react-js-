@@ -52,6 +52,7 @@ function NavBar() {
     topNavigationItems[0]
   );
   const isOpen = useSelector((state) => state.chat.isNavOpen);
+  const userData = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -63,6 +64,7 @@ function NavBar() {
     }
   };
   console.log("open :", isOpen);
+  console.log("userData", userData);
 
   return (
     <div className={classes.NavBar} isopen={isOpen}>
@@ -86,12 +88,18 @@ function NavBar() {
         })}
         <div className={classes.topNavItem}>
           <Dropdown
+            trigger={"click"}
             menu={{
               items: DropDownItems,
               onClick: menuOnClick,
             }}
           >
-            <Avatar className="util-pointer">U</Avatar>
+            <Avatar
+              className="util-pointer util-capitalized"
+              src={userData.profile_picture}
+            >
+              {userData.username[0]}
+            </Avatar>
           </Dropdown>
         </div>
       </div>

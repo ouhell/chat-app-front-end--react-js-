@@ -11,12 +11,14 @@ import {
 import { useEffect, useRef, useState } from "react";
 import c from "./Profile.module.scss";
 import { useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { AuthActions } from "../../../../store/slices/authenticationSlice";
 
 const Profile = () => {
   const usernameCounter = useRef(0);
   const emailCounter = useRef(0);
   const currentProfile = useRef({});
+  const dispatch = useDispatch();
   const [notifApi, notifContextHolder] = notification.useNotification();
   const [updateFormData, setUpdateFormData] = useState({
     feilds: {
@@ -329,6 +331,7 @@ const Profile = () => {
           message: "Profile info updated!",
           duration: 2,
         });
+        dispatch(AuthActions.setUsername(updateData.username));
       })
       .catch((err) => {
         console.log("update profile err", err);
@@ -351,8 +354,9 @@ const Profile = () => {
           },
         })
         .then((res) => {
-          res.data;
+          console.log("response", res.data);
           setProfilePicture(res.data.newUrl);
+          dispatch(AuthActions.setProfilePicture(res.data.newUrl));
         })
         .catch((err) => {})
         .finally(() => {
@@ -409,9 +413,9 @@ const Profile = () => {
                 style={{
                   fontSize: "2rem",
                 }}
-                className={"util-pointer " + c.ProfilPic}
+                className={"util-pointer util-capitalized " + c.ProfilPic}
               >
-                U
+                {userData.username[0]}
               </Avatar>
             </Spin>
           </div>

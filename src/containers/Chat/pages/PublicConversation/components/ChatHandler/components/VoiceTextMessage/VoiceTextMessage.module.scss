@@ -1,9 +1,11 @@
 .VoiceTextMessage {
   overflow-wrap: break-word;
-  max-width: min(15rem, 60%);
+  max-width: min(16rem, 60%);
+  min-width: min(15rem, 60%);
   min-height: 2.5rem;
   display: flex;
   align-items: center;
+  gap: 0.4rem;
   background-color: #e7eff7;
   border-radius: 1rem;
   padding: 0 0.5rem;
