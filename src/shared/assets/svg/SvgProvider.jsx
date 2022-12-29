@@ -89,3 +89,18 @@ export const PauseCircleSvg = (props) => {
     </svg>
   );
 };
+
+export const MenuSvg = (props) => {
+  return (
+    <svg viewBox="0 0 48 48" fill="currentColor" {...props}>
+      <path d="M5.15 37.4v-4.7h37.7v4.7Zm0-11.05v-4.7h37.7v4.7Zm0-11.05v-4.75h37.7v4.75Z" />
+    </svg>
+  );
+};
+export const ArrowBackSvg = (props) => {
+  return (
+    <svg viewBox="0 0 48 48" fill="currentColor" {...props}>
+      <path d="M24 40.55 7.45 24 24 7.45l3.35 3.3-10.85 10.9h24.05v4.7H16.5L27.35 37.2Z" />
+    </svg>
+  );
+};

@@ -66,8 +66,6 @@ const VoiceTextMessage = ({ message, userId }) => {
         ref={audio}
         src={message.content}
         onLoadedMetadata={async (e) => {
-          console.log(e);
-
           if (e.target.duration === Infinity) {
             e.target.currentTime = 1e101;
             e.target.volume = 0;

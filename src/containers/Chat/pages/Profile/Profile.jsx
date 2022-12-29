@@ -354,7 +354,6 @@ const Profile = () => {
           },
         })
         .then((res) => {
-          console.log("response", res.data);
           setProfilePicture(res.data.newUrl);
           dispatch(AuthActions.setProfilePicture(res.data.newUrl));
         })

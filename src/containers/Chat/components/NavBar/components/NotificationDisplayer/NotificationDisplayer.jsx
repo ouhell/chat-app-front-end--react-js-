@@ -110,7 +110,7 @@ const NotificationDisplayer = () => {
         removerequest(id);
       })
       .catch((err) => {
-        console.log("accept reqq err", err);
+        console.log("accept req err", err);
         setRequestStates((prevState) => {
           const newState = { ...prevState };
           newState[id] = {

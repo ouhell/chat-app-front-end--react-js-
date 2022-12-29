@@ -1,18 +1,18 @@
 import { useState } from "react";
 import ChatsDisplayer from "./components/ChatsDisplayers/ChatsDisplayer";
-import { Route, Routes, NavLink, useNavigate } from "react-router-dom";
-import { DownOutlined, SmileOutlined } from "@ant-design/icons";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  PhoneSvg,
-  GroupSvg,
   ChatSvg,
   NotificationBellSvg,
+  MenuSvg,
+  ArrowBackSvg,
 } from "../../../../shared/assets/svg/SvgProvider.jsx";
 import classes from "./NavBar.module.scss";
 import NotificationDisplayer from "./components/NotificationDisplayer/NotificationDisplayer";
 import { Avatar, Dropdown } from "antd";
 import { AuthActions } from "../../../../store/slices/authenticationSlice";
+import { ChatActions } from "../../../../store/slices/ChatSlice";
 
 const DropDownItems = [
   {
@@ -34,11 +34,7 @@ const topNavigationItems = [
     icon: ChatSvg,
     render: <ChatsDisplayer />,
   },
-  {
-    title: "calls",
-    path: "/calls",
-    icon: PhoneSvg,
-  },
+
   {
     title: "notifications",
     path: "/notifications",
@@ -63,12 +59,22 @@ function NavBar() {
         navigate("/");
     }
   };
-  console.log("open :", isOpen);
-  console.log("userData", userData);
 
   return (
     <div className={classes.NavBar} isopen={isOpen}>
       <div className={classes.TopNavigation}>
+        <div
+          className={classes.TopNavigationItem + " " + classes.CloseArrow}
+          style={{
+            /* position: "fixed", */
+            color: "var(--primary-soft)",
+          }}
+          onClick={() => {
+            dispatch(ChatActions.OpenNav());
+          }}
+        >
+          <ArrowBackSvg />
+        </div>
         {topNavigationItems.map((topNavItem) => {
           return (
             <div

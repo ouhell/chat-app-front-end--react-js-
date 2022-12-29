@@ -125,8 +125,6 @@ const SignUp = () => {
           axios
             .get("/api/auth/emailExist/" + testingValue)
             .then((res) => {
-              console.log("email exists?", res.data);
-
               if (res.data) {
                 validation.isValid = false;
                 validation.errorMessage = "email already exists!";

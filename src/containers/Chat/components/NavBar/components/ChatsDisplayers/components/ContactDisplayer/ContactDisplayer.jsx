@@ -99,7 +99,9 @@ const ContactDisplayer = () => {
               }}
             >
               <NavLink
-                to={"/chats/private/" + contact._id}
+                to={
+                  "/chats/private/" + contact._id + "?user=" + contact.user._id
+                }
                 className={({ isActive }) =>
                   classes.ContactLink + (isActive ? ` ${classes.active}` : "")
                 }

@@ -8,6 +8,7 @@ import InputHandler from "./components/InputHandler/InputHandler";
 import classes from "./PublicCoversation.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { ChatActions } from "../../../../store/slices/ChatSlice";
+import ContactHeader from "./components/ContactHeader/ContactHeader";
 
 function PublicConversation({}) {
   const { id } = useParams();
@@ -66,12 +67,7 @@ function PublicConversation({}) {
   }, [messages]);
   return (
     <div className={classes.Conversation}>
-      <div
-        className={classes.ContactHeader}
-        onClick={() => {
-          dispatch(ChatActions.OpenNav());
-        }}
-      ></div>
+      <ContactHeader />
       <ChatHandler
         isLoading={isLoading}
         isError={isError}

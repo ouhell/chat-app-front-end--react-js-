@@ -1,0 +1,18 @@
+.ContactHeader {
+  display: flex;
+  gap: 1rem;
+  min-height: 4rem;
+  background-color: var(--primary-light);
+  box-shadow: 0 0.15rem 0.5rem rgb(219, 214, 214);
+  align-items: center;
+  padding: 0 1rem;
+
+  .Menu {
+    width: 2rem;
+    color: var(--primary-soft);
+    cursor: pointer;
+    @media (min-width: 701px) {
+      display: none;
+    }
+  }
+}

@@ -61,7 +61,6 @@ const ContactAdder = ({ open, onCancel }) => {
         }
       )
       .then((res) => {
-        console.log("send request res :", res.data);
         setCandidateState((prevState) => {
           const newState = { ...prevState };
           newState[id] = {
@@ -96,7 +95,6 @@ const ContactAdder = ({ open, onCancel }) => {
     }, 3000); */
   };
   const cancelRequest = (id) => {
-    console.log("canceling ", id);
     if (!candidateState[id]) return;
     if (!candidateState[id].request) return;
 
