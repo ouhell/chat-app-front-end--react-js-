@@ -1,8 +1,20 @@
 .VoiceRecorder {
+  background: transparent;
   display: grid;
   place-items: center;
-  background: transparent;
+  overflow: visible;
 
+  span {
+    border-radius: 100%;
+
+    transform: scale(1.05);
+    display: grid;
+    place-items: center;
+
+    svg {
+      position: relative;
+    }
+  }
   &:is([isrecording="true"]) {
     svg {
       color: red;
