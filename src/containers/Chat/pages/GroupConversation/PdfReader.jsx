@@ -96,6 +96,13 @@ const PDFReader = () => {
       <Button onClick={toggleRecording} danger>
         {isRecording ? "Stop" : "Record"}
       </Button>
+      <audio
+        controls
+        src="lmao"
+        onLoadedData={(e) => {
+          console.log(e);
+        }}
+      />
     </div>
   );
 };

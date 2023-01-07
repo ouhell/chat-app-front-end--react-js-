@@ -6,7 +6,7 @@ import {
   PlayCircleSvg,
   PauseCircleSvg,
 } from "../../../../../../../../shared/assets/svg/SvgProvider";
-import { Progress, Slider } from "antd";
+import { Progress, Slider, Spin } from "antd";
 
 function formatTime(time) {
   const secs = `${parseInt(`${time % 60}`)}`.padStart(2, "0");
@@ -28,15 +28,6 @@ const VoiceTextMessage = ({ message, userId }) => {
 
   const [isAllSet, setIsAllSet] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-
-  useEffect(() => {
-    /* console.log("audio", audio);
-    track.current = audioContext.current.createMediaElementSource(
-      audio.current
-    );
-
-    track.current.connect(audioContext.current.destination); */
-  }, []);
 
   async function togglePlay() {
     /* if (audioContext.current.state === "suspended") {
@@ -92,12 +83,19 @@ const VoiceTextMessage = ({ message, userId }) => {
         }}
         onEnded={async (e) => {
           await e.target.pause();
-          e.target.currentTime = 0;
+          if (e.target.duration !== 0) e.target.currentTime = 0;
           e.target.volume = 1;
         }}
       />
 
-      <span onClick={togglePlay}>
+      <span
+        onClick={togglePlay}
+        style={{
+          height: "max-content",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
         {isPlaying ? <PauseCircleSvg /> : <PlayCircleSvg />}
       </span>
 
@@ -132,13 +130,24 @@ const VoiceTextMessage = ({ message, userId }) => {
           open: false,
         }}
       />
-      <span>
-        {metaDataConfig.loaded
-          ? formatTime(
-              metaDataConfig.full_duration - metaDataConfig.currentTiming
-            )
-          : "00:00"}
-      </span>
+      <div className={c.Footer}>
+        {message.temporary ? (
+          <Spin
+            className={c.Spinner}
+            spinning
+            size="small"
+            style={{
+              color: "var(--primary-soft)",
+            }}
+          />
+        ) : metaDataConfig.loaded ? (
+          formatTime(
+            metaDataConfig.full_duration - metaDataConfig.currentTiming
+          )
+        ) : (
+          "00:00"
+        )}
+      </div>
     </div>
   );
 };
