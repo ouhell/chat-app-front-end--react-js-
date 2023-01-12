@@ -48,6 +48,8 @@ const ContactHeader = () => {
     fetchContactData();
   }, [id]);
 
+  const isReady = !isLoading && !isError;
+
   return (
     <div className={c.ContactHeader}>
       {isNavOpen === "false" ? (
@@ -62,12 +64,29 @@ const ContactHeader = () => {
           }}
         />
       ) : null}
-      {isLoading ? <Skeleton.Avatar size={45} active /> : null}
-      {!isLoading && !isError ? (
-        <Avatar size={45} src={contactData.profile_picture}>
-          {contactData.username[0]}
-        </Avatar>
-      ) : null}
+
+      {isLoading && (
+        <>
+          <Skeleton.Avatar size={45} active />
+          <div className={c.InfoHolder}>
+            <Skeleton.Input active />
+          </div>
+        </>
+      )}
+      {isReady && (
+        <>
+          <Avatar size={45} src={contactData.profile_picture}>
+            {contactData.username[0]}
+          </Avatar>
+          <div className={c.InfoHolder}>
+            <div className={c.UsernameHolder}>{contactData.username}</div>
+            <div className={c.PersonalnameHolder}>
+              {contactData.personal_name}
+            </div>
+          </div>
+        </>
+      )}
+      {}
     </div>
   );
 };

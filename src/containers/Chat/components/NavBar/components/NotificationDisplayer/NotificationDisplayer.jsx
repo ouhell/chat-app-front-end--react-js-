@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import BasicSpinner from "../../../../../../shared/components/BasicSpinner/BasicSpinner";
+import ContactRequest from "./components/ContactRequest/ContactRequest";
 import c from "./NotificationDisplayer.module.scss";
 
 const NotificationDisplayer = () => {
@@ -12,7 +13,6 @@ const NotificationDisplayer = () => {
 
   const [requestStates, setRequestStates] = useState({});
   const userData = useSelector((state) => state.auth.userData);
-  const userId = JSON.parse(localStorage.getItem("userData")).userId;
 
   const fetchNotifications = () => {
     if (isLoading) return;
@@ -137,48 +137,16 @@ const NotificationDisplayer = () => {
       <div className={c.RequestList}>
         <BasicSpinner spinning={isLoading} />
 
-        {requests.map((req) => {
-          const userIsSender = req.requester._id === userId;
-          const opponent = userIsSender ? req.destinator : req.requester;
-          let isCancelLoading = false;
-          let isAcceptLoading = false;
-          if (requestStates[req._id]) {
-            isCancelLoading = requestStates[req._id].isCancelLoading;
-            isAcceptLoading = requestStates[req._id].isAcceptLoading;
-          }
+        {requests.map((requestData) => {
           return (
-            <div className={c.Request} key={req._id}>
-              <Avatar src={opponent.profile_picture}>
-                {opponent.username[0]}
-              </Avatar>
-              <div className={c.IdentityHolder}>
-                <div className={c.Username}>{opponent.username}</div>
-                <div className={c.Personalname}>{opponent.personal_name}</div>
-              </div>
-              <div className={c.ActionHolder}>
-                {!userIsSender && !isCancelLoading ? (
-                  <Button
-                    disabled={isCancelLoading}
-                    type="default"
-                    className={c.AcceptButton}
-                    onClick={() => acceptRequest(req._id)}
-                    loading={isAcceptLoading}
-                  >
-                    Accept
-                  </Button>
-                ) : null}
-                <Button
-                  className={c.CancelButton}
-                  disabled={isAcceptLoading}
-                  danger
-                  type="dashed"
-                  onClick={() => cancelRequest(req._id)}
-                  loading={isCancelLoading}
-                >
-                  {userIsSender ? "Cancel" : "Refuse"}
-                </Button>
-              </div>
-            </div>
+            <ContactRequest
+              key={requestData._id}
+              requestData={requestData}
+              requestStates={requestStates}
+              acceptRequest={acceptRequest}
+              cancelRequest={cancelRequest}
+              userId={userData.userId}
+            />
           );
         })}
       </div>

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import Candidate from "./components/Candidate/Candidate";
 import c from "./ContactAdder.module.scss";
 
 const ContactAdder = ({ open, onCancel }) => {
@@ -178,13 +179,6 @@ const ContactAdder = ({ open, onCancel }) => {
         <div className={c.Title}>Add Contact</div>
         <Input.Search
           placeholder="search username / personal name"
-          onKeyDown={(e) => {
-            if (e.key !== "Enter") return;
-            setIsLoading(true);
-            setTimeout(() => {
-              setIsLoading(false);
-            }, 1000);
-          }}
           className={c.SearchBar}
           loading={isLoading}
           value={searchtext}
@@ -195,55 +189,15 @@ const ContactAdder = ({ open, onCancel }) => {
           onSearch={fetchCandidates}
         />
         <div className={c.Candidates}>
-          {data.map((cand, index) => {
-            let buttonLoading = false;
-            let isCancelLoading = false;
-            let isSent = false;
-
-            if (candidateState[cand._id]) {
-              buttonLoading = candidateState[cand._id].sendLoading;
-              isSent = candidateState[cand._id].sent;
-              isCancelLoading = candidateState[cand._id].isCancelLoading;
-            }
-
+          {data.map((candInfo, index) => {
             return (
-              <div className={c.Candidate} key={cand._id}>
-                <Avatar src={cand.profile_picture}>{cand.username[0]}</Avatar>
-                <div className={c.NameHolder}>
-                  <div className={c.UserName}>{cand.username}</div>
-                  <div className={c.PersonalName}>{cand.personal_name}</div>
-                </div>
-                <div className={c.ActionHolder}>
-                  {!isCancelLoading ? (
-                    <Button
-                      type={isSent ? "ghost" : "default"}
-                      className={isSent ? c.SentButton : c.ActionButton}
-                      onClick={() => {
-                        if (isSent) return;
-                        sendRequest(cand._id);
-                      }}
-                      loading={buttonLoading}
-                    >
-                      {isSent ? "Sent!" : "Send Request"}
-                    </Button>
-                  ) : null}
-                  {isSent ? (
-                    <Button
-                      danger
-                      type="dashed"
-                      style={{
-                        fontSize: "0.9rem",
-                      }}
-                      loading={isCancelLoading}
-                      onClick={() => {
-                        cancelRequest(cand._id);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  ) : null}
-                </div>
-              </div>
+              <Candidate
+                cancelRequest={cancelRequest}
+                sendRequest={sendRequest}
+                candInfo={candInfo}
+                candidateState={candidateState}
+                key={candInfo._id}
+              />
             );
           })}
         </div>

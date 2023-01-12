@@ -15,4 +15,14 @@
       display: none;
     }
   }
+
+  .InfoHolder {
+    .UsernameHolder {
+      font-weight: bold;
+    }
+    .PersonalnameHolder {
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+  }
 }

@@ -1,13 +1,12 @@
 import classes from "./ContactDisplayer.module.scss";
 import { SearchSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import { useCallback, useEffect, useState } from "react";
-import { Avatar, Button, Empty, Result } from "antd";
+import { Button, Empty, Result } from "antd";
 import { motion } from "framer-motion";
 import axios from "axios";
-import { NavLink } from "react-router-dom";
 import BasicSpinner from "../../../../../../../../shared/components/BasicSpinner/BasicSpinner";
 import { useDispatch, useSelector } from "react-redux";
-import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
+import Contact from "./components/Contact";
 const ContactDisplayer = () => {
   const [seachtext, setSearchtext] = useState("");
   const [contactData, setContactData] = useState([]);
@@ -98,37 +97,7 @@ const ContactDisplayer = () => {
                 duration: 0.5 + 0.2 * i,
               }}
             >
-              <NavLink
-                to={
-                  "/chats/private/" + contact._id + "?user=" + contact.user._id
-                }
-                className={({ isActive }) =>
-                  classes.ContactLink + (isActive ? ` ${classes.active}` : "")
-                }
-                onClick={() => {
-                  dispatch(ChatActions.OpenNav());
-                }}
-              >
-                <motion.div className={classes.Contact}>
-                  <Avatar
-                    src={contact.user.profile_picture}
-                    size={40}
-                    style={{
-                      fontSize: "1rem",
-                    }}
-                  >
-                    {contact.user.username[0]}
-                  </Avatar>
-                  <div>
-                    <div className={classes.UsernameHolder}>
-                      {contact.user.username}
-                    </div>
-                    <div className={classes.PersonalnameHolder}>
-                      {contact.user.personal_name}
-                    </div>
-                  </div>
-                </motion.div>
-              </NavLink>
+              <Contact contactInfo={contact} />
             </motion.div>
           );
         })}

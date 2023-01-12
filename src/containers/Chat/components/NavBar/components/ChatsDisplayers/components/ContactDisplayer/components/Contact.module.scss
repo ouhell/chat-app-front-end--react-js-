@@ -1,0 +1,36 @@
+.ContactLink {
+  display: block;
+  text-decoration: none;
+
+  .Contact {
+    background-color: var(--primary-light);
+    border-radius: 0.5rem;
+    box-shadow: 0 0 0.8rem #cccc;
+    cursor: pointer;
+    padding: 0.7rem;
+    transition: transform 0.2s ease;
+    display: flex;
+    gap: 1rem;
+
+    .UsernameHolder {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .PersonalnameHolder {
+      font-size: 0.8rem;
+      color: var(--main-blank);
+    }
+
+    &:hover {
+      transform: translate(0.1rem, -0.1rem);
+    }
+  }
+
+  &.active {
+    .Contact {
+      background-color: var(--primary-dark);
+      color: var(--primary-light);
+    }
+  }
+}
