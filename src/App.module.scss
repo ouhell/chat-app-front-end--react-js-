@@ -7,6 +7,7 @@
   color: inherit;
   scrollbar-width: thin;
   scrollbar-color: #888 #f1f1f1;
+  -webkit-tap-highlight-color: transparent;
   /* width */
   &::-webkit-scrollbar {
     width: 0.4rem;
@@ -33,7 +34,7 @@
   --primary-hard: #6d54e5;
   --primary-soft: #b750fd;
   --main-blank: #bcc6cb;
-  --main-blank-deeper: #b2b3b4;
+  --main-blank-deeper: #a7aaac;
   --primary-grey: hsl(203deg 12% 65%);
   --primary-grey-deeper: #8e8e8f;
   --primary-dark: #303341;

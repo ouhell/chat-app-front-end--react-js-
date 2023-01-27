@@ -97,7 +97,7 @@ const ContactDisplayer = () => {
                 duration: 0.5 + 0.2 * i,
               }}
             >
-              <Contact contactInfo={contact} />
+              <Contact contactInfo={contact} userData={userData} />
             </motion.div>
           );
         })}

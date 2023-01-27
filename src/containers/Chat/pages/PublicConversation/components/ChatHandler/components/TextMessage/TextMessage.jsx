@@ -10,7 +10,7 @@ const TextMessage = ({ message, userId }) => {
         (message.error ? " " + c.Error : "")
       }
     >
-      {message.message}
+      <div className={c.MessageHolder}>{message.message}</div>
     </div>
   );
 };

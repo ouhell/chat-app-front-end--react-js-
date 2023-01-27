@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import ChatsDisplayer from "./components/ChatsDisplayers/ChatsDisplayer";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,7 +12,7 @@ import classes from "./NavBar.module.scss";
 import NotificationDisplayer from "./components/NotificationDisplayer/NotificationDisplayer";
 import { Avatar, Dropdown } from "antd";
 import { AuthActions } from "../../../../store/slices/authenticationSlice";
-import { ChatActions } from "../../../../store/slices/ChatSlice";
+import { ComponentActions } from "../../../../store/slices/ComponentSlice";
 
 const DropDownItems = [
   {
@@ -47,7 +47,9 @@ function NavBar() {
   const [selectedNavigation, setSelectedNavigation] = useState(
     topNavigationItems[0]
   );
-  const isOpen = useSelector((state) => state.chat.isNavOpen);
+  const startY = useRef(0);
+  const startX = useRef(0);
+  const isOpen = useSelector((state) => state.component.isNavOpen);
   const userData = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -57,6 +59,8 @@ function NavBar() {
       case "logout":
         dispatch(AuthActions.logout());
         navigate("/");
+      case "settings":
+        dispatch(ComponentActions.closeNav());
     }
   };
 
@@ -70,7 +74,7 @@ function NavBar() {
             color: "var(--primary-soft)",
           }}
           onClick={() => {
-            dispatch(ChatActions.OpenNav());
+            dispatch(ComponentActions.closeNav());
           }}
         >
           <ArrowBackSvg />
@@ -109,7 +113,24 @@ function NavBar() {
           </Dropdown>
         </div>
       </div>
-      <div className={classes.Content}>{selectedNavigation.render}</div>
+      <div
+        className={classes.Content}
+        onTouchStart={(e) => {
+          startX.current = e.touches[0].clientX;
+          startY.current = e.touches[0].clientY;
+        }}
+        onTouchEnd={(e) => {
+          const endX = e.changedTouches[0].clientX;
+          const endY = e.changedTouches[0].clientY;
+          const diffX = endX - startX.current;
+          const diffY = endY - startY.current;
+          if (Math.abs(diffX) > Math.abs(diffY) && diffX < -40) {
+            dispatch(ComponentActions.closeNav());
+          }
+        }}
+      >
+        {selectedNavigation.render}
+      </div>
     </div>
   );
 }

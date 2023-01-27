@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, useSearchParams } from "react-router-dom";
 import { MenuSvg } from "../../../../../../shared/assets/svg/SvgProvider";
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
+import { ComponentActions } from "../../../../../../store/slices/ComponentSlice";
 
 import c from "./ContactHeader.module.scss";
 
@@ -19,7 +20,7 @@ const ContactHeader = () => {
   const [isError, setisError] = useState(false);
 
   const dispatch = useDispatch();
-  const isNavOpen = useSelector((state) => state.chat.isNavOpen);
+
   const userData = useSelector((state) => state.auth.userData);
   const { id } = useParams();
 
@@ -52,18 +53,16 @@ const ContactHeader = () => {
 
   return (
     <div className={c.ContactHeader}>
-      {isNavOpen === "false" ? (
-        <MenuSvg
-          style={{
-            color: "var(--primary-soft)",
-            cursor: "pointer",
-          }}
-          className={c.Menu}
-          onClick={() => {
-            dispatch(ChatActions.OpenNav());
-          }}
-        />
-      ) : null}
+      <MenuSvg
+        style={{
+          color: "var(--primary-soft)",
+          cursor: "pointer",
+        }}
+        className={c.Menu}
+        onClick={() => {
+          dispatch(ComponentActions.openNav());
+        }}
+      />
 
       {isLoading && (
         <>

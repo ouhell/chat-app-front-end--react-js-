@@ -1,10 +1,61 @@
 import c from "./Contact.module.scss";
 import { NavLink } from "react-router-dom";
-import { Avatar } from "antd";
+import { Avatar, message } from "antd";
 import { ChatActions } from "../../../../../../../../../store/slices/ChatSlice";
-import { useDispatch } from "react-redux";
-const Contact = ({ contactInfo }) => {
+import { useDispatch, useSelector } from "react-redux";
+import { ComponentActions } from "../../../../../../../../../store/slices/ComponentSlice";
+import { useEffect } from "react";
+import { useCallback } from "react";
+import axios from "axios";
+const Contact = ({ contactInfo, userData }) => {
+  const messages =
+    useSelector((state) => state.chat.conversations[contactInfo._id]) || [];
+
   const dispatch = useDispatch();
+
+  const fetchMessages = useCallback(() => {
+    axios
+      .get("api/messagerie/messages/" + contactInfo._id, {
+        headers: {
+          authorization: "Bearer " + userData.access_token,
+        },
+      })
+      .then((res) => {
+        dispatch(
+          ChatActions.emit({ event: "private chat", data: contactInfo._id })
+        );
+
+        dispatch(
+          ChatActions.setConversationMessages({
+            conversation_id: contactInfo._id,
+            conversationData: res.data,
+          })
+        );
+      })
+      .catch((err) => {
+        console.log("fetch messages error" + contactInfo._id, err);
+      })
+      .finally(() => {});
+  }, []);
+
+  const getLastMessage = () => {
+    if (messages.length === 0) return "";
+
+    const lastMessage = messages[messages.length - 1];
+    const sender = lastMessage.sender === userData.userId ? "you : " : "";
+    switch (lastMessage.content_type) {
+      case "text":
+        return sender + lastMessage.message;
+      case "voice":
+        return sender + "sent voice message";
+      default:
+        return sender + "sent attachement";
+    }
+  };
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
 
   return (
     <NavLink
@@ -13,7 +64,7 @@ const Contact = ({ contactInfo }) => {
         c.ContactLink + (isActive ? ` ${c.active}` : "")
       }
       onClick={() => {
-        dispatch(ChatActions.OpenNav());
+        dispatch(ComponentActions.closeNav());
       }}
     >
       <div className={c.Contact}>
@@ -26,11 +77,9 @@ const Contact = ({ contactInfo }) => {
         >
           {contactInfo.user.username[0]}
         </Avatar>
-        <div>
+        <div className={c.InfoHolder}>
           <div className={c.UsernameHolder}>{contactInfo.user.username}</div>
-          <div className={c.PersonalnameHolder}>
-            {contactInfo.user.personal_name}
-          </div>
+          <div className={c.LastMessageHolder}>{getLastMessage()}</div>
         </div>
       </div>
     </NavLink>

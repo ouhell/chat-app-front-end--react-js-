@@ -175,7 +175,13 @@ const ContactAdder = ({ open, onCancel }) => {
         setSearchtext("");
       }}
     >
-      <div className={c.Content}>
+      <div
+        className={c.Content}
+        onTouchStart={(e) => {
+          e.stopPropagation();
+        }}
+        onTouchEnd={(e) => e.stopPropagation()}
+      >
         <div className={c.Title}>Add Contact</div>
         <Input.Search
           placeholder="search username / personal name"

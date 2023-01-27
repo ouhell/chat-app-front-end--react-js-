@@ -12,14 +12,23 @@
     display: flex;
     gap: 1rem;
 
-    .UsernameHolder {
-      font-size: 1.1rem;
-      font-weight: bold;
-    }
+    .InfoHolder {
+      max-width: 70%;
 
-    .PersonalnameHolder {
-      font-size: 0.8rem;
-      color: var(--main-blank);
+      .UsernameHolder {
+        font-size: 1.1rem;
+        font-weight: bold;
+      }
+
+      .LastMessageHolder {
+        max-width: 100%;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--main-blank-deeper);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
 
     &:hover {

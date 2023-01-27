@@ -6,10 +6,12 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import { NotifActions } from "../../../../../../../../store/slices/NotificationSlice";
+import { message } from "antd";
 
 const initialRecordIconStyle = "none";
 
-const VoiceRecorder = ({ setMessages }) => {
+const VoiceRecorder = () => {
+  const { id } = useParams();
   const [mediaRecorder, setMediaRecorder] = useState();
   const [isRocordReady, setIsRecordReady] = useState(false);
   const [isRecording, setisRecording] = useState(false);
@@ -151,33 +153,33 @@ const VoiceRecorder = ({ setMessages }) => {
             data: res.data,
           })
         );
-        setMessages((prevMessages) => {
-          const newMessages = [...prevMessages];
-          const index = newMessages.findIndex((message) => {
-            return message._id === generatedId;
-          });
-          if (index < 0) return prevMessages;
-          const oldContent = newMessages[index].content;
-          newMessages[index] = res.data;
-          newMessages[index].content = oldContent;
-          return newMessages;
-        });
+        res.data.content = url;
+
+        dispatch(
+          ChatActions.replaceMessage({
+            conversation_id: id,
+            id: generatedId,
+            newMessage: res.data,
+          })
+        );
       })
       .catch((err) => {
         console.log("voice err :", err);
       });
-    setMessages((prevMessages) => {
-      const newMessages = [...prevMessages];
-      newMessages.push({
-        _id: generatedId,
-        sender: userData.userId,
-        content: url,
-        conversation: convo_id,
-        content_type: "voice",
-        temporary: true,
-      });
-      return newMessages;
-    });
+    const tempMessage = {
+      _id: generatedId,
+      sender: userData.userId,
+      content: url,
+      conversation: convo_id,
+      content_type: "voice",
+      temporary: true,
+    };
+    dispatch(
+      ChatActions.addMessage({
+        conversation_id: id,
+        newMessage: tempMessage,
+      })
+    );
   }
 
   function startRecordingAudio() {

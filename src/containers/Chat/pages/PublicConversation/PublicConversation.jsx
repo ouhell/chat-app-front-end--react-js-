@@ -12,7 +12,7 @@ import ContactHeader from "./components/ContactHeader/ContactHeader";
 
 function PublicConversation({}) {
   const { id } = useParams();
-  const [messages, setMessages] = useState([]);
+  const messages = useSelector((state) => state.chat.conversations[id]) || [];
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const dispatch = useDispatch();
@@ -32,20 +32,13 @@ function PublicConversation({}) {
         })
         .then((res) => {
           dispatch(ChatActions.emit({ event: "private chat", data: id }));
-          dispatch(ChatActions.off({ event: "receive message" }));
+
           dispatch(
-            ChatActions.on({
-              event: "receive message",
-              callback: (message) => {
-                if (message.conversation !== id) return;
-                setMessages((prevMessages) => {
-                  const newMessages = [...prevMessages, message];
-                  return newMessages;
-                });
-              },
+            ChatActions.setConversationMessages({
+              conversation_id: id,
+              conversationData: res.data,
             })
           );
-          setMessages(res.data);
         })
         .catch((err) => {
           console.log("fetch messages error", err);
@@ -75,10 +68,7 @@ function PublicConversation({}) {
         data={messages}
         fetchMessages={fetchMessages}
       />
-      <InputHandler
-        sendAllowed={!isError && !isLoading}
-        setMessages={setMessages}
-      />
+      <InputHandler sendAllowed={!isError && !isLoading} />
     </div>
   );
 }

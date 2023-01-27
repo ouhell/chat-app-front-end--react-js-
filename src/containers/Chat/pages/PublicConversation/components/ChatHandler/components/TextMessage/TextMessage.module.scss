@@ -1,39 +1,58 @@
 .TextMessage {
-  background-color: #e7eff7;
-  padding: 1rem;
-  width: max-content;
-
-  overflow-wrap: break-word;
-  max-width: 80%;
-  min-height: fit-content;
   transition: border-radius 0.05s ease-in-out;
+  display: flex;
+  .MessageHolder {
+    padding: 1rem;
+    background-color: #e7eff7;
+
+    width: fit-content;
+
+    min-height: fit-content;
+    word-break: break-word;
+    word-wrap: break-word;
+    white-space: break-spaces;
+    max-width: 80%;
+    /* width: fit-content; */
+  }
 
   &:not(.SelfSent):not(:last-child) {
-    border-top-left-radius: 2rem;
+    .MessageHolder {
+      border-top-left-radius: 2rem;
+    }
   }
   &:is(:last-child):not(.SelfSent) {
-    border-bottom-left-radius: 2rem;
+    .MessageHolder {
+      border-bottom-left-radius: 2rem;
+    }
   }
   &:not(.SelfSent) {
-    border-top-right-radius: 2rem;
-    border-bottom-right-radius: 2rem;
+    .MessageHolder {
+      border-top-right-radius: 2rem;
+      border-bottom-right-radius: 2rem;
+    }
   }
 
   &.SelfSent {
-    margin-left: auto;
-    border-top-left-radius: 2rem;
-    border-bottom-left-radius: 2rem;
-    color: #ffff;
-    background: linear-gradient(
-      to right,
-      var(--primary-hard),
-      var(--primary-soft)
-    );
+    justify-content: end;
+    .MessageHolder {
+      color: #ffff;
+      background: linear-gradient(
+        to right,
+        var(--primary-hard),
+        var(--primary-soft)
+      );
+      border-top-left-radius: 2rem;
+      border-bottom-left-radius: 2rem;
+    }
     &:not(:last-child) {
-      border-top-right-radius: 2rem;
+      .MessageHolder {
+        border-top-right-radius: 2rem;
+      }
     }
     &:is(:last-child) {
-      border-bottom-right-radius: 2rem;
+      .MessageHolder {
+        border-bottom-right-radius: 2rem;
+      }
     }
   }
 

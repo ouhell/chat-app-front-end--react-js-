@@ -15,7 +15,7 @@ import { Popover } from "antd";
 import EmojiPicker from "emoji-picker-react";
 import VoiceRecorder from "./components/VoiceRecorder/VoiceRecorder";
 
-const InputHandler = ({ setMessages, sendAllowed }) => {
+const InputHandler = ({ sendAllowed }) => {
   const [message, setMessage] = useState("");
   const pathParams = useParams();
 
@@ -23,7 +23,9 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
   const fileInput = useRef();
   const userData = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
+
   const sendMessage = () => {
+    console.log("message :", message);
     if (!sendAllowed) return;
     const userId = userData.userId;
     const readyMessage = message.trim();
@@ -51,31 +53,32 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
           })
         );
 
-        setMessages((prevMessages) => {
-          const newMessages = [...prevMessages];
-          const index = newMessages.findIndex((message) => {
-            return message._id === generatedId;
-          });
-          if (index < 0) return prevMessages;
-          newMessages[index] = res.data;
-          return newMessages;
-        });
+        dispatch(
+          ChatActions.replaceMessage({
+            conversation_id: id,
+            id: generatedId,
+            newMessage: res.data,
+          })
+        );
       })
       .catch((err) => console.log("err", err));
 
-    setMessages((prevMessages) => {
-      const message = {
-        _id: generatedId,
-        sender: userId,
-        message: readyMessage,
-        content_type: "text",
-        conversation: id,
-        temporary: true,
-      };
-      message.temporary = true;
-      const newMessages = [...prevMessages, message];
-      return newMessages;
-    });
+    const tempMessage = {
+      _id: generatedId,
+      sender: userId,
+      message: readyMessage,
+      content_type: "text",
+      conversation: id,
+      temporary: true,
+    };
+
+    dispatch(
+      ChatActions.addMessage({
+        conversation_id: id,
+        newMessage: tempMessage,
+      })
+    );
+
     setMessage("");
   };
   const sendFile = (file, value) => {
@@ -105,34 +108,33 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
             data: res.data,
           })
         );
-        setMessages((prevMessages) => {
-          const newMessages = [...prevMessages];
-          const index = newMessages.findIndex((message) => {
-            return message._id === generatedId;
-          });
-          res.data.content = newMessages[index].content;
-          newMessages[index] = res.data;
-
-          return newMessages;
-        });
+        dispatch(
+          ChatActions.replaceMessage({
+            conversation_id: id,
+            id: generatedId,
+            newMessage: res.data,
+          })
+        );
       })
       .catch((err) => {
         console.log(err);
       });
 
-    setMessages((prevMessages) => {
-      const message = {
-        _id: generatedId,
-        sender: userId,
-        content: URL.createObjectURL(file),
-        conversation: id,
-        content_type: "image",
-        temporary: true,
-      };
-      message.temporary = true;
-      const newMessages = [...prevMessages, message];
-      return newMessages;
-    });
+    const message = {
+      _id: generatedId,
+      sender: userId,
+      content: URL.createObjectURL(file),
+      conversation: id,
+      content_type: "image",
+      temporary: true,
+    };
+
+    dispatch(
+      ChatActions.addMessage({
+        conversation_id: id,
+        newMessage: message,
+      })
+    );
   };
 
   return (
@@ -191,7 +193,7 @@ const InputHandler = ({ setMessages, sendAllowed }) => {
         >
           <MoodSvg />
         </Popover>
-        <VoiceRecorder setMessages={setMessages} />
+        <VoiceRecorder />
         <div className={classes.Sender} onClick={sendMessage}>
           <SendArrowSvg />
         </div>
