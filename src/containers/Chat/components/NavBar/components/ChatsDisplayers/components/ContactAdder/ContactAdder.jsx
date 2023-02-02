@@ -1,3 +1,4 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Input, Modal, Button, Avatar } from "antd";
 import axios from "axios";
 import { useEffect } from "react";
@@ -12,6 +13,7 @@ const ContactAdder = ({ open, onCancel }) => {
   const [data, setData] = useState([]);
   const [searchtext, setSearchtext] = useState("");
   const [candidateState, setCandidateState] = useState({});
+  const [candidateHolder] = useAutoAnimate();
 
   useEffect(() => {
     if (open) fetchCandidates();
@@ -194,7 +196,7 @@ const ContactAdder = ({ open, onCancel }) => {
           }}
           onSearch={fetchCandidates}
         />
-        <div className={c.Candidates}>
+        <div className={c.Candidates} ref={candidateHolder}>
           {data.map((candInfo, index) => {
             return (
               <Candidate

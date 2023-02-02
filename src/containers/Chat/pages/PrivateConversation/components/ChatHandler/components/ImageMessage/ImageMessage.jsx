@@ -12,18 +12,20 @@ const ImageMessage = ({ message, userId }) => {
         (message.error ? " " + c.Error : "")
       }
     >
-      <Spin
-        indicator={
-          <LoadingOutlined
-            style={{
-              color: "var(--primary-soft)",
-            }}
-          />
-        }
-        spinning={message.temporary ? true : false}
-      >
-        <Image src={message.content} />
-      </Spin>
+      <div className={c.MessageHolder}>
+        <Spin
+          indicator={
+            <LoadingOutlined
+              style={{
+                color: "var(--primary-soft)",
+              }}
+            />
+          }
+          spinning={message.temporary ? true : false}
+        >
+          <Image src={message.content} />
+        </Spin>
+      </div>
     </div>
   );
 };

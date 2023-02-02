@@ -7,6 +7,7 @@ import { PluxCircleSvg } from "../../../../../../shared/assets/svg/SvgProvider";
 import ContactAdder from "./components/ContactAdder/ContactAdder";
 import { useDispatch } from "react-redux";
 import { NotifActions } from "../../../../../../store/slices/NotificationSlice";
+import PublicChatDisplayer from "./components/PublicChatDisplayer/PublicChatDisplayer";
 
 const chatTypes = [
   {
@@ -22,7 +23,7 @@ const chatTypes = [
   {
     title: "public",
     path: "/chats/public",
-    render: null,
+    render: <PublicChatDisplayer />,
   },
 ];
 

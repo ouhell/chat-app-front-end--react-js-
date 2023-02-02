@@ -1,0 +1,51 @@
+.ImageMessage {
+  display: flex;
+  justify-content: flex-start;
+
+  .MessageHolder {
+    overflow-wrap: break-word;
+    max-width: min(15rem, 60%);
+
+    transition: border-radius 0.05s ease-in-out;
+  }
+
+  &:not(.SelfSent):not(:last-child) {
+    .MessageHolder {
+      border-top-left-radius: 2rem;
+    }
+  }
+  &:is(:last-child):not(.SelfSent) {
+    .MessageHolder {
+      border-bottom-left-radius: 2rem;
+    }
+  }
+  &:not(.SelfSent) {
+    .MessageHolder {
+      border-top-right-radius: 2rem;
+      border-bottom-right-radius: 2rem;
+    }
+  }
+
+  &.SelfSent {
+    justify-content: flex-end;
+    .MessageHolder {
+      border-top-left-radius: 2rem;
+      border-bottom-left-radius: 2rem;
+    }
+
+    &:not(:last-child) {
+      .MessageHolder {
+        border-top-right-radius: 2rem;
+      }
+    }
+    &:is(:last-child) {
+      .MessageHolder {
+        border-bottom-right-radius: 2rem;
+      }
+    }
+  }
+
+  &.Temporary {
+    opacity: 0.5;
+  }
+}

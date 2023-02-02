@@ -7,6 +7,7 @@ const ChatSlice = createSlice({
   name: "chatReducer",
   initialState: {
     conversations: {},
+    contacts: [],
   },
   reducers: {
     openNav: (state, action) => {
@@ -56,6 +57,22 @@ const ChatSlice = createSlice({
       newMessages[index] = newMessage;
 
       state.conversations[conversation_id] = newMessages;
+    },
+    setContacts: (state, action) => {
+      state.contacts = action.payload;
+    },
+    addContact: (state, action) => {
+      const { newContact } = action.payload;
+      const newContacts = [...state.contacts];
+      newContacts.push(newContact);
+      state.contacts = newContacts;
+    },
+    removeContact: (state, action) => {
+      const { contactId } = action.payload;
+
+      state.contacts = state.contacts.filter(
+        (contact) => contact._id !== contactId
+      );
     },
   },
 });

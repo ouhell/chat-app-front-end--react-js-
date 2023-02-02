@@ -50,6 +50,68 @@ const VoiceTextMessage = ({ message, userId }) => {
         (message.error ? " " + c.Error : "")
       }
     >
+      <div className={c.MessageHolder}>
+        <span
+          onClick={togglePlay}
+          style={{
+            height: "max-content",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          {isPlaying ? <PauseCircleSvg /> : <PlayCircleSvg />}
+        </span>
+
+        {/* <input
+        style={{
+          height: "100%",
+          width: "100%",
+        }}
+        type={"range"}
+        max={metaDataConfig.full_duration}
+        value={metaDataConfig.currentTiming}
+        onInput={(e) => {
+          console.log("chosen val :", e.target.value);
+          audio.current.currentTime = e.target.value;
+        }}
+      /> */}
+        <Slider
+          min={0}
+          max={metaDataConfig.full_duration}
+          onChange={(value) => {
+            if (!metaDataConfig.loaded) return;
+            audio.current.currentTime = value;
+          }}
+          value={metaDataConfig.currentTiming}
+          style={{
+            width: "100%",
+          }}
+          handleStyle={{
+            transform: "scale(0.8)",
+          }}
+          tooltip={{
+            open: false,
+          }}
+        />
+        <div className={c.Footer}>
+          {message.temporary ? (
+            <Spin
+              className={c.Spinner}
+              spinning
+              size="small"
+              style={{
+                color: "var(--primary-soft)",
+              }}
+            />
+          ) : metaDataConfig.loaded ? (
+            formatTime(
+              metaDataConfig.full_duration - metaDataConfig.currentTiming
+            )
+          ) : (
+            "00:00"
+          )}
+        </div>
+      </div>
       <audio
         style={{
           display: "none",
@@ -87,67 +149,6 @@ const VoiceTextMessage = ({ message, userId }) => {
           e.target.volume = 1;
         }}
       />
-
-      <span
-        onClick={togglePlay}
-        style={{
-          height: "max-content",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        {isPlaying ? <PauseCircleSvg /> : <PlayCircleSvg />}
-      </span>
-
-      {/* <input
-        style={{
-          height: "100%",
-          width: "100%",
-        }}
-        type={"range"}
-        max={metaDataConfig.full_duration}
-        value={metaDataConfig.currentTiming}
-        onInput={(e) => {
-          console.log("chosen val :", e.target.value);
-          audio.current.currentTime = e.target.value;
-        }}
-      /> */}
-      <Slider
-        min={0}
-        max={metaDataConfig.full_duration}
-        onChange={(value) => {
-          if (!metaDataConfig.loaded) return;
-          audio.current.currentTime = value;
-        }}
-        value={metaDataConfig.currentTiming}
-        style={{
-          width: "100%",
-        }}
-        handleStyle={{
-          transform: "scale(0.8)",
-        }}
-        tooltip={{
-          open: false,
-        }}
-      />
-      <div className={c.Footer}>
-        {message.temporary ? (
-          <Spin
-            className={c.Spinner}
-            spinning
-            size="small"
-            style={{
-              color: "var(--primary-soft)",
-            }}
-          />
-        ) : metaDataConfig.loaded ? (
-          formatTime(
-            metaDataConfig.full_duration - metaDataConfig.currentTiming
-          )
-        ) : (
-          "00:00"
-        )}
-      </div>
     </div>
   );
 };

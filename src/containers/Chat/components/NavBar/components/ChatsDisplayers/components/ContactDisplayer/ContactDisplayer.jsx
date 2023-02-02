@@ -2,18 +2,22 @@ import classes from "./ContactDisplayer.module.scss";
 import { SearchSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Empty, Result } from "antd";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
 import BasicSpinner from "../../../../../../../../shared/components/BasicSpinner/BasicSpinner";
 import { useDispatch, useSelector } from "react-redux";
 import Contact from "./components/Contact";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
+
 const ContactDisplayer = () => {
   const [seachtext, setSearchtext] = useState("");
-  const [contactData, setContactData] = useState([]);
+  const contactData = useSelector((state) => state.chat.contacts);
   const [isloading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const userData = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
+  const [parent, enableAnimate] = useAutoAnimate();
 
   const filterContact = () => {
     return contactData.filter((contact, i) => {
@@ -34,7 +38,7 @@ const ContactDisplayer = () => {
         },
       })
       .then((res) => {
-        setContactData(res.data);
+        dispatch(ChatActions.setContacts(res.data));
       })
       .catch((err) => {
         setIsError(true);
@@ -45,7 +49,7 @@ const ContactDisplayer = () => {
   }, []);
 
   useEffect(() => {
-    fetchContacts();
+    if (contactData.length === 0) fetchContacts();
   }, []);
 
   return (
@@ -83,22 +87,12 @@ const ContactDisplayer = () => {
         <Empty description="No contact" />
       ) : null}
 
-      <div className={classes.ContactList}>
+      <div className={classes.ContactList} ref={parent}>
         {filterContact().map((contact, i) => {
           return (
-            <motion.div
-              key={contact._id}
-              initial={{ y: "50%", opacity: 0 }}
-              animate={{
-                y: 0,
-                opacity: 1,
-              }}
-              transition={{
-                duration: 0.5 + 0.2 * i,
-              }}
-            >
+            <div key={contact._id}>
               <Contact contactInfo={contact} userData={userData} />
-            </motion.div>
+            </div>
           );
         })}
       </div>

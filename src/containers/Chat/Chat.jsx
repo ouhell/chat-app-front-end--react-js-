@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import classes from "./Chat.module.scss";
 import NavBar from "./components/NavBar/NavBar";
-import PublicConversation from "./pages/PublicConversation/PublicConversation";
+import PrivateConversation from "./pages/PrivateConversation/PrivateConversation";
 import { io } from "socket.io-client";
 import { useEffect } from "react";
 import { useRef } from "react";
@@ -11,6 +11,7 @@ import { ChatActions } from "../../store/slices/ChatSlice";
 import Profile from "./pages/Profile/Profile";
 import PDFReader from "./pages/GroupConversation/PdfReader";
 import { ComponentActions } from "../../store/slices/ComponentSlice";
+import PublicConversation from "./pages/PublicConversation/PublicConversation";
 
 export default function Chat() {
   const startY = useRef(0);
@@ -53,7 +54,11 @@ export default function Chat() {
           }}
         >
           <Routes>
-            <Route path="/chats/private/:id" element={<PublicConversation />} />
+            <Route
+              path="/chats/private/:id"
+              element={<PrivateConversation />}
+            />
+            <Route path="/chats/public" element={<PublicConversation />} />
             <Route path="/settings" element={<Profile />} />
             <Route path="/pdf" element={<PDFReader />} />
           </Routes>

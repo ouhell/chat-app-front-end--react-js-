@@ -1,9 +1,11 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Avatar, Button, Spin } from "antd";
 import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import BasicSpinner from "../../../../../../shared/components/BasicSpinner/BasicSpinner";
+import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import ContactRequest from "./components/ContactRequest/ContactRequest";
 import c from "./NotificationDisplayer.module.scss";
 
@@ -13,6 +15,10 @@ const NotificationDisplayer = () => {
 
   const [requestStates, setRequestStates] = useState({});
   const userData = useSelector((state) => state.auth.userData);
+
+  const dispatch = useDispatch();
+
+  const [requestHolder] = useAutoAnimate();
 
   const fetchNotifications = () => {
     if (isLoading) return;
@@ -108,6 +114,16 @@ const NotificationDisplayer = () => {
       })
       .then((res) => {
         removerequest(id);
+        const newContact = res.data.users.find(
+          (user) => user._id !== userData.userId
+        );
+        if (newContact) {
+          dispatch(
+            ChatActions.addContact({
+              newContact,
+            })
+          );
+        }
       })
       .catch((err) => {
         console.log("accept req err", err);
@@ -134,7 +150,7 @@ const NotificationDisplayer = () => {
 
   return (
     <div className={c.NotificationDisplayer}>
-      <div className={c.RequestList}>
+      <div className={c.RequestList} ref={requestHolder}>
         <BasicSpinner spinning={isLoading} />
 
         {requests.map((requestData) => {

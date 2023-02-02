@@ -4,15 +4,14 @@
   .MessageHolder {
     padding: 1rem;
     background-color: #e7eff7;
-
     width: fit-content;
-
     min-height: fit-content;
     word-break: break-word;
     word-wrap: break-word;
     white-space: break-spaces;
     max-width: 80%;
     /* width: fit-content; */
+    position: relative;
   }
 
   &:not(.SelfSent):not(:last-child) {
