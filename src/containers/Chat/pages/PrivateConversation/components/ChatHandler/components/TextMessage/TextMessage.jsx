@@ -20,6 +20,7 @@ const TextMessage = ({ message, userId }) => {
     >
       <div className={c.MessageHolder} sent-date={formatDate(sentDate)}>
         {message.message}
+        <div className={c.SentDateHolder}>{formatDate(sentDate)}</div>
       </div>
     </div>
   );
