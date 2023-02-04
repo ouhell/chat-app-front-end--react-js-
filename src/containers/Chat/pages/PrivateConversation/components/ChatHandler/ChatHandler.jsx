@@ -4,8 +4,17 @@ import TextMessage from "./components/TextMessage/TextMessage";
 import BasicSpinner from "../../../../../../shared/components/BasicSpinner/BasicSpinner";
 import ImageMessage from "./components/ImageMessage/ImageMessage";
 import VoiceTextMessage from "./components/VoiceTextMessage/VoiceTextMessage";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 
-const renderMessages = (data, isLoading, isError, fetchMessages) => {
+const renderMessages = (
+  data,
+  isLoading,
+  isError,
+  fetchMessages,
+  deleteMessage
+) => {
   const userId = JSON.parse(localStorage.getItem("userData")).userId;
 
   if (isLoading)
@@ -37,12 +46,22 @@ const renderMessages = (data, isLoading, isError, fetchMessages) => {
     switch (message.content_type) {
       case "text":
         return (
-          <TextMessage message={message} userId={userId} key={message._id} />
+          <TextMessage
+            message={message}
+            userId={userId}
+            key={message._id}
+            deleteMessage={deleteMessage}
+          />
         );
 
       case "image":
         return (
-          <ImageMessage message={message} userId={userId} key={message._id} />
+          <ImageMessage
+            message={message}
+            userId={userId}
+            key={message._id}
+            deleteMessage={deleteMessage}
+          />
         );
 
       case "voice":
@@ -51,6 +70,7 @@ const renderMessages = (data, isLoading, isError, fetchMessages) => {
             message={message}
             userId={userId}
             key={message._id}
+            deleteMessage={deleteMessage}
           />
         );
 
@@ -67,9 +87,37 @@ const ChatHandler = ({
   chatContainer,
   fetchMessages,
 }) => {
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.auth.userData);
+
+  function deleteMessage(message) {
+    axios
+      .delete("api/messagerie/messages/" + message._id, {
+        headers: {
+          authorization: "Bearer " + userData.access_token,
+        },
+      })
+      .then(() => {
+        console.log("deleted :", message._id);
+        dispatch(
+          ChatActions.emit({
+            event: "delete message",
+            data: message,
+          })
+        );
+
+        dispatch(
+          ChatActions.deleteMessage({
+            conversation_id: message.conversation,
+            id: message._id,
+          })
+        );
+      });
+  }
+
   return (
     <div ref={chatContainer} className={classes.ChatHandler}>
-      {renderMessages(data, isLoading, isError, fetchMessages)}
+      {renderMessages(data, isLoading, isError, fetchMessages, deleteMessage)}
     </div>
   );
 };

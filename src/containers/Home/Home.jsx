@@ -6,9 +6,10 @@ const Home = () => {
   return (
     <div className={c.Home}>
       <Routes>
-        <Route path="/" element={<Signin />} />
-        <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/signin" element={<Signin />} />
+
+        <Route path="/*" element={<Signin />} />
       </Routes>
     </div>
   );

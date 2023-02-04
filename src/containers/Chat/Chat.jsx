@@ -16,8 +16,17 @@ import PublicConversation from "./pages/PublicConversation/PublicConversation";
 export default function Chat() {
   const startY = useRef(0);
   const startX = useRef(0);
+
+  const userData = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
   useEffect(() => {
+    dispatch(
+      ChatActions.emit({
+        event: "self connect",
+        data: userData.userId,
+      })
+    );
+
     dispatch(
       ChatActions.on({
         event: "receive message",
@@ -26,6 +35,20 @@ export default function Chat() {
             ChatActions.addMessage({
               conversation_id: message.conversation,
               newMessage: message,
+            })
+          );
+        },
+      })
+    );
+
+    dispatch(
+      ChatActions.on({
+        event: "remove message",
+        callback: (message) => {
+          dispatch(
+            ChatActions.deleteMessage({
+              conversation_id: message.conversation,
+              id: message._id,
             })
           );
         },

@@ -7,9 +7,9 @@
   overflow: hidden;
   background-color: hsl(200deg 33% 98%);
   padding: 0;
-  transition: width 0.4s ease-in-out, opacity 0.2s ease;
+  transition: width 0.2s ease-in-out, opacity 0.2s ease;
   & > * {
-    transition: width 0.4s ease-in-out, opacity 0.2s ease;
+    transition: width 0.2s ease-in-out, opacity 0.2s ease;
   }
   //margin-left: -100%;
   //position: fixed;

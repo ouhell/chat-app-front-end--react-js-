@@ -58,6 +58,15 @@ const ChatSlice = createSlice({
 
       state.conversations[conversation_id] = newMessages;
     },
+    deleteMessage: (state, action) => {
+      const { conversation_id, id } = action.payload;
+      if (!state.conversations[conversation_id]) return;
+      const newMessages = state.conversations[conversation_id].filter(
+        (message) => message._id !== id
+      );
+
+      state.conversations[conversation_id] = newMessages;
+    },
     setContacts: (state, action) => {
       state.contacts = action.payload;
     },

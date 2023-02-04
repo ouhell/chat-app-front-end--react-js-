@@ -1,3 +1,5 @@
+import { Dropdown } from "antd";
+import { MoreDotsSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import c from "./TextMessage.module.scss";
 
 const formatDate = (date) => {
@@ -7,8 +9,24 @@ const formatDate = (date) => {
   return hours + ":" + minutes;
 };
 
-const TextMessage = ({ message, userId }) => {
+const TextMessage = ({ message, userId, deleteMessage }) => {
   const sentDate = new Date(message.sent_date);
+
+  const menuOnClick = ({ key }) => {
+    switch (key) {
+      case "delete":
+        deleteMessage(message);
+    }
+  };
+
+  const items = [
+    {
+      label: "delete message",
+      key: "delete",
+      danger: true,
+    },
+  ];
+
   return (
     <div
       className={
@@ -20,6 +38,16 @@ const TextMessage = ({ message, userId }) => {
     >
       <div className={c.MessageHolder} sent-date={formatDate(sentDate)}>
         {message.message}
+        {userId === message.sender && (
+          <div className={c.Options}>
+            <Dropdown
+              menu={{ items, onClick: menuOnClick }}
+              trigger={["click"]}
+            >
+              <MoreDotsSvg />
+            </Dropdown>
+          </div>
+        )}
         <div className={c.SentDateHolder}>{formatDate(sentDate)}</div>
       </div>
     </div>
