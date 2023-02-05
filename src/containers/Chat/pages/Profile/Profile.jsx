@@ -17,6 +17,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const Profile = () => {
   const usernameCounter = useRef(0);
+  const userData = useSelector((state) => state.auth.userData);
   const emailCounter = useRef(0);
   const currentProfile = useRef({});
   const dispatch = useDispatch();
@@ -42,7 +43,8 @@ const Profile = () => {
             errorMessage: "",
           };
 
-          if (currentProfile.current.username.trim() === testingValue) return;
+          if (currentProfile.current.username.trim() === testingValue)
+            return setValidation("username", validation);
 
           if (testingValue.length < 4) {
             validation.isValid = false;
@@ -59,7 +61,7 @@ const Profile = () => {
           axios
             .get("/api/auth/usernameExist/" + testingValue)
             .then((res) => {
-              if (res.data) {
+              if (res.data && testingValue !== userData.username) {
                 validation.isValid = false;
                 validation.errorMessage = "username already exists!";
               }
@@ -140,7 +142,9 @@ const Profile = () => {
           axios
             .get("/api/auth/emailExist/" + testingValue)
             .then((res) => {
+              console.log("validation of : ", testingValue, "is :", res.data);
               if (res.data) {
+                console.log("email exists");
                 validation.isValid = false;
                 validation.errorMessage = "email already exists!";
               }
@@ -150,6 +154,7 @@ const Profile = () => {
               validation.errorMessage = "connection error";
             })
             .finally(() => {
+              console.log("email exists check");
               if (emailCounter.current !== counter) return;
               setValidation("email", validation);
             });
@@ -174,7 +179,6 @@ const Profile = () => {
   const [isUpdatingInfo, setIsUpdatingInfo] = useState(false);
   const [isUpdatingPic, setIsUpdatingPic] = useState(false);
   const fileUploader = useRef();
-  const userData = useSelector((state) => state.auth.userData);
 
   useEffect(() => {
     fetchProfileData();
@@ -314,7 +318,10 @@ const Profile = () => {
   function updateData() {
     if (isUpdatingInfo) return;
 
-    if (!isFormValid()) return validateAll();
+    if (!isFormValid()) {
+      console.log("validating");
+      return validateAll();
+    }
     setIsUpdatingInfo(true);
     const updateData = {};
     for (let feild in updateFormData.feilds) {
