@@ -1,4 +1,4 @@
-import { Dropdown } from "antd";
+import { Avatar, Dropdown } from "antd";
 import { MoreDotsSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import c from "./TextMessage.module.scss";
 
@@ -8,6 +8,14 @@ const formatDate = (date) => {
 
   return hours + ":" + minutes;
 };
+
+const items = [
+  {
+    label: "remove message",
+    key: "delete",
+    danger: true,
+  },
+];
 
 const TextMessage = ({ message, userId, deleteMessage }) => {
   const sentDate = new Date(message.sent_date);
@@ -19,26 +27,25 @@ const TextMessage = ({ message, userId, deleteMessage }) => {
     }
   };
 
-  const items = [
-    {
-      label: "delete message",
-      key: "delete",
-      danger: true,
-    },
-  ];
+  const isSender = userId === message.sender._id;
 
   return (
     <div
       className={
         c.TextMessage +
-        (userId === message.sender ? ` ${c.SelfSent}` : "") +
+        (isSender ? ` ${c.SelfSent}` : "") +
         (message.temporary ? " " + c.Temporary : "") +
         (message.error ? " " + c.Error : "")
       }
     >
+      {!isSender && (
+        <Avatar src={message.sender.profile_picture}>
+          {message.sender.username[0]}
+        </Avatar>
+      )}
       <div className={c.MessageHolder} sent-date={formatDate(sentDate)}>
         {message.message}
-        {userId === message.sender && (
+        {isSender && (
           <div className={c.Options}>
             <Dropdown
               menu={{ items, onClick: menuOnClick }}

@@ -61,7 +61,14 @@ const InputHandler = ({ sendAllowed }) => {
           })
         );
       })
-      .catch((err) => console.log("err", err));
+      .catch((err) => {
+        dispatch(
+          ChatActions.deleteMessage({
+            conversation_id: id,
+            id: generatedId,
+          })
+        );
+      });
 
     const tempMessage = {
       _id: generatedId,
@@ -117,7 +124,12 @@ const InputHandler = ({ sendAllowed }) => {
         );
       })
       .catch((err) => {
-        console.log(err);
+        dispatch(
+          ChatActions.deleteMessage({
+            conversation_id: id,
+            id: generatedId,
+          })
+        );
       });
 
     const message = {

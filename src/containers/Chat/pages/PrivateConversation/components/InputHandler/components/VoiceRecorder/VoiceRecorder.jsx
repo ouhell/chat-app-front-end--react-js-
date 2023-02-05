@@ -10,28 +10,33 @@ import { message } from "antd";
 
 const initialRecordIconStyle = "none";
 
+const initialAudioConfig = {
+  audioContext: null,
+  audioSource: null,
+  audioAnalyser: null,
+  dataArray: [],
+  mediaStream: null,
+  mediaRecorder: null,
+};
+
 const VoiceRecorder = () => {
   const { id } = useParams();
-  const [mediaRecorder, setMediaRecorder] = useState();
+  const [isGettingPermission, setIsGettingPermission] = useState(false);
   const [isRocordReady, setIsRecordReady] = useState(false);
   const [isRecording, setisRecording] = useState(false);
 
   const audioChunks = useRef([]);
-  const audioConfig = useRef({
-    audioContext: null,
-    audioSource: null,
-    audioAnalyser: null,
-    dataArray: [],
-  });
+  const audioConfig = useRef({ ...initialAudioConfig });
   const shouldDraw = useRef(false);
   const micHolder = useRef();
+  const recordTimout = useRef();
 
   const { id: convo_id } = useParams();
 
   const userData = useSelector((state) => state.auth.userData);
 
   const dispatch = useDispatch();
-
+  /* 
   useEffect(() => {
     navigator.permissions
       .query({
@@ -43,16 +48,17 @@ const VoiceRecorder = () => {
       .catch((err) => {
         console.log("permission error :", err);
       });
-  }, []);
+  }, []); */
 
   useEffect(() => {
-    if (!mediaRecorder) return;
-    mediaRecorder.onstop = () => {
+    if (!audioConfig.current.mediaRecorder) return;
+    audioConfig.current.mediaRecorder.onstop = () => {
       sendVoiceRecord();
     };
   }, [convo_id]);
 
   function getRecordPermision() {
+    setIsGettingPermission(true);
     try {
       navigator.mediaDevices
         .getUserMedia({
@@ -60,6 +66,7 @@ const VoiceRecorder = () => {
           video: false,
         })
         .then((mediaStream) => {
+          audioConfig.current.mediaStream = mediaStream;
           audioConfig.current.audioContext = new window.AudioContext();
           audioConfig.current.audioAnalyser =
             audioConfig.current.audioContext.createAnalyser();
@@ -89,10 +96,24 @@ const VoiceRecorder = () => {
           recorder.onstop = () => {
             sendVoiceRecord();
           };
-          setMediaRecorder(recorder);
+          audioConfig.current.mediaRecorder = recorder;
           setIsRecordReady(true);
+
+          //start recording
+          recordTimout.current = window.setTimeout(() => {
+            console.log("timout");
+            endRecordingAudio();
+          }, 5000);
+          audioConfig.current.mediaRecorder.start();
+          shouldDraw.current = true;
+          setisRecording(true);
+          draw();
+        })
+        .finally(() => {
+          setIsGettingPermission(false);
         });
     } catch (err) {
+      setIsGettingPermission(false);
       dispatch(
         NotifActions.notify({
           type: "error",
@@ -100,6 +121,16 @@ const VoiceRecorder = () => {
         })
       );
     }
+  }
+
+  function revokeMedia() {
+    if (audioConfig.current.mediaStream)
+      audioConfig.current.mediaStream.getTracks().forEach((track) => {
+        console.log("revoking");
+        track.stop();
+      });
+    audioConfig.current = { ...initialAudioConfig };
+    setIsRecordReady(false);
   }
 
   function draw() {
@@ -164,7 +195,12 @@ const VoiceRecorder = () => {
         );
       })
       .catch((err) => {
-        console.log("voice err :", err);
+        dispatch(
+          ChatActions.deleteMessage({
+            conversation_id: id,
+            id: generatedId,
+          })
+        );
       });
     const tempMessage = {
       _id: generatedId,
@@ -183,21 +219,20 @@ const VoiceRecorder = () => {
   }
 
   function startRecordingAudio() {
-    if (!isRocordReady) return getRecordPermision();
-
-    mediaRecorder.start();
-    shouldDraw.current = true;
-    setisRecording(true);
-    draw();
+    if (isGettingPermission) return;
+    getRecordPermision();
   }
   function endRecordingAudio() {
+    console.log("ending", isRecording);
     if (!isRocordReady || !isRecording) return;
 
-    mediaRecorder.stop();
+    audioConfig.current.mediaRecorder.stop();
 
     shouldDraw.current = false;
     micHolder.current.style.boxShadow = initialRecordIconStyle;
     setisRecording(false);
+    window.clearTimeout(recordTimout.current);
+    revokeMedia();
   }
 
   return (

@@ -5,8 +5,9 @@ import { LoadingOutlined } from "@ant-design/icons";
 import {
   PlayCircleSvg,
   PauseCircleSvg,
+  MoreDotsSvg,
 } from "../../../../../../../../shared/assets/svg/SvgProvider";
-import { Progress, Slider, Spin } from "antd";
+import { Dropdown, Slider, Spin } from "antd";
 
 function formatTime(time) {
   const secs = `${parseInt(`${time % 60}`)}`.padStart(2, "0");
@@ -15,10 +16,26 @@ function formatTime(time) {
   return `${mins}:${secs}`;
 }
 
-const VoiceTextMessage = ({ message, userId }) => {
+const formatDate = (date) => {
+  const hours = (date.getHours() + "").padStart(2, "0");
+  const minutes = (date.getMinutes() + "").padStart(2, "0");
+
+  return hours + ":" + minutes;
+};
+
+const items = [
+  {
+    label: "delete message",
+    key: "delete",
+    danger: true,
+  },
+];
+
+const VoiceTextMessage = ({ message, userId, deleteMessage }) => {
   /* const audioContext = useRef(new AudioContext());
   const track = useRef(); */
   const audio = useRef();
+  const sentDate = new Date(message.sent_date);
 
   const [metaDataConfig, setMetaDataConfig] = useState({
     currentTiming: 0,
@@ -28,6 +45,13 @@ const VoiceTextMessage = ({ message, userId }) => {
 
   const [isAllSet, setIsAllSet] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  const menuOnClick = ({ key }) => {
+    switch (key) {
+      case "delete":
+        deleteMessage(message);
+    }
+  };
 
   async function togglePlay() {
     /* if (audioContext.current.state === "suspended") {
@@ -40,17 +64,28 @@ const VoiceTextMessage = ({ message, userId }) => {
       await audio.current.play();
     }
   }
-
+  const isSender = userId === message.sender._id;
   return (
     <div
       className={
         c.VoiceTextMessage +
-        (userId === message.sender ? ` ${c.SelfSent}` : "") +
+        (isSender ? ` ${c.SelfSent}` : "") +
         (message.temporary ? " " + c.Temporary : "") +
         (message.error ? " " + c.Error : "")
       }
     >
       <div className={c.MessageHolder}>
+        {isSender && (
+          <div className={c.Options}>
+            <Dropdown
+              menu={{ items, onClick: menuOnClick }}
+              trigger={["click"]}
+            >
+              <MoreDotsSvg />
+            </Dropdown>
+          </div>
+        )}
+
         <span
           onClick={togglePlay}
           style={{
@@ -62,19 +97,6 @@ const VoiceTextMessage = ({ message, userId }) => {
           {isPlaying ? <PauseCircleSvg /> : <PlayCircleSvg />}
         </span>
 
-        {/* <input
-        style={{
-          height: "100%",
-          width: "100%",
-        }}
-        type={"range"}
-        max={metaDataConfig.full_duration}
-        value={metaDataConfig.currentTiming}
-        onInput={(e) => {
-          console.log("chosen val :", e.target.value);
-          audio.current.currentTime = e.target.value;
-        }}
-      /> */}
         <Slider
           min={0}
           max={metaDataConfig.full_duration}
@@ -111,6 +133,7 @@ const VoiceTextMessage = ({ message, userId }) => {
             "00:00"
           )}
         </div>
+        <div className={c.SentDateHolder}>{formatDate(sentDate)}</div>
       </div>
       <audio
         style={{

@@ -7,9 +7,13 @@ import { ComponentActions } from "../../../../../../../../../store/slices/Compon
 import { useEffect } from "react";
 import { useCallback } from "react";
 import axios from "axios";
+
+const emptyArray = [];
+
 const Contact = ({ contactInfo, userData }) => {
   const messages =
-    useSelector((state) => state.chat.conversations[contactInfo._id]) || [];
+    useSelector((state) => state.chat.conversations[contactInfo._id]) ||
+    emptyArray;
 
   const dispatch = useDispatch();
 
@@ -42,7 +46,7 @@ const Contact = ({ contactInfo, userData }) => {
     if (messages.length === 0) return "";
 
     const lastMessage = messages[messages.length - 1];
-    const sender = lastMessage.sender === userData.userId ? "you : " : "";
+    const sender = lastMessage.sender._id === userData.userId ? "you : " : "";
     switch (lastMessage.content_type) {
       case "text":
         return sender + lastMessage.message;
@@ -54,7 +58,7 @@ const Contact = ({ contactInfo, userData }) => {
   };
 
   useEffect(() => {
-    fetchMessages();
+    if (messages === emptyArray) fetchMessages();
   }, []);
 
   return (

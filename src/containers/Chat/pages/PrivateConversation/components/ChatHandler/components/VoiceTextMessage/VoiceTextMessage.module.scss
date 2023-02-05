@@ -26,12 +26,23 @@
       display: grid;
       place-items: center;
     }
+
+    .SentDateHolder {
+      float: right;
+      color: var(--main-blank-deeper);
+
+      font-size: 0.7rem;
+      margin-left: -0.2rem;
+      margin-top: 0.5rem;
+    }
+    .Options {
+      display: none;
+    }
   }
 
   &.SelfSent {
     justify-content: flex-end;
     .MessageHolder {
-      margin-left: auto;
       border-top-left-radius: 2rem;
       border-bottom-left-radius: 2rem;
       color: #ffff;
@@ -40,6 +51,54 @@
         var(--primary-hard),
         var(--primary-soft)
       );
+
+      position: relative;
+
+      .SentDateHolder {
+        color: var(--main-blank-lighter);
+      }
+
+      .Options {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        height: 80%;
+        width: 2rem;
+
+        position: absolute;
+        left: -2rem;
+        bottom: 50%;
+        transform: translateY(50%);
+
+        cursor: pointer;
+
+        svg {
+          color: var(--main-blank-deeper);
+        }
+
+        .ActionsHolder {
+          .DeleteButton {
+            cursor: pointer;
+            color: red;
+            &:hover {
+              color: white;
+              background-color: red;
+            }
+          }
+        }
+
+        &:hover {
+          svg {
+            color: gray;
+          }
+        }
+      }
+
+      &:hover {
+        .Options {
+          display: flex;
+        }
+      }
     }
   }
   .Spinner {
