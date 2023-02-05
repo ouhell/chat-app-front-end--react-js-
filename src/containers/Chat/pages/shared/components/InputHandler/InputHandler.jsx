@@ -32,6 +32,12 @@ const InputHandler = ({ sendAllowed }) => {
     if (!readyMessage) return;
     const generatedId = Math.random() * 10;
 
+    const senderInfo = {
+      _id: userData.userId,
+      username: userData.username,
+      profile_picture: userData.profile_picture,
+    };
+
     axios
       .post(
         "api/messagerie/messages",
@@ -46,18 +52,19 @@ const InputHandler = ({ sendAllowed }) => {
         }
       )
       .then((res) => {
+        const newMessage = { ...res.data, sender: senderInfo };
         dispatch(
           ChatActions.emit({
             event: "send message",
-            data: res.data,
+            data: newMessage,
           })
         );
-
+        console.log("newMessage", res.data);
         dispatch(
           ChatActions.replaceMessage({
             conversation_id: id,
             id: generatedId,
-            newMessage: res.data,
+            newMessage: newMessage,
           })
         );
       })
@@ -72,7 +79,7 @@ const InputHandler = ({ sendAllowed }) => {
 
     const tempMessage = {
       _id: generatedId,
-      sender: userId,
+      sender: senderInfo,
       message: readyMessage,
       content_type: "text",
       conversation: id,
@@ -96,6 +103,12 @@ const InputHandler = ({ sendAllowed }) => {
     const data = new FormData();
     data.append("file", file);
 
+    const senderInfo = {
+      _id: userData.userId,
+      username: userData.username,
+      profile_picture: userData.profile_picture,
+    };
+
     axios
       .post(
         "api/messagerie/image/" + id,
@@ -109,17 +122,18 @@ const InputHandler = ({ sendAllowed }) => {
       )
       .then((res) => {
         /* chatSocket.emit("send message", res.data); */
+        const newMessage = { ...res.data, sender: senderInfo };
         dispatch(
           ChatActions.emit({
             event: "send message",
-            data: res.data,
+            data: newMessage,
           })
         );
         dispatch(
           ChatActions.replaceMessage({
             conversation_id: id,
             id: generatedId,
-            newMessage: res.data,
+            newMessage: newMessage,
           })
         );
       })
@@ -134,7 +148,7 @@ const InputHandler = ({ sendAllowed }) => {
 
     const message = {
       _id: generatedId,
-      sender: userId,
+      sender: senderInfo,
       content: URL.createObjectURL(file),
       conversation: id,
       content_type: "image",

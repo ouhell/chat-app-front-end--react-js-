@@ -171,6 +171,12 @@ const VoiceRecorder = () => {
     const data = new FormData();
     data.append("voice", blob);
 
+    const senderInfo = {
+      _id: userData.userId,
+      username: userData.username,
+      profile_picture: userData.profile_picture,
+    };
+
     axios
       .post("/api/messagerie/voice/" + convo_id, data, {
         headers: {
@@ -178,19 +184,20 @@ const VoiceRecorder = () => {
         },
       })
       .then((res) => {
+        const newMessage = { ...res.data, sender: senderInfo };
         dispatch(
           ChatActions.emit({
             event: "send message",
-            data: res.data,
+            data: newMessage,
           })
         );
-        res.data.content = url;
+        newMessage.content = url;
 
         dispatch(
           ChatActions.replaceMessage({
             conversation_id: id,
             id: generatedId,
-            newMessage: res.data,
+            newMessage: newMessage,
           })
         );
       })
@@ -204,7 +211,7 @@ const VoiceRecorder = () => {
       });
     const tempMessage = {
       _id: generatedId,
-      sender: userData.userId,
+      sender: senderInfo,
       content: url,
       conversation: convo_id,
       content_type: "voice",

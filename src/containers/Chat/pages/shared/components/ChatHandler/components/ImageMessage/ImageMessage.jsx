@@ -1,4 +1,4 @@
-import { Dropdown, Image, Spin } from "antd";
+import { Dropdown, Image, Spin, Avatar } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import c from "./ImageMessage.module.scss";
 import { MoreDotsSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
@@ -18,7 +18,7 @@ const ImageMessage = ({ message, userId, deleteMessage }) => {
         deleteMessage(message);
     }
   };
-  const isSender = isSender;
+  const isSender = message.sender._id === userId;
   return (
     <div
       className={
@@ -28,6 +28,11 @@ const ImageMessage = ({ message, userId, deleteMessage }) => {
         (message.error ? " " + c.Error : "")
       }
     >
+      {!isSender && (
+        <Avatar src={message.sender.profile_picture}>
+          {message.sender.username[0]}
+        </Avatar>
+      )}
       <div className={c.MessageHolder}>
         {isSender && (
           <div className={c.Options}>

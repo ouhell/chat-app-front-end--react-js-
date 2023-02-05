@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import c from "./VoiceTextMessage.module.scss";
-import song from "../../../../../../../../shared/assets/audio/liln.mp3";
+
 import { LoadingOutlined } from "@ant-design/icons";
 import {
   PlayCircleSvg,
   PauseCircleSvg,
   MoreDotsSvg,
 } from "../../../../../../../../shared/assets/svg/SvgProvider";
-import { Dropdown, Slider, Spin } from "antd";
+import { Dropdown, Slider, Spin, Avatar } from "antd";
 
 function formatTime(time) {
   const secs = `${parseInt(`${time % 60}`)}`.padStart(2, "0");
@@ -74,6 +74,11 @@ const VoiceTextMessage = ({ message, userId, deleteMessage }) => {
         (message.error ? " " + c.Error : "")
       }
     >
+      {!isSender && (
+        <Avatar src={message.sender.profile_picture}>
+          {message.sender.username[0]}
+        </Avatar>
+      )}
       <div className={c.MessageHolder}>
         {isSender && (
           <div className={c.Options}>
