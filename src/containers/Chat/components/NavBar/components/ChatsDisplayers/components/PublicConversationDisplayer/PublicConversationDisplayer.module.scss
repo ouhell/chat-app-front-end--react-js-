@@ -1,8 +1,9 @@
-.ContactDisplayer {
+.PublicConversationDisplayer {
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
   .SearchBarContainer {
     padding: 0.8rem var(--nav-chat-side-pad);
     .SearchBarHolder {
@@ -44,73 +45,59 @@
     }
   }
 
-  .ContactList {
-    height: 100%;
+  .Conversations {
     display: flex;
+    height: 100%;
     flex-direction: column;
-    padding: 0.5rem var(--nav-chat-side-pad);
     gap: 0.5rem;
+    padding: 1rem;
     overflow-x: hidden;
     overflow-y: overlay;
 
-    .ContactLink {
-      display: block;
+    .ConversationLink {
       text-decoration: none;
 
-      .Contact {
+      .Conversation {
+        height: 3.5rem;
         background-color: var(--primary-light);
-        border-radius: 0.5rem;
-        box-shadow: 0 0 0.8rem #cccc;
-        cursor: pointer;
-        padding: 0.7rem;
-        transition: transform 0.2s ease;
+        box-shadow: 0 0 1rem var(--primary-blank);
+        padding: 1rem;
+        position: relative;
+        overflow: hidden;
         display: flex;
-        gap: 1rem;
-
-        .UsernameHolder {
-          font-size: 1.1rem;
-          font-weight: bold;
-        }
-
-        .PersonalnameHolder {
-          font-size: 0.8rem;
-          color: var(--primary-blank);
-        }
-
-        &:hover {
-          transform: translate(0.1rem, -0.1rem);
+        justify-content: center;
+        align-items: center;
+        z-index: 1;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-overflow: ellipsis;
+        text-transform: capitalize;
+        color: var(--primary-hard);
+        transition: color 0.2s ease;
+        &:after {
+          content: "";
+          background-color: var(--primary-hard);
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 95%;
+          z-index: -1;
+          transition: right 0.3s ease, background-color 0.2s ease;
         }
       }
-
       &.active {
-        .Contact {
-          background-color: var(--primary-dark);
-          color: var(--primary-light);
+        .Conversation {
+          color: white;
+
+          &:after {
+            background-color: var(--primary-soft);
+
+            right: 0;
+          }
         }
       }
     }
-
-    /* width */
-    &::-webkit-scrollbar {
-      width: 0.3rem;
-      height: 0rem;
-    }
-
-    /* Track */
-    &::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-
-    /* Handle */
-    &::-webkit-scrollbar-thumb {
-      background: #888;
-    }
-
-    /* Handle on hover */
-    &::-webkit-scrollbar-thumb:hover {
-      background: #555;
-    }
-    /* Handle */
   }
 
   .Button {

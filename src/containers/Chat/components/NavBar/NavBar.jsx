@@ -16,8 +16,8 @@ import { ComponentActions } from "../../../../store/slices/ComponentSlice";
 
 const DropDownItems = [
   {
-    key: "settings",
-    label: <NavLink to="/settings">edit settings</NavLink>,
+    key: "profile",
+    label: <NavLink to="/settings">edit profile</NavLink>,
   },
 
   {
@@ -59,7 +59,7 @@ function NavBar() {
       case "logout":
         dispatch(AuthActions.logout());
         navigate("/");
-      case "settings":
+      case "profile":
         dispatch(ComponentActions.closeNav());
     }
   };

@@ -15,19 +15,23 @@ import { Popover } from "antd";
 import EmojiPicker from "emoji-picker-react";
 import VoiceRecorder from "./components/VoiceRecorder/VoiceRecorder";
 
-const InputHandler = ({ sendAllowed }) => {
+const InputHandler = ({
+  sendAllowed,
+  textMessageUrl,
+  imageMessageUrl,
+  voiceMessageUrl,
+  conversationId,
+}) => {
   const [message, setMessage] = useState("");
-  const pathParams = useParams();
 
-  const { id } = useParams();
   const fileInput = useRef();
+  const textInput = useRef();
   const userData = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
 
   const sendMessage = () => {
-    console.log("message :", message);
     if (!sendAllowed) return;
-    const userId = userData.userId;
+
     const readyMessage = message.trim();
     if (!readyMessage) return;
     const generatedId = Math.random() * 10;
@@ -40,10 +44,9 @@ const InputHandler = ({ sendAllowed }) => {
 
     axios
       .post(
-        "api/messagerie/messages",
+        textMessageUrl + conversationId,
         {
           message: readyMessage,
-          conversation_id: pathParams.id,
         },
         {
           headers: {
@@ -59,19 +62,19 @@ const InputHandler = ({ sendAllowed }) => {
             data: newMessage,
           })
         );
-        console.log("newMessage", res.data);
         dispatch(
           ChatActions.replaceMessage({
-            conversation_id: id,
+            conversation_id: conversationId,
             id: generatedId,
             newMessage: newMessage,
           })
         );
       })
       .catch((err) => {
+        console.log("send message error", err);
         dispatch(
           ChatActions.deleteMessage({
-            conversation_id: id,
+            conversation_id: conversationId,
             id: generatedId,
           })
         );
@@ -82,13 +85,13 @@ const InputHandler = ({ sendAllowed }) => {
       sender: senderInfo,
       message: readyMessage,
       content_type: "text",
-      conversation: id,
+      conversation: conversationId,
       temporary: true,
     };
 
     dispatch(
       ChatActions.addMessage({
-        conversation_id: id,
+        conversation_id: conversationId,
         newMessage: tempMessage,
       })
     );
@@ -111,7 +114,7 @@ const InputHandler = ({ sendAllowed }) => {
 
     axios
       .post(
-        "api/messagerie/image/" + id,
+        imageMessageUrl + conversationId,
 
         data,
         {
@@ -131,7 +134,7 @@ const InputHandler = ({ sendAllowed }) => {
         );
         dispatch(
           ChatActions.replaceMessage({
-            conversation_id: id,
+            conversation_id: conversationId,
             id: generatedId,
             newMessage: newMessage,
           })
@@ -140,7 +143,7 @@ const InputHandler = ({ sendAllowed }) => {
       .catch((err) => {
         dispatch(
           ChatActions.deleteMessage({
-            conversation_id: id,
+            conversation_id: conversationId,
             id: generatedId,
           })
         );
@@ -150,14 +153,14 @@ const InputHandler = ({ sendAllowed }) => {
       _id: generatedId,
       sender: senderInfo,
       content: URL.createObjectURL(file),
-      conversation: id,
+      conversation: conversationId,
       content_type: "image",
       temporary: true,
     };
 
     dispatch(
       ChatActions.addMessage({
-        conversation_id: id,
+        conversation_id: conversationId,
         newMessage: message,
       })
     );
@@ -185,6 +188,7 @@ const InputHandler = ({ sendAllowed }) => {
           }}
         />
         <input
+          ref={textInput}
           placeholder="Type a message here"
           autoCorrect="false"
           onKeyDown={(e) => {
@@ -212,6 +216,7 @@ const InputHandler = ({ sendAllowed }) => {
                 setMessage((prevMassage) => {
                   return prevMassage + emoji.emoji;
                 });
+                textInput.current.focus();
               }}
             />
           }
@@ -219,8 +224,17 @@ const InputHandler = ({ sendAllowed }) => {
         >
           <MoodSvg />
         </Popover>
-        <VoiceRecorder />
-        <div className={classes.Sender} onClick={sendMessage}>
+        <VoiceRecorder
+          apiUrl={voiceMessageUrl}
+          conversationId={conversationId}
+        />
+        <div
+          className={classes.Sender}
+          onClick={() => {
+            sendMessage();
+            textInput.current.focus();
+          }}
+        >
           <SendArrowSvg />
         </div>
       </div>

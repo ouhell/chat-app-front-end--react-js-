@@ -142,9 +142,7 @@ const Profile = () => {
           axios
             .get("/api/auth/emailExist/" + testingValue)
             .then((res) => {
-              console.log("validation of : ", testingValue, "is :", res.data);
               if (res.data) {
-                console.log("email exists");
                 validation.isValid = false;
                 validation.errorMessage = "email already exists!";
               }
@@ -319,7 +317,6 @@ const Profile = () => {
     if (isUpdatingInfo) return;
 
     if (!isFormValid()) {
-      console.log("validating");
       return validateAll();
     }
     setIsUpdatingInfo(true);
@@ -403,7 +400,7 @@ const Profile = () => {
               style={{
                 width: "fit-content",
                 borderRadius: "100%",
-                backgroundColor: "var(--main-blank)",
+                backgroundColor: "var(--primary-blank)",
               }}
             >
               <input

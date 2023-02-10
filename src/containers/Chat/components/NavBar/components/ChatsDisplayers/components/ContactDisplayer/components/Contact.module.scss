@@ -11,7 +11,7 @@
     transition: transform 0.2s ease;
     display: flex;
     gap: 1rem;
-
+    transition: color 0.1s ease, background-color 0.1s ease;
     .InfoHolder {
       max-width: 70%;
 
@@ -24,7 +24,7 @@
         max-width: 100%;
         font-size: 0.8rem;
         font-weight: 500;
-        color: var(--main-blank-deeper);
+        color: var(--primary-blank-deeper);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

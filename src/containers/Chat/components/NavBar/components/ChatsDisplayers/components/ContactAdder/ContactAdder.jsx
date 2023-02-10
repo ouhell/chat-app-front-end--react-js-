@@ -131,7 +131,7 @@ const ContactAdder = ({ open, onCancel }) => {
         });
       })
       .catch((err) => {
-        console.log("cancel request err :", err);
+        console.log("cancel request error", err);
         if (err.response) {
           if (err.response.data) {
             if (err.response.data.servedError) {

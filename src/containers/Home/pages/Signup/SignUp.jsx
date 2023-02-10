@@ -41,6 +41,13 @@ const SignUp = () => {
             return setValidation("username", validation);
           }
 
+          if (testingValue.length > 11) {
+            validation.isValid = false;
+            validation.errorMessage =
+              "username must be less than 11 characters";
+            return setValidation("username", validation);
+          }
+
           // check if username already exists
           setloading("username", true);
           usernameCounter.current++;
@@ -262,7 +269,7 @@ const SignUp = () => {
         navigate("/signin");
       })
       .catch((err) => {
-        console.log("signup error :", err);
+        console.log("signup error ", err);
       })
       .finally(() => {
         setIsSigningUp(false);

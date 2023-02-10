@@ -25,9 +25,7 @@ const Contact = ({ contactInfo, userData }) => {
         },
       })
       .then((res) => {
-        dispatch(
-          ChatActions.emit({ event: "private chat", data: contactInfo._id })
-        );
+        dispatch(ChatActions.emit({ event: "chat", data: contactInfo._id }));
 
         dispatch(
           ChatActions.setConversationMessages({

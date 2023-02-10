@@ -56,7 +56,7 @@ const ContactDisplayer = () => {
     <div className={classes.ContactDisplayer}>
       <div className={classes.SearchBarContainer}>
         <div className={classes.SearchBarHolder}>
-          <SearchSvg onClick={fetchContacts} />
+          <SearchSvg />
           <input
             onChange={(e) => {
               if (e.target.value.length > 25) return;

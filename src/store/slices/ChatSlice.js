@@ -8,6 +8,7 @@ const ChatSlice = createSlice({
   initialState: {
     conversations: {},
     contacts: [],
+    publicConvos: [],
   },
   reducers: {
     openNav: (state, action) => {
@@ -17,17 +18,17 @@ const ChatSlice = createSlice({
       state.isNavOpen = "false";
     },
 
-    emit: function (state, action) {
+    emit: (state, action) => {
       const event = action.payload.event;
       const data = action.payload.data;
       socket.emit(event, data);
     },
-    off: function (state, action) {
+    off: (state, action) => {
       const event = action.payload.event;
 
       socket.off(event);
     },
-    on: function (state, action) {
+    on: (state, action) => {
       const event = action.payload.event;
       const callback = action.payload.callback;
 
@@ -82,6 +83,9 @@ const ChatSlice = createSlice({
       state.contacts = state.contacts.filter(
         (contact) => contact._id !== contactId
       );
+    },
+    setPublicConvos: (state, action) => {
+      state.publicConvos = action.payload;
     },
   },
 });

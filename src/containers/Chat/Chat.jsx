@@ -81,7 +81,7 @@ export default function Chat() {
               path="/chats/private/:id"
               element={<PrivateConversation />}
             />
-            <Route path="/chats/public" element={<PublicConversation />} />
+            <Route path="/chats/public/:id" element={<PublicConversation />} />
             <Route path="/settings" element={<Profile />} />
           </Routes>
         </div>

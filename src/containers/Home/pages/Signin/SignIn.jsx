@@ -31,7 +31,7 @@ const Signin = () => {
         });
         navigate(0); */
       })
-      .catch((err) => console.log(err))
+      .catch((err) => console.log("signin error", err))
       .finally(() => {
         setIsSigningIn(false);
       });

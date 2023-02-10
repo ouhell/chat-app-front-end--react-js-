@@ -37,7 +37,7 @@ const ContactHeader = () => {
         setContactData(res.data);
       })
       .catch((err) => {
-        console.log(err);
+        console.log("fetching contacts error", err);
         setisError(true);
       })
       .finally(() => {

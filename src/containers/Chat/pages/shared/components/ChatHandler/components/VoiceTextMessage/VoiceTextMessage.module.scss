@@ -31,7 +31,7 @@
 
     .SentDateHolder {
       float: right;
-      color: var(--main-blank-deeper);
+      color: var(--primary-blank-deeper);
 
       font-size: 0.7rem;
       margin-left: -0.2rem;
@@ -57,7 +57,7 @@
       position: relative;
 
       .SentDateHolder {
-        color: var(--main-blank-lighter);
+        color: var(--primary-blank-lighter);
       }
 
       .Options {
@@ -75,7 +75,7 @@
         cursor: pointer;
 
         svg {
-          color: var(--main-blank-deeper);
+          color: var(--primary-blank-deeper);
         }
 
         .ActionsHolder {

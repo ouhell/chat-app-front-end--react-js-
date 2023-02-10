@@ -19,8 +19,7 @@ const initialAudioConfig = {
   mediaRecorder: null,
 };
 
-const VoiceRecorder = () => {
-  const { id } = useParams();
+const VoiceRecorder = ({ apiUrl, conversationId }) => {
   const [isGettingPermission, setIsGettingPermission] = useState(false);
   const [isRocordReady, setIsRecordReady] = useState(false);
   const [isRecording, setisRecording] = useState(false);
@@ -30,8 +29,6 @@ const VoiceRecorder = () => {
   const shouldDraw = useRef(false);
   const micHolder = useRef();
   const recordTimout = useRef();
-
-  const { id: convo_id } = useParams();
 
   const userData = useSelector((state) => state.auth.userData);
 
@@ -55,7 +52,7 @@ const VoiceRecorder = () => {
     audioConfig.current.mediaRecorder.onstop = () => {
       sendVoiceRecord();
     };
-  }, [convo_id]);
+  }, [conversationId]);
 
   function getRecordPermision() {
     setIsGettingPermission(true);
@@ -126,7 +123,6 @@ const VoiceRecorder = () => {
   function revokeMedia() {
     if (audioConfig.current.mediaStream)
       audioConfig.current.mediaStream.getTracks().forEach((track) => {
-        console.log("revoking");
         track.stop();
       });
     audioConfig.current = { ...initialAudioConfig };
@@ -178,7 +174,7 @@ const VoiceRecorder = () => {
     };
 
     axios
-      .post("/api/messagerie/voice/" + convo_id, data, {
+      .post(apiUrl + conversationId, data, {
         headers: {
           authorization: "Bearer " + userData.access_token,
         },
@@ -195,7 +191,7 @@ const VoiceRecorder = () => {
 
         dispatch(
           ChatActions.replaceMessage({
-            conversation_id: id,
+            conversation_id: conversationId,
             id: generatedId,
             newMessage: newMessage,
           })
@@ -204,7 +200,7 @@ const VoiceRecorder = () => {
       .catch((err) => {
         dispatch(
           ChatActions.deleteMessage({
-            conversation_id: id,
+            conversation_id: conversationId,
             id: generatedId,
           })
         );
@@ -213,13 +209,13 @@ const VoiceRecorder = () => {
       _id: generatedId,
       sender: senderInfo,
       content: url,
-      conversation: convo_id,
+      conversation: conversationId,
       content_type: "voice",
       temporary: true,
     };
     dispatch(
       ChatActions.addMessage({
-        conversation_id: id,
+        conversation_id: conversationId,
         newMessage: tempMessage,
       })
     );
@@ -230,7 +226,6 @@ const VoiceRecorder = () => {
     getRecordPermision();
   }
   function endRecordingAudio() {
-    console.log("ending", isRecording);
     if (!isRocordReady || !isRecording) return;
 
     audioConfig.current.mediaRecorder.stop();
