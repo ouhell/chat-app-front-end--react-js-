@@ -4,11 +4,11 @@
   gap: 1rem;
   padding: 1rem;
   background-color: var(--primary-light);
-  box-shadow: 0 0 0.4rem rgb(209, 208, 208);
-  border-radius: 0.5rem;
+  //box-shadow: 0 0 0.4rem rgb(209, 208, 208);
 
   &:not(:last-child) {
     margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--primary-blank-lighter);
   }
 
   .IdentityHolder {

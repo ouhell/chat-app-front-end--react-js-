@@ -91,7 +91,11 @@ const ContactDisplayer = () => {
         {filterContact().map((contact, i) => {
           return (
             <div key={contact._id}>
-              <Contact contactInfo={contact} userData={userData} />
+              <Contact
+                contactInfo={contact}
+                userData={userData}
+                key={contact._id}
+              />
             </div>
           );
         })}

@@ -159,66 +159,79 @@ const VoiceRecorder = ({ apiUrl, conversationId }) => {
   function sendVoiceRecord() {
     const blob = new Blob(audioChunks.current, {
       type: "audio/webm",
+        
     });
-
+     
     const url = window.URL.createObjectURL(blob);
     audioChunks.current = [];
     const generatedId = Math.random() * 10;
     const data = new FormData();
-    data.append("voice", blob);
 
-    const senderInfo = {
-      _id: userData.userId,
-      username: userData.username,
-      profile_picture: userData.profile_picture,
+    let testAudio = new Audio(url);
+    testAudio.currentTime = 1e101;
+    testAudio.volume = 0;
+    testAudio.onended = () => {
+      console.log("duration", testAudio.duration);
+      const senderInfo = {
+        _id: userData.userId,
+        username: userData.username,
+        profile_picture: userData.profile_picture,
+      };
+
+      data.append("voice", blob);
+      data.append("duration", testAudio.duration);
+
+      axios
+        .post(apiUrl + conversationId, data, {
+          headers: {
+            authorization: "Bearer " + userData.access_token,
+          },
+        })
+        .then((res) => {
+          const newMessage = { ...res.data, sender: senderInfo };
+          dispatch(
+            ChatActions.emit({
+              event: "send message",
+              data: newMessage,
+            })
+          );
+          newMessage.content = url;
+
+          dispatch(
+            ChatActions.replaceMessage({
+              conversation_id: conversationId,
+              id: generatedId,
+              newMessage: newMessage,
+            })
+          );
+        })
+        .catch((err) => {
+          dispatch(
+            ChatActions.deleteMessage({
+              conversation_id: conversationId,
+              id: generatedId,
+            })
+          );
+        });
+      const tempMessage = {
+        _id: generatedId,
+        sender: senderInfo,
+        content: url,
+        conversation: conversationId,
+        content_type: "voice",
+        temporary: true,
+      };
+      dispatch(
+        ChatActions.addMessage({
+          conversation_id: conversationId,
+          newMessage: tempMessage,
+        })
+      );
+      testAudio.pause();
+      testAudio.src = "";
+      testAudio = null;
     };
-
-    axios
-      .post(apiUrl + conversationId, data, {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
-      .then((res) => {
-        const newMessage = { ...res.data, sender: senderInfo };
-        dispatch(
-          ChatActions.emit({
-            event: "send message",
-            data: newMessage,
-          })
-        );
-        newMessage.content = url;
-
-        dispatch(
-          ChatActions.replaceMessage({
-            conversation_id: conversationId,
-            id: generatedId,
-            newMessage: newMessage,
-          })
-        );
-      })
-      .catch((err) => {
-        dispatch(
-          ChatActions.deleteMessage({
-            conversation_id: conversationId,
-            id: generatedId,
-          })
-        );
-      });
-    const tempMessage = {
-      _id: generatedId,
-      sender: senderInfo,
-      content: url,
-      conversation: conversationId,
-      content_type: "voice",
-      temporary: true,
-    };
-    dispatch(
-      ChatActions.addMessage({
-        conversation_id: conversationId,
-        newMessage: tempMessage,
-      })
-    );
+    testAudio.play();
   }
 
   function startRecordingAudio() {

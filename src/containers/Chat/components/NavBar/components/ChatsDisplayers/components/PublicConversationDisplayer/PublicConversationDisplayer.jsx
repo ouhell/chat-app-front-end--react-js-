@@ -49,7 +49,7 @@ const PublicConversationDisplayer = () => {
       });
   }
   useEffect(() => {
-    fetchPublicConversation();
+    if (publicConversations.length === 0) fetchPublicConversation();
   }, []);
 
   return (

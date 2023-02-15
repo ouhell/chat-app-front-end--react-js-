@@ -12,6 +12,7 @@ import Profile from "./pages/Profile/Profile";
 
 import { ComponentActions } from "../../store/slices/ComponentSlice";
 import PublicConversation from "./pages/PublicConversation/PublicConversation";
+import Default from "./pages/Default/Default";
 
 export default function Chat() {
   const startY = useRef(0);
@@ -83,6 +84,7 @@ export default function Chat() {
             />
             <Route path="/chats/public/:id" element={<PublicConversation />} />
             <Route path="/settings" element={<Profile />} />
+            <Route path="/*" element={<Default />} />
           </Routes>
         </div>
         <div className={classes.SideContent}></div>

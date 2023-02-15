@@ -5,13 +5,17 @@ import { Route, Routes } from "react-router-dom";
 
 import classes from "./App.module.scss";
 //import Chat from "./containers/Chat/Chat";
-import Home from "./containers/Home/Home";
+//import Home from "./containers/Home/Home";
 
 function wait() {
   return new Promise((resolve, reject) => {
     setTimeout(resolve, 3000);
   });
 }
+
+const Home = lazy(() => {
+  return import("./containers/Home/Home");
+});
 const Chat = lazy(() => {
   return import("./containers/Chat/Chat");
 });
