@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ChatActions } from "../../store/slices/ChatSlice";
 import Profile from "./pages/Profile/Profile";
-
+import axios from "axios";
 import { ComponentActions } from "../../store/slices/ComponentSlice";
 import PublicConversation from "./pages/PublicConversation/PublicConversation";
 import Default from "./pages/Default/Default";
@@ -21,6 +21,7 @@ export default function Chat() {
   const userData = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
   useEffect(() => {
+    fetchNotifications();
     dispatch(
       ChatActions.emit({
         event: "self connect",
@@ -32,6 +33,7 @@ export default function Chat() {
       ChatActions.on({
         event: "receive message",
         callback: (message) => {
+          console.log("");
           dispatch(
             ChatActions.addMessage({
               conversation_id: message.conversation,
@@ -56,6 +58,37 @@ export default function Chat() {
       })
     );
   }, []);
+
+  const fetchNotifications = () => {
+    axios
+      .get("/api/userapi/request", {
+        headers: {
+          authorization: "Bearer " + userData.access_token,
+        },
+      })
+      .then((res) => {
+        dispatch(ChatActions.setRequests(res.data));
+        dispatch(
+          ChatActions.on({
+            event: "receive request",
+            callback: (request) => {
+              dispatch(ChatActions.addRequest(request));
+            },
+          })
+        );
+        dispatch(
+          ChatActions.on({
+            event: "canceled request",
+            callback: (requestId) => {
+              dispatch(ChatActions.removeRequest(requestId));
+            },
+          })
+        );
+      })
+      .catch((err) => {
+        console.log("fetch request error :", err);
+      });
+  };
 
   return (
     <div className={classes.Chat}>

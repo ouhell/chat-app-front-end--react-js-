@@ -3,7 +3,8 @@ import { Input, Modal, Button, Avatar } from "antd";
 import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import Candidate from "./components/Candidate/Candidate";
 import c from "./ContactAdder.module.scss";
 
@@ -13,6 +14,9 @@ const ContactAdder = ({ open, onCancel }) => {
   const [data, setData] = useState([]);
   const [searchtext, setSearchtext] = useState("");
   const [candidateState, setCandidateState] = useState({});
+
+  const dispatch = useDispatch();
+
   const [candidateHolder] = useAutoAnimate();
 
   useEffect(() => {
@@ -73,6 +77,13 @@ const ContactAdder = ({ open, onCancel }) => {
           };
           return newState;
         });
+        dispatch(ChatActions.addRequest(res.data));
+        dispatch(
+          ChatActions.emit({
+            event: "send request",
+            data: res.data,
+          })
+        );
       })
       .catch((err) => {
         setCandidateState((prevState) => {
@@ -120,6 +131,14 @@ const ContactAdder = ({ open, onCancel }) => {
         },
       })
       .then((res) => {
+        dispatch(ChatActions.removeRequest(candidateState[id].request));
+
+        dispatch(
+          ChatActions.emit({
+            event: "cancel request",
+            data: res.data,
+          })
+        );
         setCandidateState((prevState) => {
           const newState = { ...prevState };
           newState[id] = {

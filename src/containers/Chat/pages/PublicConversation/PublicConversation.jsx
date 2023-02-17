@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import { ChatActions } from "../../../../store/slices/ChatSlice";
 import ChatHandler from "../shared/components/ChatHandler/ChatHandler";
 import InputHandler from "../shared/components/InputHandler/InputHandler";
+import ChatHeader from "./components/ChatHeader/ChatHeader";
 import c from "./PublicConversation.module.scss";
 
 const PublicConversation = () => {
@@ -54,23 +55,22 @@ const PublicConversation = () => {
   }, [conversationId]);
 
   return (
-    <AnimatePresence>
-      <div className={c.PublicConversation}>
-        <ChatHandler
-          data={messages}
-          isLoading={isLoading}
-          isError={isError}
-          fetchMessages={fetchPublicMessages}
-        />
-        <InputHandler
-          sendAllowed={!isError && !isLoading}
-          textMessageUrl="api/messagerie/public/messages/"
-          voiceMessageUrl="api/messagerie/public/voice/"
-          imageMessageUrl="api/messagerie/public/image/"
-          conversationId={conversationId}
-        />
-      </div>
-    </AnimatePresence>
+    <div className={c.PublicConversation}>
+      <ChatHeader />
+      <ChatHandler
+        data={messages}
+        isLoading={isLoading}
+        isError={isError}
+        fetchMessages={fetchPublicMessages}
+      />
+      <InputHandler
+        sendAllowed={!isError && !isLoading}
+        textMessageUrl="api/messagerie/public/messages/"
+        voiceMessageUrl="api/messagerie/public/voice/"
+        imageMessageUrl="api/messagerie/public/image/"
+        conversationId={conversationId}
+      />
+    </div>
   );
 };
 

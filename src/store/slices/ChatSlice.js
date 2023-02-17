@@ -9,15 +9,12 @@ const ChatSlice = createSlice({
     conversations: {},
     contacts: [],
     publicConvos: [],
+    requests: {
+      loaded: false,
+      data: [],
+    },
   },
   reducers: {
-    openNav: (state, action) => {
-      state.isNavOpen = "true";
-    },
-    closeNav: (state, action) => {
-      state.isNavOpen = "false";
-    },
-
     emit: (state, action) => {
       const event = action.payload.event;
       const data = action.payload.data;
@@ -86,6 +83,25 @@ const ChatSlice = createSlice({
     },
     setPublicConvos: (state, action) => {
       state.publicConvos = action.payload;
+    },
+    setRequests: (state, action) => {
+      const data = action.payload;
+      state.requests.data = data;
+      state.requests.loaded = true;
+    },
+    removeRequest: (state, action) => {
+      const requestId = action.payload;
+      const newRequests = [...state.requests.data];
+      const index = newRequests.findIndex((req) => req._id === requestId);
+      if (index < 0) return;
+      newRequests.splice(index, 1);
+      state.requests.data = newRequests;
+    },
+    addRequest: (state, action) => {
+      const newRequest = action.payload;
+      const newRequests = [...state.requests.data];
+      newRequests.push(newRequest);
+      state.requests.data = newRequests;
     },
   },
 });

@@ -1,0 +1,18 @@
+.ChatHeader {
+  gap: 1rem;
+  min-height: 4rem;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  box-shadow: 0 0 0.8rem var(--primary-blank-lighter);
+  gap: 1rem;
+  padding: 0 1rem;
+  .Menu {
+    color: var(--primary-soft);
+    width: 2rem;
+    cursor: pointer;
+    @media (min-width: 701px) {
+      display: none;
+    }
+  }
+}
