@@ -7,10 +7,8 @@
   overflow: hidden;
   background-color: hsl(200deg 33% 98%);
   padding: 0;
-  transition: width 0.2s ease-in-out, opacity 0.2s ease;
-  & > * {
-    transition: width 0.2s ease-in-out, opacity 0.2s ease;
-  }
+  transition: margin-left 0.2s ease-in-out, opacity 0.2s ease;
+
   //margin-left: -100%;
   //position: fixed;
   min-width: 20rem;
@@ -18,15 +16,13 @@
   //  opacity: 0;
   @media screen and (max-width: 700px) {
     position: fixed;
+    margin-left: 0;
     width: 100%;
     min-width: 0;
 
     &:is([isopen="false"]) {
-      width: 0;
-
-      & > * {
-        width: 0;
-      }
+      margin-left: -100%;
+      opacity: 0;
     }
   }
 

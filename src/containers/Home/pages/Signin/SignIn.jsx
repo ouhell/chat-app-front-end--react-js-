@@ -6,32 +6,65 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AuthActions } from "../../../../store/slices/authenticationSlice";
+import { NotifActions } from "../../../../store/slices/NotificationSlice";
+import { motion } from "framer-motion";
+
+const variants = {
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+  hidden: { opacity: 0, y: 15 },
+};
+
 const Signin = () => {
   const [signinData, setSigninData] = useState({
-    identifier: "",
-    password: "",
+    identifier: {
+      value: "",
+      type: "text",
+      placeholder: "Username or Email",
+      prefix: UserOutlined,
+    },
+    password: {
+      value: "",
+      type: "text",
+      placeholder: "password",
+      prefix: LockOutlined,
+    },
   });
   const [isSigningIn, setIsSigningIn] = useState(false);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const signIn = () => {
     if (isSigningIn) return;
     setIsSigningIn(true);
     axios
       .post("api/auth/login", {
-        identifier: signinData.identifier.trim(),
-        password: signinData.password.trim(),
+        identifier: signinData.identifier.value.trim(),
+        password: signinData.password.value.trim(),
       })
       .then((res) => {
         dispatch(AuthActions.login(res.data));
-        /* localStorage.setItem("userData", JSON.stringify(res.data));
-        navigate("/", {
-          replace: true,
-        });
-        navigate(0); */
       })
-      .catch((err) => console.log("signin error", err))
+      .catch((err) => {
+        if (
+          err &&
+          err.response &&
+          err.response.data &&
+          err.response.data.servedError
+        ) {
+          dispatch(
+            NotifActions.notify({
+              type: "error",
+              message: err.response.data.message,
+            })
+          );
+        }
+        console.log("signin error", err);
+      })
       .finally(() => {
         setIsSigningIn(false);
       });
@@ -41,40 +74,39 @@ const Signin = () => {
       <div className={classes.SigninBox}>
         <header className={classes.Header}>Login</header>
 
-        <div className={classes.InputBox}>
-          <div className={classes.InputHolder}>
-            <Input
-              prefix={<UserOutlined className={classes.PrefixIcon} />}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") signIn();
-              }}
-              value={signinData.identifier}
-              onChange={(e) => {
-                setSigninData((oldvalue) => {
-                  return { ...oldvalue, identifier: e.target.value };
-                });
-              }}
-              className={classes.Input}
-              placeholder="Username or Email"
-            />
-          </div>
-          <div className={classes.InputHolder}>
-            <Input.Password
-              prefix={<LockOutlined className={classes.PrefixIcon} />}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") signIn();
-              }}
-              value={signinData.password}
-              onChange={(e) => {
-                setSigninData((oldvalue) => {
-                  return { ...oldvalue, password: e.target.value };
-                });
-              }}
-              className={classes.Input}
-              placeholder="Password"
-            />
-          </div>
-        </div>
+        <motion.div
+          className={classes.InputBox}
+          variants={variants}
+          animate="visible"
+          initial="hidden"
+        >
+          {Object.keys(signinData).map((key) => {
+            let InputType = Input;
+            const PrefixIcon = signinData[key].prefix;
+            if (signinData[key].type === "password") InputType = Input.Password;
+            return (
+              <motion.div variants={variants} className={classes.InputHolder}>
+                <InputType
+                  prefix={<PrefixIcon className={classes.PrefixIcon} />}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") signIn();
+                  }}
+                  value={signinData[key].value}
+                  onChange={(e) => {
+                    setSigninData((oldvalue) => {
+                      const newValue = { ...oldvalue };
+                      newValue[key] = { ...oldvalue[key] };
+                      newValue[key].value = e.target.value;
+                      return newValue;
+                    });
+                  }}
+                  className={classes.Input}
+                  placeholder={signinData[key].placeholder}
+                />
+              </motion.div>
+            );
+          })}
+        </motion.div>
 
         <Button
           className={classes.Button}

@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+  userData: JSON.parse(localStorage.getItem("userData")),
+};
+
 const AuthenticationSlice = createSlice({
   name: "authenticationReducer",
-  initialState: {
-    userData: JSON.parse(localStorage.getItem("userData")),
-  },
+  initialState: initialState,
 
   reducers: {
     login: function (state, action) {
@@ -33,6 +35,9 @@ const AuthenticationSlice = createSlice({
       const newUserData = { ...state.userData };
       newUserData.username = action.payload;
       state.userData = newUserData;
+    },
+    resetState: (state, action) => {
+      state = initialState;
     },
   },
 });

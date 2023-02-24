@@ -10,14 +10,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { ChatActions } from "../../../../store/slices/ChatSlice";
 import ContactHeader from "./components/ContactHeader/ContactHeader";
 import { AnimatePresence, motion } from "framer-motion";
+import { pageAnimation } from "../shared/animation/animationHandler";
 
-function PrivateConversation({}) {
+function PrivateConversation() {
   const { id: conversationId } = useParams();
 
   const conversation = useSelector(
     (state) => state.chat.conversations[conversationId]
   );
-  const messages = conversation || [];
+  const messages = conversation ? conversation.messages : [];
 
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -40,9 +41,9 @@ function PrivateConversation({}) {
           dispatch(ChatActions.emit({ event: "chat", data: conversationId }));
 
           dispatch(
-            ChatActions.setConversationMessages({
+            ChatActions.setConversation({
               conversation_id: conversationId,
-              conversationData: res.data,
+              data: res.data,
             })
           );
         })
@@ -67,39 +68,24 @@ function PrivateConversation({}) {
     }, 80);
   }, [messages, conversationId]);
   return (
-    <AnimatePresence>
-      <motion.div
-        className={classes.Conversation}
-        initial={{
-          opacity: 0,
-          y: 50,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        exit={{
-          y: -50,
-          opacity: 0,
-        }}
-      >
-        <ContactHeader />
-        <ChatHandler
-          isLoading={isLoading}
-          isError={isError}
-          chatContainer={chatContainer}
-          data={messages}
-          fetchMessages={fetchMessages}
-        />
-        <InputHandler
-          sendAllowed={!isError && !isLoading}
-          textMessageUrl="api/messagerie/messages/"
-          voiceMessageUrl="api/messagerie/voice/"
-          imageMessageUrl="api/messagerie/image/"
-          conversationId={conversationId}
-        />
-      </motion.div>
-    </AnimatePresence>
+    <motion.div {...pageAnimation} className={classes.Conversation}>
+      <ContactHeader />
+      <ChatHandler
+        isLoading={isLoading}
+        isError={isError}
+        chatContainer={chatContainer}
+        data={messages}
+        fetchMessages={fetchMessages}
+        key={conversationId}
+      />
+      <InputHandler
+        sendAllowed={!isError && !isLoading}
+        textMessageUrl="api/messagerie/messages/"
+        voiceMessageUrl="api/messagerie/voice/"
+        imageMessageUrl="api/messagerie/image/"
+        conversationId={conversationId}
+      />
+    </motion.div>
   );
 }
 

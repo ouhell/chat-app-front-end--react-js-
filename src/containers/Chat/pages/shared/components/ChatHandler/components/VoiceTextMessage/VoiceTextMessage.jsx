@@ -8,7 +8,7 @@ import {
   MoreDotsSvg,
 } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import { Dropdown, Slider, Spin, Avatar } from "antd";
-
+import { motion } from "framer-motion";
 function formatTime(time) {
   console.log("time :", time);
   if (Number.isNaN(time) || time === Infinity) return "00:00";
@@ -68,7 +68,26 @@ const VoiceTextMessage = ({ message, userId, deleteMessage }) => {
   }
   const isSender = userId === message.sender._id;
   return (
-    <div
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{
+        opacity: 1,
+
+        scale: 1,
+      }}
+      exit={{
+        opacity: 0,
+
+        scale: 0.8,
+      }}
+      transition={{
+        opacity: { duration: 0.2 },
+        layout: {},
+      }}
+      style={{
+        originX: isSender ? 1 : 0,
+      }}
       className={
         c.VoiceTextMessage +
         (isSender ? ` ${c.SelfSent}` : "") +
@@ -187,7 +206,7 @@ const VoiceTextMessage = ({ message, userId, deleteMessage }) => {
           e.target.volume = 1;
         }}
       />
-    </div>
+    </motion.div>
   );
 };
 

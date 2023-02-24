@@ -8,7 +8,8 @@ import ChatHandler from "../shared/components/ChatHandler/ChatHandler";
 import InputHandler from "../shared/components/InputHandler/InputHandler";
 import ChatHeader from "./components/ChatHeader/ChatHeader";
 import c from "./PublicConversation.module.scss";
-
+import { motion } from "framer-motion";
+import { pageAnimation } from "../shared/animation/animationHandler";
 const PublicConversation = () => {
   const [isLoading, setIsLoading] = useState();
   const [isError, setIsError] = useState();
@@ -17,7 +18,7 @@ const PublicConversation = () => {
   const publicConversation = useSelector(
     (state) => state.chat.conversations[conversationId]
   );
-  const messages = publicConversation || [];
+  const messages = publicConversation ? publicConversation.messages : [];
   const userData = useSelector((state) => state.auth.userData);
 
   const dispatch = useDispatch();
@@ -33,9 +34,9 @@ const PublicConversation = () => {
       })
       .then((res) => {
         dispatch(
-          ChatActions.setConversationMessages({
+          ChatActions.setConversation({
             conversation_id: conversationId,
-            conversationData: res.data,
+            data: res.data,
           })
         );
 
@@ -55,7 +56,7 @@ const PublicConversation = () => {
   }, [conversationId]);
 
   return (
-    <div className={c.PublicConversation}>
+    <motion.div {...pageAnimation} className={c.PublicConversation}>
       <ChatHeader />
       <ChatHandler
         data={messages}
@@ -70,7 +71,7 @@ const PublicConversation = () => {
         imageMessageUrl="api/messagerie/public/image/"
         conversationId={conversationId}
       />
-    </div>
+    </motion.div>
   );
 };
 

@@ -11,9 +11,11 @@ import axios from "axios";
 const emptyArray = [];
 
 const Contact = ({ contactInfo, userData }) => {
-  const messages =
-    useSelector((state) => state.chat.conversations[contactInfo._id]) ||
-    emptyArray;
+  const conversation = useSelector(
+    (state) => state.chat.conversations[contactInfo._id]
+  );
+
+  const messages = conversation ? conversation.messages : emptyArray;
 
   const dispatch = useDispatch();
 
@@ -28,9 +30,9 @@ const Contact = ({ contactInfo, userData }) => {
         dispatch(ChatActions.emit({ event: "chat", data: contactInfo._id }));
 
         dispatch(
-          ChatActions.setConversationMessages({
+          ChatActions.setConversation({
             conversation_id: contactInfo._id,
-            conversationData: res.data,
+            data: res.data,
           })
         );
       })

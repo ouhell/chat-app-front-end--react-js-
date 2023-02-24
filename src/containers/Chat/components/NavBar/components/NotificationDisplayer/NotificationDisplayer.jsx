@@ -11,9 +11,7 @@ import ContactRequest from "./components/ContactRequest/ContactRequest";
 import c from "./NotificationDisplayer.module.scss";
 
 const NotificationDisplayer = () => {
-  const { loaded, data: requests } = useSelector(
-    (state) => state.chat.requests
-  );
+  let { loaded, data: requests } = useSelector((state) => state.chat.requests);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -73,7 +71,14 @@ const NotificationDisplayer = () => {
   const requestNumber = !isLoading ? ` (${requests.length})` : "";
   return (
     <div className={c.NotificationDisplayer}>
-      <Collapse className={c.Collapse} bordered>
+      <Collapse
+        className={c.Collapse}
+        bordered
+        style={{
+          backgroundColor: "#f8fafc",
+          border: "none",
+        }}
+      >
         <Panel
           header={"Requests" + requestNumber}
           key="requests"

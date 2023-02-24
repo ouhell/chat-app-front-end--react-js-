@@ -2,68 +2,73 @@ import { createSlice } from "@reduxjs/toolkit";
 import { io } from "socket.io-client";
 import { HostName } from "../../client/ApiClient";
 
+const initialState = {
+  conversations: {},
+  contacts: [],
+  publicConvos: [],
+  requests: {
+    loaded: false,
+    data: [],
+  },
+};
+
 const socket = io(HostName);
 const ChatSlice = createSlice({
   name: "chatReducer",
-  initialState: {
-    conversations: {},
-    contacts: [],
-    publicConvos: [],
-    requests: {
-      loaded: false,
-      data: [],
-    },
-  },
+  initialState: initialState,
   reducers: {
     emit: (state, action) => {
       const event = action.payload.event;
       const data = action.payload.data;
       socket.emit(event, data);
     },
-    off: (state, action) => {
+    off: function (state, action) {
       const event = action.payload.event;
 
       socket.off(event);
     },
-    on: (state, action) => {
-      const event = action.payload.event;
-      const callback = action.payload.callback;
-
+    on: (state, { payload: { event, callback } }) => {
+      socket.off(event);
       socket.on(event, callback);
     },
+    setConversation: (state, action) => {
+      const { conversation_id, data } = action.payload;
+      state.conversations[conversation_id] = data;
+    },
     setConversationMessages: (state, action) => {
-      const { conversation_id, conversationData } = action.payload;
-      state.conversations[conversation_id] = conversationData;
+      const { conversation_id, newMessages } = action.payload;
+      if (state.conversations[conversation_id])
+        state.conversations[conversation_id].messages = newMessages;
     },
     addMessage: (state, action) => {
       const { conversation_id, newMessage } = action.payload;
       let newMessages = [];
       if (state.conversations[conversation_id]) {
-        newMessages = [...state.conversations[conversation_id]];
+        newMessages = [...state.conversations[conversation_id].messages];
+        newMessages.push(newMessage);
+        state.conversations[conversation_id].messages = newMessages;
       }
-
-      newMessages.push(newMessage);
-      state.conversations[conversation_id] = newMessages;
     },
     replaceMessage: (state, action) => {
       const { conversation_id, id, newMessage } = action.payload;
       if (!state.conversations[conversation_id]) return;
-      const newMessages = [...state.conversations[conversation_id]];
+      const newMessages = [...state.conversations[conversation_id].messages];
       const index = newMessages.findIndex((message) => message._id === id);
       if (index < 0) return;
-
+      newMessage.trueId = newMessage._id;
+      newMessage._id = id;
       newMessages[index] = newMessage;
 
-      state.conversations[conversation_id] = newMessages;
+      state.conversations[conversation_id].messages = newMessages;
     },
     deleteMessage: (state, action) => {
       const { conversation_id, id } = action.payload;
       if (!state.conversations[conversation_id]) return;
-      const newMessages = state.conversations[conversation_id].filter(
+      const newMessages = state.conversations[conversation_id].messages.filter(
         (message) => message._id !== id
       );
 
-      state.conversations[conversation_id] = newMessages;
+      state.conversations[conversation_id].messages = newMessages;
     },
     setContacts: (state, action) => {
       state.contacts = action.payload;
@@ -102,6 +107,9 @@ const ChatSlice = createSlice({
       const newRequests = [...state.requests.data];
       newRequests.push(newRequest);
       state.requests.data = newRequests;
+    },
+    resetState: (state, action) => {
+      state = initialState;
     },
   },
 });

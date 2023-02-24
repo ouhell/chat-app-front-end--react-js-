@@ -2,7 +2,7 @@ import { Dropdown, Image, Spin, Avatar } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import c from "./ImageMessage.module.scss";
 import { MoreDotsSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
-
+import { motion } from "framer-motion";
 const items = [
   {
     label: "delete message",
@@ -20,7 +20,26 @@ const ImageMessage = ({ message, userId, deleteMessage }) => {
   };
   const isSender = message.sender._id === userId;
   return (
-    <div
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{
+        opacity: 1,
+
+        scale: 1,
+      }}
+      exit={{
+        opacity: 0,
+
+        scale: 0.8,
+      }}
+      transition={{
+        opacity: { duration: 0.2 },
+        layout: {},
+      }}
+      style={{
+        originX: isSender ? 1 : 0,
+      }}
       className={
         c.ImageMessage +
         (isSender ? ` ${c.SelfSent}` : "") +
@@ -58,7 +77,7 @@ const ImageMessage = ({ message, userId, deleteMessage }) => {
           <Image src={message.content} />
         </Spin>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

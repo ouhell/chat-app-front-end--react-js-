@@ -13,6 +13,8 @@ import NotificationDisplayer from "./components/NotificationDisplayer/Notificati
 import { Avatar, Dropdown } from "antd";
 import { AuthActions } from "../../../../store/slices/authenticationSlice";
 import { ComponentActions } from "../../../../store/slices/ComponentSlice";
+import { NotifActions } from "../../../../store/slices/NotificationSlice";
+import { ChatActions } from "../../../../store/slices/ChatSlice";
 
 const DropDownItems = [
   {
@@ -57,6 +59,10 @@ function NavBar() {
   const menuOnClick = ({ key }) => {
     switch (key) {
       case "logout":
+        dispatch(ChatActions.resetState());
+        dispatch(NotifActions.resetState());
+        dispatch(ComponentActions.resetState());
+        dispatch(AuthActions.resetState());
         dispatch(AuthActions.logout());
         navigate("/");
       case "profile":

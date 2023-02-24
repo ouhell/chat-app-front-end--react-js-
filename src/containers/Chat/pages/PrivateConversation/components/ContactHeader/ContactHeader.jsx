@@ -1,14 +1,34 @@
-import { Avatar, Skeleton } from "antd";
+import { Avatar, Dropdown, Skeleton } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useSearchParams } from "react-router-dom";
-import { MenuSvg } from "../../../../../../shared/assets/svg/SvgProvider";
+import {
+  MenuSvg,
+  MoreDotsSvg,
+} from "../../../../../../shared/assets/svg/SvgProvider";
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import { ComponentActions } from "../../../../../../store/slices/ComponentSlice";
 
 import c from "./ContactHeader.module.scss";
 
+const DropDownItems = [
+  {
+    key: "block",
+    label: "block user",
+  },
+
+  {
+    key: "remove",
+    danger: true,
+    label: "remove contact",
+  },
+  {
+    key: "blackList",
+    danger: true,
+    label: "blacklist user",
+  },
+];
 const ContactHeader = () => {
   const [contactData, setContactData] = useState({
     username: " ",
@@ -22,13 +42,13 @@ const ContactHeader = () => {
   const dispatch = useDispatch();
 
   const userData = useSelector((state) => state.auth.userData);
-  const { id } = useParams();
+  const { id: contactId } = useParams();
 
   const fetchContactData = () => {
     setIsLoading(true);
     setisError(false);
     axios
-      .get("/api/userapi/contact_profile/" + id, {
+      .get("/api/userapi/contact_profile/" + contactId, {
         headers: {
           authorization: "Bearer " + userData.access_token,
         },
@@ -47,7 +67,7 @@ const ContactHeader = () => {
 
   useEffect(() => {
     fetchContactData();
-  }, [id]);
+  }, [contactId]);
 
   const isReady = !isLoading && !isError;
 
@@ -83,9 +103,11 @@ const ContactHeader = () => {
               {contactData.personal_name}
             </div>
           </div>
+          <Dropdown menu={{ items: DropDownItems }} trigger={["click"]}>
+            <MoreDotsSvg className={c.Options} />
+          </Dropdown>
         </>
       )}
-      {}
     </div>
   );
 };

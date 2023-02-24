@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import classes from "./Chat.module.scss";
 import NavBar from "./components/NavBar/NavBar";
 import PrivateConversation from "./pages/PrivateConversation/PrivateConversation";
@@ -13,85 +13,19 @@ import axios from "axios";
 import { ComponentActions } from "../../store/slices/ComponentSlice";
 import PublicConversation from "./pages/PublicConversation/PublicConversation";
 import Default from "./pages/Default/Default";
+import ChatController from "./components/ChatController/ChatController";
+import { AnimatePresence } from "framer-motion";
 
 export default function Chat() {
   const startY = useRef(0);
   const startX = useRef(0);
-
-  const userData = useSelector((state) => state.auth.userData);
+  const location = useLocation();
+  const { pathname } = location;
   const dispatch = useDispatch();
-  useEffect(() => {
-    fetchNotifications();
-    dispatch(
-      ChatActions.emit({
-        event: "self connect",
-        data: userData.userId,
-      })
-    );
-
-    dispatch(
-      ChatActions.on({
-        event: "receive message",
-        callback: (message) => {
-          console.log("");
-          dispatch(
-            ChatActions.addMessage({
-              conversation_id: message.conversation,
-              newMessage: message,
-            })
-          );
-        },
-      })
-    );
-
-    dispatch(
-      ChatActions.on({
-        event: "remove message",
-        callback: (message) => {
-          dispatch(
-            ChatActions.deleteMessage({
-              conversation_id: message.conversation,
-              id: message._id,
-            })
-          );
-        },
-      })
-    );
-  }, []);
-
-  const fetchNotifications = () => {
-    axios
-      .get("/api/userapi/request", {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
-      .then((res) => {
-        dispatch(ChatActions.setRequests(res.data));
-        dispatch(
-          ChatActions.on({
-            event: "receive request",
-            callback: (request) => {
-              dispatch(ChatActions.addRequest(request));
-            },
-          })
-        );
-        dispatch(
-          ChatActions.on({
-            event: "canceled request",
-            callback: (requestId) => {
-              dispatch(ChatActions.removeRequest(requestId));
-            },
-          })
-        );
-      })
-      .catch((err) => {
-        console.log("fetch request error :", err);
-      });
-  };
 
   return (
     <div className={classes.Chat}>
+      <ChatController />
       <section className={classes.MainSection}>
         <NavBar />
         <div
@@ -110,15 +44,20 @@ export default function Chat() {
             }
           }}
         >
-          <Routes>
-            <Route
-              path="/chats/private/:id"
-              element={<PrivateConversation />}
-            />
-            <Route path="/chats/public/:id" element={<PublicConversation />} />
-            <Route path="/settings" element={<Profile />} />
-            <Route path="/*" element={<Default />} />
-          </Routes>
+          <AnimatePresence initial={false} mode={"wait"}>
+            <Routes location={location} key={pathname}>
+              <Route
+                path="/chats/private/:id"
+                element={<PrivateConversation />}
+              />
+              <Route
+                path="/chats/public/:id"
+                element={<PublicConversation />}
+              />
+              <Route path="/settings" element={<Profile />} />
+              <Route path="/*" element={<Default />} />
+            </Routes>
+          </AnimatePresence>
         </div>
         <div className={classes.SideContent}></div>
       </section>

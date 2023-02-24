@@ -7,6 +7,7 @@ import VoiceTextMessage from "./components/VoiceTextMessage/VoiceTextMessage";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
+import { AnimatePresence } from "framer-motion";
 
 const renderMessages = (
   data,
@@ -91,14 +92,17 @@ const ChatHandler = ({
   const userData = useSelector((state) => state.auth.userData);
 
   function deleteMessage(message) {
+    let messageId = message._id;
+    if (message.trueId) messageId = message.trueId;
+
     axios
-      .delete("api/messagerie/messages/" + message._id, {
+      .delete("api/messagerie/messages/" + messageId, {
         headers: {
           authorization: "Bearer " + userData.access_token,
         },
       })
       .then(() => {
-        console.log("deleted :", message._id);
+        console.log("deleted :", messageId);
         dispatch(
           ChatActions.emit({
             event: "delete message",
@@ -116,9 +120,11 @@ const ChatHandler = ({
   }
 
   return (
-    <div ref={chatContainer} className={classes.ChatHandler}>
-      {renderMessages(data, isLoading, isError, fetchMessages, deleteMessage)}
-    </div>
+    <AnimatePresence initial={false} mode="popLayout">
+      <div ref={chatContainer} className={classes.ChatHandler}>
+        {renderMessages(data, isLoading, isError, fetchMessages, deleteMessage)}
+      </div>
+    </AnimatePresence>
   );
 };
 

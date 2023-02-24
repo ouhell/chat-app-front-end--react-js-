@@ -14,6 +14,8 @@ import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AuthActions } from "../../../../store/slices/authenticationSlice";
 import { AnimatePresence, motion } from "framer-motion";
+import { pageAnimation } from "../shared/animation/animationHandler";
+import { NotifActions } from "../../../../store/slices/NotificationSlice";
 
 const Profile = () => {
   const usernameCounter = useRef(0);
@@ -21,7 +23,7 @@ const Profile = () => {
   const emailCounter = useRef(0);
   const currentProfile = useRef({});
   const dispatch = useDispatch();
-  const [notifApi, notifContextHolder] = notification.useNotification();
+
   const [updateFormData, setUpdateFormData] = useState({
     feilds: {
       init: function () {
@@ -332,10 +334,13 @@ const Profile = () => {
       })
       .then((res) => {
         currentProfile.current = updateData;
-        notifApi.success({
-          message: "Profile info updated!",
-          duration: 2,
-        });
+
+        dispatch(
+          NotifActions.notify({
+            type: "success",
+            message: "Profile info updated!",
+          })
+        );
         dispatch(AuthActions.setUsername(updateData.username));
       })
       .catch((err) => {
@@ -372,140 +377,123 @@ const Profile = () => {
 
   const displayReady = !isLoading && !isError;
   return (
-    <AnimatePresence>
-      <motion.div
-        className={c.Profile}
-        initial={{
-          y: 50,
-          opacity: 0,
-        }}
-        animate={{
-          y: 0,
-          opacity: 1,
-        }}
-        exit={{
-          y: -50,
-          opacity: 0,
-        }}
-      >
-        {notifContextHolder}
-        <header className={c.Header}>My Profile</header>
+    <motion.div {...pageAnimation} className={c.Profile}>
+      <header className={c.Header}>My Profile</header>
 
-        <div className={c.ProfilPicHolder}>
-          {isLoading ? (
-            <Skeleton.Avatar className={c.ProfilPic} active size={90} />
-          ) : null}
-          {displayReady ? (
-            <div
+      <div className={c.ProfilPicHolder}>
+        {isLoading ? (
+          <Skeleton.Avatar className={c.ProfilPic} active size={90} />
+        ) : null}
+        {displayReady ? (
+          <div
+            style={{
+              width: "fit-content",
+              borderRadius: "100%",
+              backgroundColor: "var(--primary-blank)",
+            }}
+          >
+            <input
+              ref={fileUploader}
+              type={"file"}
               style={{
-                width: "fit-content",
-                borderRadius: "100%",
-                backgroundColor: "var(--primary-blank)",
+                display: "none",
               }}
+              onChange={(e) => {
+                updatePic(e.target.files[0]);
+              }}
+            />
+            <Spin
+              spinning={isUpdatingPic}
+              indicator={
+                <LoadingOutlined
+                  style={{
+                    color: "var(--primary-soft)",
+                  }}
+                />
+              }
             >
-              <input
-                ref={fileUploader}
-                type={"file"}
+              <Avatar
+                onClick={() => {
+                  fileUploader.current.click();
+                }}
+                size={90}
+                src={profilePicture}
                 style={{
-                  display: "none",
+                  fontSize: "2rem",
                 }}
-                onChange={(e) => {
-                  updatePic(e.target.files[0]);
-                }}
-              />
-              <Spin
-                spinning={isUpdatingPic}
-                indicator={
+                className={"util-pointer util-capitalized " + c.ProfilPic}
+              >
+                {userData.username[0]}
+              </Avatar>
+            </Spin>
+          </div>
+        ) : null}
+      </div>
+      <div className={c.ProfilInfoHolder}>
+        {isLoading ? <Skeleton active /> : null}
+        {displayReady
+          ? Object.keys(updateFormData.feilds).map((key) => {
+              const feild = updateFormData.feilds[key];
+              const config = feild.input_config;
+
+              const props = {
+                onChange: (e) => {
+                  changeValue(key, e.target.value, key);
+                },
+                value: feild.value,
+                maxLength: config.maxLength,
+                placeholder: config.placeHolder,
+                className: c.Input,
+                status:
+                  !feild.isValid && feild.isTouched && !feild.isLoading
+                    ? "error"
+                    : "normal",
+                prefix: config.prefix,
+                suffix: feild.isValid ? (
+                  <CheckOutlined
+                    style={{
+                      color: "green",
+                    }}
+                  />
+                ) : feild.isLoading ? (
                   <LoadingOutlined
                     style={{
                       color: "var(--primary-soft)",
                     }}
                   />
-                }
-              >
-                <Avatar
-                  onClick={() => {
-                    fileUploader.current.click();
-                  }}
-                  size={90}
-                  src={profilePicture}
-                  style={{
-                    fontSize: "2rem",
-                  }}
-                  className={"util-pointer util-capitalized " + c.ProfilPic}
-                >
-                  {userData.username[0]}
-                </Avatar>
-              </Spin>
-            </div>
-          ) : null}
-        </div>
-        <div className={c.ProfilInfoHolder}>
-          {isLoading ? <Skeleton active /> : null}
-          {displayReady
-            ? Object.keys(updateFormData.feilds).map((key) => {
-                const feild = updateFormData.feilds[key];
-                const config = feild.input_config;
+                ) : null,
+              };
 
-                const props = {
-                  onChange: (e) => {
-                    changeValue(key, e.target.value, key);
-                  },
-                  value: feild.value,
-                  maxLength: config.maxLength,
-                  placeholder: config.placeHolder,
-                  className: c.Input,
-                  status:
-                    !feild.isValid && feild.isTouched && !feild.isLoading
-                      ? "error"
-                      : "normal",
-                  prefix: config.prefix,
-                  suffix: feild.isValid ? (
-                    <CheckOutlined
-                      style={{
-                        color: "green",
-                      }}
-                    />
-                  ) : feild.isLoading ? (
-                    <LoadingOutlined
-                      style={{
-                        color: "var(--primary-soft)",
-                      }}
-                    />
-                  ) : null,
-                };
+              let InputType = Input;
 
-                let InputType = Input;
-
-                if (config.type === "input.password") {
-                  InputType = Input.Password;
-                  props.visibilityToggle = config.visibilityToggle;
-                }
-                return (
-                  <div className={c.DataChanger} key={key}>
-                    <label className={c.Label}>{feild.label_name}</label>
-                    <div className={c.InputHolder}>
-                      {feild.errorMessage ? (
-                        <div className={c.InputError}>{feild.errorMessage}</div>
-                      ) : null}
-                      <InputType {...props} />
-                    </div>
+              if (config.type === "input.password") {
+                InputType = Input.Password;
+                props.visibilityToggle = config.visibilityToggle;
+              }
+              return (
+                <div className={c.DataChanger} key={key}>
+                  <label className={c.Label}>{feild.label_name}</label>
+                  <div className={c.InputHolder}>
+                    {feild.errorMessage ? (
+                      <div className={c.InputError}>{feild.errorMessage}</div>
+                    ) : null}
+                    <InputType {...props} />
                   </div>
-                );
-              })
-            : null}
-          {displayReady ? (
-            <Button
-              className={c.EditButton}
-              loading={isUpdatingInfo}
-              onClick={updateData}
-            >
-              Edit Profile
-            </Button>
-          ) : null}
-        </div>
-      </motion.div>
-    </AnimatePresence>
+                </div>
+              );
+            })
+          : null}
+        {displayReady ? (
+          <Button
+            className={c.EditButton}
+            loading={isUpdatingInfo}
+            onClick={updateData}
+          >
+            Edit Profile
+          </Button>
+        ) : null}
+      </div>
+    </motion.div>
   );
 };
 

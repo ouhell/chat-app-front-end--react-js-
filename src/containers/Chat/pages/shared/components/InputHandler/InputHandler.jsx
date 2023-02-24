@@ -155,6 +155,7 @@ const InputHandler = ({
       content: URL.createObjectURL(file),
       conversation: conversationId,
       content_type: "image",
+      sent_date: new Date().toString(),
       temporary: true,
     };
 

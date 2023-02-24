@@ -1,6 +1,7 @@
 import { Avatar, Dropdown } from "antd";
 import { MoreDotsSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import c from "./TextMessage.module.scss";
+import { motion } from "framer-motion";
 
 const formatDate = (date) => {
   const hours = (date.getHours() + "").padStart(2, "0");
@@ -23,14 +24,32 @@ const TextMessage = ({ message, userId, deleteMessage }) => {
   const menuOnClick = ({ key }) => {
     switch (key) {
       case "delete":
-        deleteMessage(message);
+        if (!message.temporary) deleteMessage(message);
     }
   };
 
   const isSender = userId === message.sender._id;
 
   return (
-    <div
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{
+        opacity: 1,
+
+        scale: 1,
+      }}
+      exit={{
+        opacity: 0,
+
+        scale: 0.8,
+      }}
+      transition={{
+        opacity: { duration: 0.2 },
+      }}
+      style={{
+        originX: isSender ? 1 : 0,
+      }}
       className={
         c.TextMessage +
         (isSender ? ` ${c.SelfSent}` : "") +
@@ -57,7 +76,7 @@ const TextMessage = ({ message, userId, deleteMessage }) => {
         )}
         <div className={c.SentDateHolder}>{formatDate(sentDate)}</div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

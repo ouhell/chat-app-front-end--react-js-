@@ -11,6 +11,19 @@ import {
 } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useRef } from "react";
+import { motion } from "framer-motion";
+
+const variants = {
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+  hidden: { opacity: 0, y: 15 },
+};
+
 const SignUp = () => {
   const usernameCounter = useRef(0);
   const emailCounter = useRef(0);
@@ -367,8 +380,13 @@ const SignUp = () => {
       <div className={classes.SigninBox}>
         <header className={classes.Header}>Sign Up</header>
 
-        <div className={classes.InputBox}>
-          {Object.keys(signupFormData.feilds).map((key) => {
+        <motion.div
+          className={classes.InputBox}
+          variants={variants}
+          initial="hidden"
+          animate="visible"
+        >
+          {Object.keys(signupFormData.feilds).map((key, i) => {
             const feild = signupFormData.feilds[key];
             const config = feild.input_config;
             const props = {
@@ -409,15 +427,19 @@ const SignUp = () => {
             }
 
             return (
-              <div className={classes.InputHolder} key={key}>
+              <motion.div
+                className={classes.InputHolder}
+                variants={variants}
+                key={key}
+              >
                 {feild.errorMessage ? (
                   <div className={classes.InputError}>{feild.errorMessage}</div>
                 ) : null}
                 <InputType {...props} type={config.type} />
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
 
         <Button
           className={classes.Button}

@@ -91,9 +91,14 @@
           color: white;
 
           &:after {
-            background-color: var(--primary-soft);
+            // background-color:   var(--primary-soft);
+            background: linear-gradient(
+              to right,
+              var(--primary-hard),
+              var(--primary-soft)
+            );
 
-            right: 0;
+            // right: 0;
           }
         }
       }
