@@ -12,29 +12,30 @@ import { ComponentActions } from "../../../../../../store/slices/ComponentSlice"
 
 import c from "./ContactHeader.module.scss";
 
-const DropDownItems = [
-  {
-    key: "block",
-    label: "block user",
-  },
-
-  {
-    key: "remove",
-    danger: true,
-    label: "remove contact",
-  },
-  {
-    key: "blackList",
-    danger: true,
-    label: "blacklist user",
-  },
-];
 const ContactHeader = () => {
-  const [contactData, setContactData] = useState({
-    username: " ",
-    personal_name: "",
-    profile_picture: undefined,
-  });
+  const { conversationId } = useParams();
+  const contactData = useSelector(
+    (state) => state.chat.contacts[conversationId]
+  );
+  console.log("contact data :", contactData);
+
+  const DropDownItems = [
+    {
+      key: "block",
+      label: "block user",
+    },
+
+    {
+      key: "remove",
+      danger: true,
+      label: "remove contact",
+    },
+    {
+      key: "blackList",
+      danger: true,
+      label: "blacklist user",
+    },
+  ];
 
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setisError] = useState(false);
@@ -42,19 +43,22 @@ const ContactHeader = () => {
   const dispatch = useDispatch();
 
   const userData = useSelector((state) => state.auth.userData);
-  const { id: contactId } = useParams();
 
   const fetchContactData = () => {
     setIsLoading(true);
     setisError(false);
     axios
-      .get("/api/userapi/contact_profile/" + contactId, {
+      .get("/api/userapi/contact/" + conversationId, {
         headers: {
           authorization: "Bearer " + userData.access_token,
         },
       })
       .then((res) => {
-        setContactData(res.data);
+        dispatch(
+          ChatActions.addContact({
+            newContact: res.data,
+          })
+        );
       })
       .catch((err) => {
         console.log("fetching contacts error", err);
@@ -66,10 +70,10 @@ const ContactHeader = () => {
   };
 
   useEffect(() => {
-    fetchContactData();
-  }, [contactId]);
+    if (!contactData) fetchContactData();
+  }, [conversationId]);
 
-  const isReady = !isLoading && !isError;
+  const isReady = contactData ? true : false;
 
   return (
     <div className={c.ContactHeader}>
@@ -84,7 +88,7 @@ const ContactHeader = () => {
         }}
       />
 
-      {isLoading && (
+      {!isReady && (
         <>
           <Skeleton.Avatar size={45} active />
           <div className={c.InfoHolder}>
@@ -94,13 +98,13 @@ const ContactHeader = () => {
       )}
       {isReady && (
         <>
-          <Avatar size={45} src={contactData.profile_picture}>
-            {contactData.username[0]}
+          <Avatar size={45} src={contactData.user.profile_picture}>
+            {contactData.user.username[0]}
           </Avatar>
           <div className={c.InfoHolder}>
-            <div className={c.UsernameHolder}>{contactData.username}</div>
+            <div className={c.UsernameHolder}>{contactData.user.username}</div>
             <div className={c.PersonalnameHolder}>
-              {contactData.personal_name}
+              {contactData.user.personal_name}
             </div>
           </div>
           <Dropdown menu={{ items: DropDownItems }} trigger={["click"]}>

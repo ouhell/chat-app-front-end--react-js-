@@ -63,7 +63,7 @@ const Contact = ({ contactInfo, userData }) => {
 
   return (
     <NavLink
-      to={"/chats/private/" + contactInfo._id}
+      to={"/chats/private/" + contactInfo._id + "/" + contactInfo.user._id}
       className={({ isActive }) =>
         c.ContactLink + (isActive ? ` ${c.active}` : "")
       }

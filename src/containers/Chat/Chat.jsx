@@ -47,11 +47,11 @@ export default function Chat() {
           <AnimatePresence initial={false} mode={"wait"}>
             <Routes location={location} key={pathname}>
               <Route
-                path="/chats/private/:id"
+                path="/chats/private/:conversationId/:contactId"
                 element={<PrivateConversation />}
               />
               <Route
-                path="/chats/public/:id"
+                path="/chats/public/:conversationId"
                 element={<PublicConversation />}
               />
               <Route path="/settings" element={<Profile />} />

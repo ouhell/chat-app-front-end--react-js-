@@ -4,7 +4,7 @@ import { HostName } from "../../client/ApiClient";
 
 const initialState = {
   conversations: {},
-  contacts: [],
+  contacts: {},
   publicConvos: [],
   requests: {
     loaded: false,
@@ -71,20 +71,23 @@ const ChatSlice = createSlice({
       state.conversations[conversation_id].messages = newMessages;
     },
     setContacts: (state, action) => {
-      state.contacts = action.payload;
+      const contactList = action.payload;
+      let newContacts = {};
+
+      contactList.forEach((contact) => {
+        newContacts[contact._id] = contact;
+      });
+      state.contacts = newContacts;
     },
     addContact: (state, action) => {
       const { newContact } = action.payload;
-      const newContacts = [...state.contacts];
-      newContacts.push(newContact);
-      state.contacts = newContacts;
+      state.contacts[newContact._id] = newContact;
     },
     removeContact: (state, action) => {
       const { contactId } = action.payload;
-
-      state.contacts = state.contacts.filter(
-        (contact) => contact._id !== contactId
-      );
+      const newContacts = { ...state.contacts };
+      delete newContacts[contactId];
+      state.contacts = newContacts;
     },
     setPublicConvos: (state, action) => {
       state.publicConvos = action.payload;

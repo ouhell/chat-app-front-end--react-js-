@@ -52,7 +52,7 @@ const ContactRequest = ({ requestData, userData, removerequest }) => {
     setIsAcceptLoading(true);
 
     axios
-      .post("api/userapi/user-contact/" + requestData._id, null, {
+      .post("api/userapi/contact/" + requestData._id, null, {
         headers: {
           authorization: "Bearer " + userData.access_token,
         },

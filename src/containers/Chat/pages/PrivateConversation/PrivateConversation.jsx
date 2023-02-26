@@ -13,7 +13,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { pageAnimation } from "../shared/animation/animationHandler";
 
 function PrivateConversation() {
-  const { id: conversationId } = useParams();
+  const { conversationId } = useParams();
 
   const conversation = useSelector(
     (state) => state.chat.conversations[conversationId]

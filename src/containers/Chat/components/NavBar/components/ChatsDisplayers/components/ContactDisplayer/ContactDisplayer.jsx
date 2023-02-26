@@ -13,6 +13,7 @@ import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 const ContactDisplayer = () => {
   const [seachtext, setSearchtext] = useState("");
   const contactData = useSelector((state) => state.chat.contacts);
+  const contacts = Object.keys(contactData).map((key) => contactData[key]);
   const [isloading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const userData = useSelector((state) => state.auth.userData);
@@ -20,10 +21,11 @@ const ContactDisplayer = () => {
   const [parent, enableAnimate] = useAutoAnimate();
 
   const filterContact = () => {
-    return contactData.filter((contact, i) => {
+    return contacts.filter((contact, i) => {
+      const filtertext = seachtext.trim().toLowerCase();
       return (
-        contact.user.username.includes(seachtext) ||
-        contact.user.personal_name.includes(seachtext)
+        contact.user.username.toLowerCase().includes(filtertext) ||
+        contact.user.personal_name.toLowerCase().includes(filtertext)
       );
     });
   };
@@ -32,7 +34,7 @@ const ContactDisplayer = () => {
     setIsLoading(true);
     setIsError(false);
     axios
-      .get("api/userapi/user-contact", {
+      .get("api/userapi/contact", {
         headers: {
           authorization: "Bearer " + userData.access_token,
         },
@@ -49,7 +51,7 @@ const ContactDisplayer = () => {
   }, []);
 
   useEffect(() => {
-    if (contactData.length === 0) fetchContacts();
+    if (contacts.length === 0) fetchContacts();
   }, []);
 
   return (
@@ -83,7 +85,7 @@ const ContactDisplayer = () => {
         />
       ) : null}
 
-      {!isloading && !isError && contactData.length === 0 ? (
+      {!isloading && !isError && contacts.length === 0 ? (
         <Empty description="No contact" />
       ) : null}
 

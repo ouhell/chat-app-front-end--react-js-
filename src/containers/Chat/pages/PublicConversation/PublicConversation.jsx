@@ -13,7 +13,7 @@ import { pageAnimation } from "../shared/animation/animationHandler";
 const PublicConversation = () => {
   const [isLoading, setIsLoading] = useState();
   const [isError, setIsError] = useState();
-  const { id: conversationId } = useParams();
+  const { conversationId } = useParams();
 
   const publicConversation = useSelector(
     (state) => state.chat.conversations[conversationId]
