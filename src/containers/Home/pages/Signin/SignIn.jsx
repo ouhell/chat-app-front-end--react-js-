@@ -30,7 +30,7 @@ const Signin = () => {
     },
     password: {
       value: "",
-      type: "text",
+      type: "password",
       placeholder: "password",
       prefix: LockOutlined,
     },

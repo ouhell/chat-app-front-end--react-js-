@@ -237,13 +237,6 @@ export const ChatBlobsSvg = (props) => {
 export const LogoSvg = (props) => {
   return (
     <svg viewBox="0 0 64 64" {...props}>
-      <style type="text/css">
-        {/* .st0{fill:#b750fd;}
-	.st1{opacity:0.2;}
-	.st2{fill:#6d54e5;}
-	.st3{fill:#FFFFFF;}
-	.st4{fill:#6d54e5;} */}
-      </style>
       <g id="Layer_1">
         <g>
           <circle cx="32" cy="32" r="32" fill="#b750fd" />
@@ -265,7 +258,7 @@ export const LogoSvg = (props) => {
           <ellipse fill="#FFFFFF" cx="32" cy="30" rx="20" ry="18" />
         </g>
         <g>
-          <circle cx="32" cy="30" r="2" />
+          <circle fill="#6d54e5" cx="32" cy="30" r="2" />
         </g>
         <g>
           <circle fill="#6d54e5" cx="40" cy="30" r="2" />

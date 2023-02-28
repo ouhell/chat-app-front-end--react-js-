@@ -23,10 +23,11 @@ const ContactRequest = ({ requestData, userData, removerequest }) => {
       })
       .then((res) => {
         dispatch(ChatActions.removeRequest(requestData._id));
+
         dispatch(
           ChatActions.emit({
             event: "cancel request",
-            data: res.data,
+            data: requestData,
           })
         );
       })
@@ -52,23 +53,24 @@ const ContactRequest = ({ requestData, userData, removerequest }) => {
     setIsAcceptLoading(true);
 
     axios
-      .post("api/userapi/contact/" + requestData._id, null, {
+      .post("api/userapi/user-contact/" + requestData._id, null, {
         headers: {
           authorization: "Bearer " + userData.access_token,
         },
       })
       .then((res) => {
         dispatch(ChatActions.removeRequest(requestData._id));
-        const newContact = res.data.users.find(
-          (user) => user._id !== userData.userId
+        dispatch(
+          ChatActions.emit({
+            event: "cancel request",
+            data: requestData,
+          })
         );
-        if (newContact) {
-          dispatch(
-            ChatActions.addContact({
-              newContact,
-            })
-          );
-        }
+        dispatch(
+          ChatActions.addContact({
+            newContact: res.data,
+          })
+        );
       })
       .catch((err) => {
         console.log("accept req err", err);

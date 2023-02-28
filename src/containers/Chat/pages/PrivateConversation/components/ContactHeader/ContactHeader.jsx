@@ -13,11 +13,10 @@ import { ComponentActions } from "../../../../../../store/slices/ComponentSlice"
 import c from "./ContactHeader.module.scss";
 
 const ContactHeader = () => {
-  const { conversationId } = useParams();
+  const { conversationId, contactId } = useParams();
   const contactData = useSelector(
     (state) => state.chat.contacts[conversationId]
   );
-  console.log("contact data :", contactData);
 
   const DropDownItems = [
     {
@@ -69,6 +68,28 @@ const ContactHeader = () => {
       });
   };
 
+  const removeContact = () => {
+    console.log("removing :", contactId);
+    axios
+      .delete("/api/userapi//user-contact/" + contactId, {
+        headers: {
+          authorization: "Bearer " + userData.access_token,
+        },
+      })
+      .then((res) => {
+        dispatch(ChatActions.removeContact({ contactId: conversationId }));
+        dispatch(ChatActions.removeConversation({ conversationId }));
+      })
+      .catch((err) => console.log("remove contact err :", err));
+  };
+
+  const dropDownClickHandler = ({ key }) => {
+    switch (key) {
+      case "remove":
+        removeContact();
+    }
+  };
+
   useEffect(() => {
     if (!contactData) fetchContactData();
   }, [conversationId]);
@@ -107,7 +128,10 @@ const ContactHeader = () => {
               {contactData.user.personal_name}
             </div>
           </div>
-          <Dropdown menu={{ items: DropDownItems }} trigger={["click"]}>
+          <Dropdown
+            menu={{ items: DropDownItems, onClick: dropDownClickHandler }}
+            trigger={["click"]}
+          >
             <MoreDotsSvg className={c.Options} />
           </Dropdown>
         </>

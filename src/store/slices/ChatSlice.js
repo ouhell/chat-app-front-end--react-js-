@@ -40,6 +40,12 @@ const ChatSlice = createSlice({
       if (state.conversations[conversation_id])
         state.conversations[conversation_id].messages = newMessages;
     },
+    removeConversation: (state, action) => {
+      const { conversationId } = action.payload;
+      const newConversations = { ...state.conversations };
+      delete newConversations[conversationId];
+      state.conversations = newConversations;
+    },
     addMessage: (state, action) => {
       const { conversation_id, newMessage } = action.payload;
       let newMessages = [];

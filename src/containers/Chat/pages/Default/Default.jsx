@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux";
 import {
   ChatBlobsSvg,
+  LogoSvg,
   MenuSvg,
 } from "../../../../shared/assets/svg/SvgProvider";
 import { ComponentActions } from "../../../../store/slices/ComponentSlice";
@@ -16,7 +17,7 @@ const Default = () => {
           dispatch(ComponentActions.openNav());
         }}
       />
-      <ChatBlobsSvg />
+      <LogoSvg />
     </div>
   );
 };
