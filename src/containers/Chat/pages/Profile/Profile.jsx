@@ -377,7 +377,7 @@ const Profile = () => {
 
   const displayReady = !isLoading && !isError;
   return (
-    <motion.div {...pageAnimation} className={c.Profile}>
+    <motion.div {...pageAnimation} className={c.Profile} layout>
       <header className={c.Header}>My Profile</header>
 
       <div className={c.ProfilPicHolder}>

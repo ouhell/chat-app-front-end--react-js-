@@ -13,7 +13,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { pageAnimation } from "../shared/animation/animationHandler";
 
 function PrivateConversation() {
-  const { conversationId } = useParams();
+  const { conversationId, contactId } = useParams();
 
   const conversation = useSelector(
     (state) => state.chat.conversations[conversationId]
@@ -61,19 +61,23 @@ function PrivateConversation() {
   useEffect(() => {
     if (!conversation) fetchMessages(conversationId);
   }, [conversationId]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
-    }, 80);
-  }, [messages, conversationId]);
+  console.log("conversation :", conversation);
+  const isContactBlocked = conversation
+    ? conversation.conversation.blocked.find((user) => user === contactId)
+      ? true
+      : false
+    : false;
+  const isUserBlocked = conversation
+    ? conversation.conversation.blocked.find((user) => user === userData.userid)
+      ? true
+      : false
+    : false;
   return (
-    <motion.div {...pageAnimation} className={classes.Conversation}>
-      <ContactHeader />
+    <motion.div {...pageAnimation} className={classes.Conversation} layout>
+      <ContactHeader isBlocked={isContactBlocked} />
       <ChatHandler
         isLoading={isLoading}
         isError={isError}
-        chatContainer={chatContainer}
         data={messages}
         fetchMessages={fetchMessages}
         key={conversationId}

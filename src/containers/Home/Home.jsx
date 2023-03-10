@@ -1,8 +1,8 @@
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Signin from "./pages/Signin/SignIn";
 import SignUp from "./pages/Signup/SignUp";
 import Main from "./pages/Main/Main";
-import { motion, m } from "framer-motion";
+import { motion, m, AnimatePresence } from "framer-motion";
 import c from "./Home.module.scss";
 import { LogoSvg } from "../../shared/assets/svg/SvgProvider";
 
@@ -14,10 +14,11 @@ const navigationItems = [
 
 const Home = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   return (
     <div className={c.Home}>
-      <m.header className={c.Header}>
-        <m.div className={c.LogoHolder}>
+      <motion.header className={c.Header}>
+        <motion.div drag className={c.LogoHolder}>
           <LogoSvg
             className={c.Logo}
             onClick={() => {
@@ -32,7 +33,7 @@ const Home = () => {
           >
             ShutApp
           </m.div>
-        </m.div>
+        </motion.div>
         <m.div className={c.NavigationHolder}>
           {navigationItems.map((item) => {
             return (
@@ -53,14 +54,16 @@ const Home = () => {
             );
           })}
         </m.div>
-      </m.header>
+      </motion.header>
       <div className={c.Page}>
-        <Routes>
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/signin" element={<Signin />} />
+        <AnimatePresence initial={false} mode="wait">
+          <Routes key={location.pathname} location={location}>
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/signin" element={<Signin />} />
 
-          <Route path="/*" element={<Main />} />
-        </Routes>
+            <Route path="/*" element={<Main />} />
+          </Routes>
+        </AnimatePresence>
       </div>
     </div>
   );

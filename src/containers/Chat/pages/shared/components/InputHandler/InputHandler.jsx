@@ -86,6 +86,7 @@ const InputHandler = ({
       message: readyMessage,
       content_type: "text",
       conversation: conversationId,
+      sent_date: Date.now(),
       temporary: true,
     };
 

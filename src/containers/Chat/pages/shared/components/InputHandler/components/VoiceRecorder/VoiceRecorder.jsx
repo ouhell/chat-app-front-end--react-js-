@@ -159,9 +159,8 @@ const VoiceRecorder = ({ apiUrl, conversationId }) => {
   function sendVoiceRecord() {
     const blob = new Blob(audioChunks.current, {
       type: "audio/webm",
-        
     });
-     
+
     const url = window.URL.createObjectURL(blob);
     audioChunks.current = [];
     const generatedId = Math.random() * 10;
@@ -220,6 +219,7 @@ const VoiceRecorder = ({ apiUrl, conversationId }) => {
         conversation: conversationId,
         content_type: "voice",
         temporary: true,
+        sent_date: Date.now(),
       };
       dispatch(
         ChatActions.addMessage({

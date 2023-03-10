@@ -9,10 +9,10 @@ import {
 } from "../../../../../../shared/assets/svg/SvgProvider";
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import { ComponentActions } from "../../../../../../store/slices/ComponentSlice";
-
+import { NotifActions } from "../../../../../../store/slices/NotificationSlice";
 import c from "./ContactHeader.module.scss";
 
-const ContactHeader = () => {
+const ContactHeader = ({ isBlocked }) => {
   const { conversationId, contactId } = useParams();
   const contactData = useSelector(
     (state) => state.chat.contacts[conversationId]
@@ -20,8 +20,8 @@ const ContactHeader = () => {
 
   const DropDownItems = [
     {
-      key: "block",
-      label: "block user",
+      key: isBlocked ? "unblock" : "block",
+      label: isBlocked ? "unblock user" : "block user",
     },
 
     {
@@ -71,7 +71,21 @@ const ContactHeader = () => {
   const removeContact = () => {
     console.log("removing :", contactId);
     axios
-      .delete("/api/userapi//user-contact/" + contactId, {
+      .delete("/api/userapi/user-contact/" + contactId, {
+        headers: {
+          authorization: "Bearer " + userData.access_token,
+        },
+      })
+      .then((res) => {
+        dispatch(ChatActions.removeContact({ contactId: conversationId }));
+        dispatch(ChatActions.removeConversation({ conversationId }));
+      })
+      .catch((err) => console.log("remove contact err :", err));
+  };
+  const blackListContact = () => {
+    console.log("removing :", contactId);
+    axios
+      .put("/api/userapi/blackList/" + contactId, null, {
         headers: {
           authorization: "Bearer " + userData.access_token,
         },
@@ -83,10 +97,74 @@ const ContactHeader = () => {
       .catch((err) => console.log("remove contact err :", err));
   };
 
+  const blockUser = () => {
+    console.log("blocked user", contactId);
+    axios
+      .put(
+        "/api/userapi/blockUser",
+        {
+          conversationId,
+          blockedUserId: contactId,
+        },
+        {
+          headers: {
+            authorization: "Bearer " + userData.access_token,
+          },
+        }
+      )
+      .then(() => {
+        dispatch(
+          NotifActions.notify({
+            type: "success",
+            message: "user blocked",
+          })
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const unblockUser = () => {
+    console.log("blocked user", contactId);
+    axios
+      .put(
+        "/api/userapi/unblockUser",
+        {
+          conversationId,
+          blockedUserId: contactId,
+        },
+        {
+          headers: {
+            authorization: "Bearer " + userData.access_token,
+          },
+        }
+      )
+      .then(() => {
+        dispatch(
+          NotifActions.notify({
+            type: "success",
+            message: "user unblocked",
+          })
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const dropDownClickHandler = ({ key }) => {
     switch (key) {
       case "remove":
         removeContact();
+        break;
+
+      case "block":
+        blockUser();
+      case "unblock":
+        unblockUser();
+      case "blackList":
+        blackListContact();
     }
   };
 

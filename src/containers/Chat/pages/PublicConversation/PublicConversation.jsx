@@ -56,7 +56,7 @@ const PublicConversation = () => {
   }, [conversationId]);
 
   return (
-    <motion.div {...pageAnimation} className={c.PublicConversation}>
+    <motion.div {...pageAnimation} className={c.PublicConversation} layout>
       <ChatHeader />
       <ChatHandler
         data={messages}

@@ -70,7 +70,21 @@ const Signin = () => {
       });
   };
   return (
-    <section className={classes.Signin}>
+    <motion.section
+      initial={{
+        scale: 1.1,
+        opacity: 0,
+      }}
+      animate={{
+        scale: 1,
+        opacity: 1,
+      }}
+      exit={{
+        scale: 1.1,
+        opacity: 0,
+      }}
+      className={classes.Signin}
+    >
       <div className={classes.SigninBox}>
         <header className={classes.Header}>Login</header>
 
@@ -123,7 +137,7 @@ const Signin = () => {
           </NavLink>
         </footer>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

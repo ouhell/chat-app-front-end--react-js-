@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import { AnimatePresence } from "framer-motion";
+import { useRef, useEffect } from "react";
 
 const renderMessages = (
   data,
@@ -85,11 +86,19 @@ const ChatHandler = ({
   data,
   isLoading,
   isError,
-  chatContainer,
+
   fetchMessages,
 }) => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
+  const chatContainer = useRef();
+  useEffect(() => {
+    console.log("scroll attemp :", chatContainer);
+    if (chatContainer.current) {
+      chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
+      console.log("scroll pass");
+    }
+  }, [data]);
 
   function deleteMessage(message) {
     let messageId = message._id;
@@ -120,11 +129,19 @@ const ChatHandler = ({
   }
 
   return (
-    <AnimatePresence initial={false} mode="popLayout">
-      <div ref={chatContainer} className={classes.ChatHandler}>
-        {renderMessages(data, isLoading, isError, fetchMessages, deleteMessage)}
-      </div>
-    </AnimatePresence>
+    <div className={classes.ChatHandler} ref={chatContainer}>
+      <AnimatePresence initial={false} mode="popLayout">
+        <div className={classes.MessageContainer}>
+          {renderMessages(
+            data,
+            isLoading,
+            isError,
+            fetchMessages,
+            deleteMessage
+          )}
+        </div>
+      </AnimatePresence>
+    </div>
   );
 };
 

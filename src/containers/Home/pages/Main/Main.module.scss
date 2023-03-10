@@ -1,6 +1,9 @@
 .Main {
   .FirstHandler {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10rem;
     .Description {
       background-color: orangered;
       min-height: 100%;
@@ -11,6 +14,11 @@
       background-color: purple;
       min-height: 100%;
       width: 50%;
+    }
+    .ViewBox {
+      height: 200px;
+      width: 200px;
+      background-color: blue;
     }
   }
 }
