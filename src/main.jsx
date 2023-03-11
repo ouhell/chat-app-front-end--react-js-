@@ -21,7 +21,9 @@ axios.defaults.baseURL = HostName;
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Router>
     <Provider store={Store}>
-      <App />
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
     </Provider>
   </Router>
 );

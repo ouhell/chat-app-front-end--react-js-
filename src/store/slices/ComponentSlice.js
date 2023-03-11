@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  isNavOpen: "false",
+  isNavOpen: false,
 };
 
 const ComponentSlice = createSlice({
@@ -9,10 +9,10 @@ const ComponentSlice = createSlice({
   initialState: initialState,
   reducers: {
     openNav: (state, action) => {
-      state.isNavOpen = "true";
+      state.isNavOpen = true;
     },
     closeNav: (state, action) => {
-      state.isNavOpen = "false";
+      state.isNavOpen = false;
     },
     resetState: (state, action) => {
       state = initialState;

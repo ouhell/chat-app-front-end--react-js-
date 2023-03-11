@@ -66,9 +66,9 @@ const PublicConversation = () => {
       />
       <InputHandler
         sendAllowed={!isError && !isLoading}
-        textMessageUrl="api/messagerie/public/messages/"
-        voiceMessageUrl="api/messagerie/public/voice/"
-        imageMessageUrl="api/messagerie/public/image/"
+        textMessageUrl="api/messagerie/messages/"
+        voiceMessageUrl="api/messagerie/voice/"
+        imageMessageUrl="api/messagerie/image/"
         conversationId={conversationId}
       />
     </motion.div>

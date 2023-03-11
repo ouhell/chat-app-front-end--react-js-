@@ -1,20 +1,28 @@
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import {
+  NavLink,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import Signin from "./pages/Signin/SignIn";
 import SignUp from "./pages/Signup/SignUp";
 import Main from "./pages/Main/Main";
 import { motion, m, AnimatePresence } from "framer-motion";
 import c from "./Home.module.scss";
 import { LogoSvg } from "../../shared/assets/svg/SvgProvider";
+import classNames from "classnames";
 
 const navigationItems = [
+  { name: "home", to: "/" },
   { name: "login", to: "/signin" },
   { name: "about", to: "/about" },
-  { name: "extra", to: "/extra" },
 ];
 
 const Home = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  console.log("main path : ", location.pathname);
   return (
     <div className={c.Home}>
       <motion.header className={c.Header}>
@@ -36,20 +44,30 @@ const Home = () => {
         </motion.div>
         <m.div className={c.NavigationHolder}>
           {navigationItems.map((item) => {
+            const isCurrentPath = location.pathname === item.to;
             return (
               <motion.div
                 key={item.name}
                 whileHover={{
                   y: -2,
                   scale: 1.02,
-                  color: "rgb(100 219 222)",
+                  /* color: "rgb(100 219 222)", */
                 }}
-                className={c.NavigationItem}
+                className={classNames({
+                  [c.NavigationItem]: true,
+                  [c.active]: isCurrentPath,
+                })}
                 onClick={() => {
                   navigate(item.to);
                 }}
               >
                 {item.name}
+                {isCurrentPath && (
+                  <motion.div
+                    layoutId="navigationUnderline"
+                    className={c.Underline}
+                  ></motion.div>
+                )}
               </motion.div>
             );
           })}

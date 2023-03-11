@@ -15,6 +15,9 @@ const variants = {
       delay: 0.2,
     }, */
   },
+  enlarge: {
+    scale: 1.2,
+  },
 };
 
 const ViewBox = () => {
@@ -31,12 +34,13 @@ const ViewBox = () => {
         height: "10rem",
       }}
       variants={variants}
-      initial="hide"
+      animate="hide"
       whileInView="show"
-      viewport={{
+      whileHover={"enlarge"}
+      /* viewport={{
         once: false,
         margin: "-100px 0px -50px 0px",
-      }}
+      }} */
     ></motion.div>
   );
 };

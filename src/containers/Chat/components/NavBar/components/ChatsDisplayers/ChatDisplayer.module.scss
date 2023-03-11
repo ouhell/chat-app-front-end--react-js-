@@ -37,6 +37,7 @@
       color: var(--primary-blank);
       cursor: pointer;
       transition: transform 0.1s ease;
+      user-select: none;
 
       .underline {
         position: absolute;

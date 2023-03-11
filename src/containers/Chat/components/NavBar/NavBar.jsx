@@ -15,6 +15,10 @@ import { AuthActions } from "../../../../store/slices/authenticationSlice";
 import { ComponentActions } from "../../../../store/slices/ComponentSlice";
 import { NotifActions } from "../../../../store/slices/NotificationSlice";
 import { ChatActions } from "../../../../store/slices/ChatSlice";
+import useResize from "../../../../helpers/hooks/useResize";
+import { navigationHide } from "../../../../helpers/scss/variables.module.scss";
+import { motion } from "framer-motion";
+const navbarBreakPoint = Number.parseInt(navigationHide);
 
 const DropDownItems = [
   {
@@ -55,6 +59,7 @@ function NavBar() {
   const userData = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { windowHeigth, windowWidth } = useResize();
 
   const menuOnClick = ({ key }) => {
     switch (key) {
@@ -69,9 +74,54 @@ function NavBar() {
         dispatch(ComponentActions.closeNav());
     }
   };
+  console.log("break point :", navbarBreakPoint);
+  console.log("window w :", windowWidth);
+  const isMobileSize = windowWidth <= navbarBreakPoint;
+  console.log("selectors", isMobileSize, isOpen);
 
   return (
-    <div className={classes.NavBar} isopen={isOpen}>
+    <motion.div
+      className={classes.NavBar}
+      animate={
+        isMobileSize && isOpen
+          ? {
+              position: "fixed",
+              width: "100vw",
+              x: 0,
+              opacity: 1,
+              transition: {
+                type: "spring",
+                stiffness: "900",
+                damping: 55,
+              },
+            }
+          : isMobileSize
+          ? {
+              position: "fixed",
+              width: "100vw",
+              x: "-100%",
+              opacity: 0,
+              transition: {
+                type: "spring",
+                stiffness: "900",
+                damping: 55,
+              },
+            }
+          : {
+              position: "relative",
+              width: "25rem",
+              marginLeft: 0,
+              opacity: 1,
+              transition: {
+                type: "spring",
+                stiffness: "900",
+                damping: 10,
+              },
+            }
+      }
+
+      /* isopen={isOpen} */
+    >
       <div className={classes.TopNavigation}>
         <div
           className={classes.TopNavigationItem + " " + classes.CloseArrow}
@@ -137,7 +187,7 @@ function NavBar() {
       >
         {selectedNavigation.render}
       </div>
-    </div>
+    </motion.div>
   );
 }
 

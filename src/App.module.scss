@@ -43,6 +43,8 @@
   --primary-light: #ffff;
   --primary-topography: #313139;
   --exotic-topography: #222e3d;
+
+  --nabar-close-breakpoint: $navigationhide;
   font-size: 0.9rem;
 }
 
@@ -50,4 +52,8 @@
   max-height: 100vh;
   font-size: 1rem;
   color: var(--exotic-topography);
+}
+
+a {
+  text-decoration: none;
 }
