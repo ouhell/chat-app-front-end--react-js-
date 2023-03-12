@@ -7,6 +7,7 @@ import { ComponentActions } from "../../../../../../../../../store/slices/Compon
 import { useEffect } from "react";
 import { useCallback } from "react";
 import axios from "axios";
+import { getConversation } from "../../../../../../../../../client/ApiClient";
 
 const emptyArray = [];
 
@@ -20,12 +21,7 @@ const Contact = ({ contactInfo, userData }) => {
   const dispatch = useDispatch();
 
   const fetchMessages = useCallback(() => {
-    axios
-      .get("api/messagerie/messages/" + contactInfo._id, {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
+    getConversation(contactInfo._id, userData.access_token)
       .then((res) => {
         dispatch(ChatActions.emit({ event: "chat", data: contactInfo._id }));
 
@@ -63,7 +59,7 @@ const Contact = ({ contactInfo, userData }) => {
 
   return (
     <NavLink
-      to={"/chats/private/" + contactInfo._id + "/" + contactInfo.user._id}
+      to={"/chats/" + contactInfo._id + "/" + contactInfo.user._id}
       className={({ isActive }) =>
         c.ContactLink + (isActive ? ` ${c.active}` : "")
       }

@@ -1,6 +1,6 @@
-.Conversation {
+.PublicConversation {
   height: 100%;
-
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   background-color: var(--primary-light);

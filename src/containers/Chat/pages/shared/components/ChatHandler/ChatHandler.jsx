@@ -93,10 +93,8 @@ const ChatHandler = ({
   const userData = useSelector((state) => state.auth.userData);
   const chatContainer = useRef();
   useEffect(() => {
-    console.log("scroll attemp :", chatContainer);
     if (chatContainer.current) {
       chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
-      console.log("scroll pass");
     }
   }, [data]);
 

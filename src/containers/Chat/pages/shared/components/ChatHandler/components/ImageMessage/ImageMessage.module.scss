@@ -5,7 +5,13 @@
   gap: 0.2rem;
   .MessageHolder {
     overflow-wrap: break-word;
-    max-width: min(15rem, 60%);
+
+    img {
+      width: min(15rem, 60vw);
+      height: min(15rem, 60vw);
+      // max-width: 100%;
+      // max-height: 100%;
+    }
 
     transition: border-radius 0.05s ease-in-out;
     .Options {

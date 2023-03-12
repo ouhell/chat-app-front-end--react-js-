@@ -74,10 +74,8 @@ function NavBar() {
         dispatch(ComponentActions.closeNav());
     }
   };
-  console.log("break point :", navbarBreakPoint);
-  console.log("window w :", windowWidth);
+
   const isMobileSize = windowWidth <= navbarBreakPoint;
-  console.log("selectors", isMobileSize, isOpen);
 
   return (
     <motion.div

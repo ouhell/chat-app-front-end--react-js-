@@ -7,6 +7,7 @@ import axios from "axios";
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import { NotifActions } from "../../../../../../../../store/slices/NotificationSlice";
 import { message } from "antd";
+import { sendVoiceMessage } from "../../../../../../../../client/ApiClient";
 
 const initialRecordIconStyle = "none";
 
@@ -19,7 +20,7 @@ const initialAudioConfig = {
   mediaRecorder: null,
 };
 
-const VoiceRecorder = ({ apiUrl, conversationId }) => {
+const VoiceRecorder = ({ conversationId }) => {
   const [isGettingPermission, setIsGettingPermission] = useState(false);
   const [isRocordReady, setIsRecordReady] = useState(false);
   const [isRecording, setisRecording] = useState(false);
@@ -180,12 +181,7 @@ const VoiceRecorder = ({ apiUrl, conversationId }) => {
       data.append("voice", blob);
       data.append("duration", testAudio.duration);
 
-      axios
-        .post(apiUrl + conversationId, data, {
-          headers: {
-            authorization: "Bearer " + userData.access_token,
-          },
-        })
+      sendVoiceMessage(data, conversationId, userData.access_token)
         .then((res) => {
           const newMessage = { ...res.data, sender: senderInfo };
           dispatch(

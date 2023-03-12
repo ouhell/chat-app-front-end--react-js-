@@ -6,10 +6,10 @@ import { useParams, useSearchParams } from "react-router-dom";
 import {
   MenuSvg,
   MoreDotsSvg,
-} from "../../../../../../shared/assets/svg/SvgProvider";
-import { ChatActions } from "../../../../../../store/slices/ChatSlice";
-import { ComponentActions } from "../../../../../../store/slices/ComponentSlice";
-import { NotifActions } from "../../../../../../store/slices/NotificationSlice";
+} from "../../../../../../../../shared/assets/svg/SvgProvider";
+import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
+import { ComponentActions } from "../../../../../../../../store/slices/ComponentSlice";
+import { NotifActions } from "../../../../../../../../store/slices/NotificationSlice";
 import c from "./ContactHeader.module.scss";
 
 const ContactHeader = ({ isBlocked }) => {
@@ -158,13 +158,15 @@ const ContactHeader = ({ isBlocked }) => {
       case "remove":
         removeContact();
         break;
-
       case "block":
         blockUser();
+        break;
       case "unblock":
         unblockUser();
+        break;
       case "blackList":
         blackListContact();
+        break;
     }
   };
 

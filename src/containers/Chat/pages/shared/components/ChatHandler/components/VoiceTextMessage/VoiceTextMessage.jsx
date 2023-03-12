@@ -10,7 +10,6 @@ import {
 import { Dropdown, Slider, Spin, Avatar } from "antd";
 import { motion } from "framer-motion";
 function formatTime(time) {
-  console.log("time :", time);
   if (Number.isNaN(time) || time === Infinity) return "00:00";
   const secs = `${parseInt(`${time % 60}`)}`.padStart(2, "0");
   const mins = `${parseInt(`${(time / 60) % 60}`)}`;
@@ -170,7 +169,6 @@ const VoiceTextMessage = ({ message, userId, deleteMessage }) => {
         onLoadedMetadata={async (e) => {
           if (e.target.duration === Infinity) {
             setTimeout(() => {
-              console.log("timed out");
               e.target.currentTime = 0;
               setMetaDataConfig({
                 ...metaDataConfig,
@@ -179,7 +177,6 @@ const VoiceTextMessage = ({ message, userId, deleteMessage }) => {
               });
             }, 500);
           }
-          console.log("voice duration :", e.target.duration);
 
           setMetaDataConfig({
             ...metaDataConfig,

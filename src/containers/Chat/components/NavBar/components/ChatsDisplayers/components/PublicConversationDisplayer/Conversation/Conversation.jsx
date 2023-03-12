@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 const Conversation = ({ data }) => {
   return (
     <NavLink
-      to={"/chats/public/" + data._id}
+      to={"/chats/" + data._id}
       className={({ isActive }) => {
         return c.ConversationLink + (isActive ? " " + c.active : "");
       }}

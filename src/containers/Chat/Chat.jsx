@@ -1,20 +1,14 @@
 import { Route, Routes, useLocation } from "react-router-dom";
 import classes from "./Chat.module.scss";
 import NavBar from "./components/NavBar/NavBar";
-import PrivateConversation from "./pages/PrivateConversation/PrivateConversation";
-import { io } from "socket.io-client";
-import { useEffect } from "react";
 import { useRef } from "react";
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ChatActions } from "../../store/slices/ChatSlice";
 import Profile from "./pages/Profile/Profile";
-import axios from "axios";
 import { ComponentActions } from "../../store/slices/ComponentSlice";
-import PublicConversation from "./pages/PublicConversation/PublicConversation";
 import Default from "./pages/Default/Default";
 import ChatController from "./components/ChatController/ChatController";
 import { AnimatePresence } from "framer-motion";
+import Conversation from "./pages/Conversation/Conversation";
 
 export default function Chat() {
   const startY = useRef(0);
@@ -47,13 +41,10 @@ export default function Chat() {
           <AnimatePresence initial={false} mode={"wait"}>
             <Routes location={location} key={pathname}>
               <Route
-                path="/chats/private/:conversationId/:contactId"
-                element={<PrivateConversation />}
+                path="/chats/:conversationId/*"
+                element={<Conversation />}
               />
-              <Route
-                path="/chats/public/:conversationId"
-                element={<PublicConversation />}
-              />
+
               <Route path="/settings" element={<Profile />} />
               <Route path="/*" element={<Default />} />
             </Routes>

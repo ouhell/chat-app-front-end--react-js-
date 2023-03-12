@@ -14,12 +14,11 @@ import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import { Popover } from "antd";
 import EmojiPicker from "emoji-picker-react";
 import VoiceRecorder from "./components/VoiceRecorder/VoiceRecorder";
+import { sendImage, sendTextMessage } from "../../../../../../client/ApiClient";
 
 const InputHandler = ({
   sendAllowed,
-  textMessageUrl,
-  imageMessageUrl,
-  voiceMessageUrl,
+
   conversationId,
 }) => {
   const [message, setMessage] = useState("");
@@ -42,18 +41,7 @@ const InputHandler = ({
       profile_picture: userData.profile_picture,
     };
 
-    axios
-      .post(
-        textMessageUrl + conversationId,
-        {
-          message: readyMessage,
-        },
-        {
-          headers: {
-            authorization: "Bearer " + userData.access_token,
-          },
-        }
-      )
+    sendTextMessage(readyMessage, conversationId, userData.access_token)
       .then((res) => {
         const newMessage = { ...res.data, sender: senderInfo };
         dispatch(
@@ -113,17 +101,7 @@ const InputHandler = ({
       profile_picture: userData.profile_picture,
     };
 
-    axios
-      .post(
-        imageMessageUrl + conversationId,
-
-        data,
-        {
-          headers: {
-            authorization: "Bearer " + userData.access_token,
-          },
-        }
-      )
+    sendImage(data, conversationId, userData.access_token)
       .then((res) => {
         /* chatSocket.emit("send message", res.data); */
         const newMessage = { ...res.data, sender: senderInfo };
@@ -156,7 +134,7 @@ const InputHandler = ({
       content: URL.createObjectURL(file),
       conversation: conversationId,
       content_type: "image",
-      sent_date:  Date.now(),
+      sent_date: Date.now(),
       temporary: true,
     };
 
@@ -174,6 +152,7 @@ const InputHandler = ({
         <input
           type="file"
           ref={fileInput}
+          accept="image/png, image/gif, image/jpeg"
           style={{
             display: "none",
           }}
@@ -226,10 +205,7 @@ const InputHandler = ({
         >
           <MoodSvg />
         </Popover>
-        <VoiceRecorder
-          apiUrl={voiceMessageUrl}
-          conversationId={conversationId}
-        />
+        <VoiceRecorder conversationId={conversationId} />
         <div
           className={classes.Sender}
           onClick={() => {

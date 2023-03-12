@@ -13,8 +13,6 @@ function wait() {
   });
 }
 
-console.log("app classses", classes);
-
 const Home = lazy(() => {
   return import("./containers/Home/Home");
 });

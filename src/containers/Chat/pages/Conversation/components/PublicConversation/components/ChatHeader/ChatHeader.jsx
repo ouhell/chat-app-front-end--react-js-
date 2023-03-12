@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
-import { MenuSvg } from "../../../../../../shared/assets/svg/SvgProvider";
-import { ComponentActions } from "../../../../../../store/slices/ComponentSlice";
+import { MenuSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
+import { ComponentActions } from "../../../../../../../../store/slices/ComponentSlice";
 import c from "./ChatHeader.module.scss";
 
 const ChatHeader = () => {
