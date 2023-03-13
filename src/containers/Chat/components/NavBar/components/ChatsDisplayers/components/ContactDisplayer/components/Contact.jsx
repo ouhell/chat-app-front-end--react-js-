@@ -54,7 +54,10 @@ const Contact = ({ contactInfo, userData }) => {
   };
 
   useEffect(() => {
-    if (messages === emptyArray) fetchMessages();
+    if (!conversation) fetchMessages();
+    else {
+      dispatch(ChatActions.emit({ event: "chat", data: contactInfo._id }));
+    }
   }, []);
 
   return (

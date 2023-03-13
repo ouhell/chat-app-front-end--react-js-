@@ -19,6 +19,20 @@ const navigationItems = [
   { name: "about", to: "/about" },
 ];
 
+const variants = {
+  hide: {
+    scale: 0.8,
+    opacity: 0,
+  },
+  show: {
+    scale: 1,
+    opacity: 1,
+    transition: {
+      delay: 0.5,
+    },
+  },
+};
+
 const Home = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,7 +40,7 @@ const Home = () => {
   return (
     <div className={c.Home}>
       <motion.header className={c.Header}>
-        <motion.div drag className={c.LogoHolder}>
+        <motion.div className={c.LogoHolder}>
           <LogoSvg
             className={c.Logo}
             onClick={() => {
@@ -42,12 +56,24 @@ const Home = () => {
             ShutApp
           </m.div>
         </motion.div>
-        <m.div className={c.NavigationHolder}>
-          {navigationItems.map((item) => {
+        <motion.div className={c.NavigationHolder} variants={variants}>
+          {navigationItems.map((item, i) => {
             const isCurrentPath = location.pathname === item.to;
             return (
               <motion.div
                 key={item.name}
+                initial={{
+                  scale: 0.8,
+                  opacity: 0,
+                }}
+                animate={{
+                  scale: 1,
+                  opacity: 1,
+                  transition: {
+                    delay: 0.2 * i,
+                  },
+                }}
+                variants={variants}
                 whileHover={{
                   y: -2,
                   scale: 1.02,
@@ -71,7 +97,7 @@ const Home = () => {
               </motion.div>
             );
           })}
-        </m.div>
+        </motion.div>
       </motion.header>
       <div className={c.Page}>
         <AnimatePresence initial={false} mode="wait">

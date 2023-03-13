@@ -17,7 +17,7 @@ const Conversation = () => {
     (state) => state.chat.conversations[conversationId]
   );
   const messages = conversation ? conversation.messages : [];
-  console.log("userData : ", userData);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const dispatch = useDispatch();
