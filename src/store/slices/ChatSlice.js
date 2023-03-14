@@ -13,9 +13,10 @@ const initialState = {
 };
 
 const socket = io(HostName);
+socket.re;
 const ChatSlice = createSlice({
   name: "chatReducer",
-  initialState: initialState,
+  initialState: { ...initialState },
   reducers: {
     emit: (state, action) => {
       const event = action.payload.event;
@@ -26,7 +27,10 @@ const ChatSlice = createSlice({
     off: function (state, action) {
       const event = action.payload.event;
 
-      socket.off(event);
+      socket.removeAllListeners(event);
+    },
+    offAll: () => {
+      socket.removeAllListeners();
     },
     on: (state, { payload: { event, callback } }) => {
       socket.removeAllListeners(event);
@@ -119,7 +123,8 @@ const ChatSlice = createSlice({
       state.requests.data = newRequests;
     },
     resetState: (state, action) => {
-      state = initialState;
+      socket.removeAllListeners();
+      state = { ...initialState };
     },
   },
 });

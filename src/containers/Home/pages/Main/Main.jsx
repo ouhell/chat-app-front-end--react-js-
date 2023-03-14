@@ -29,6 +29,10 @@ const Main = () => {
         <motion.div className={c.Description}>
           <motion.div
             className={c.Title}
+            initial={{
+              y: "-50%",
+              opacity: 0.5,
+            }}
             animate={{
               y: "-50%",
               opacity: 0.5,
@@ -53,8 +57,12 @@ const Main = () => {
           </motion.div>
           <motion.div
             className={c.Content}
+            initial={{
+              x: "30%",
+              opacity: 0.5,
+            }}
             animate={{
-              x: "50%",
+              x: "30%",
               opacity: 0.5,
               transition: {
                 duration: 0,
@@ -65,7 +73,7 @@ const Main = () => {
               opacity: 1,
               transition: {
                 type: "spring",
-                stiffness: 100,
+                stiffness: 50,
                 damping: 20,
               },
             }}
@@ -83,6 +91,10 @@ const Main = () => {
             saepe!{" "}
           </motion.div>
           <motion.div
+            initial={{
+              x: "-100%",
+              opacity: 0.3,
+            }}
             animate={{
               x: "-100%",
               opacity: 0.3,
@@ -123,6 +135,11 @@ const Main = () => {
         </motion.div>
         <motion.div
           className={c.Visualisation}
+          initial={{
+            x: "10%",
+            y: "10%",
+            opacity: 0.5,
+          }}
           animate={{
             x: "10%",
             y: "10%",

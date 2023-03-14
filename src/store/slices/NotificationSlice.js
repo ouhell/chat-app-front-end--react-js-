@@ -6,7 +6,7 @@ const initialState = {};
 /* const [api, contextHolder] = notification.useNotification(); */
 const NotificationSlice = createSlice({
   name: "notificationReducer",
-  initialState: initialState,
+  initialState: { ...initialState },
   reducers: {
     notify: function (state, action) {
       notification[action.payload.type]({
@@ -14,7 +14,7 @@ const NotificationSlice = createSlice({
       });
     },
     resetState: (state, action) => {
-      state = initialState;
+      state = { ...initialState };
     },
   },
 });

@@ -6,7 +6,7 @@ const initialState = {
 
 const ComponentSlice = createSlice({
   name: "componentReducer",
-  initialState: initialState,
+  initialState: { ...initialState },
   reducers: {
     openNav: (state, action) => {
       state.isNavOpen = true;
@@ -15,7 +15,7 @@ const ComponentSlice = createSlice({
       state.isNavOpen = false;
     },
     resetState: (state, action) => {
-      state = initialState;
+      state = { ...initialState };
     },
   },
 });
