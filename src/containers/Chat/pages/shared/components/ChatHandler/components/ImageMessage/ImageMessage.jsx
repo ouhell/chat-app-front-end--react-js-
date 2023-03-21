@@ -3,6 +3,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import c from "./ImageMessage.module.scss";
 import { MoreDotsSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import { motion } from "framer-motion";
+import { forwardRef } from "react";
 const items = [
   {
     label: "delete message",
@@ -11,7 +12,7 @@ const items = [
   },
 ];
 
-const ImageMessage = ({ message, userId, deleteMessage }) => {
+const ImageMessage = ({ message, userId, deleteMessage }, ref) => {
   const menuOnClick = ({ key }) => {
     switch (key) {
       case "delete":
@@ -21,6 +22,7 @@ const ImageMessage = ({ message, userId, deleteMessage }) => {
   const isSender = message.sender._id === userId;
   return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{
@@ -81,4 +83,4 @@ const ImageMessage = ({ message, userId, deleteMessage }) => {
   );
 };
 
-export default ImageMessage;
+export default forwardRef(ImageMessage);

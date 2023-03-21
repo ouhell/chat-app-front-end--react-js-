@@ -11,9 +11,9 @@ const variants = {
     x: 0,
     rotate: 0,
     backgroundColor: "blue",
-    /* transition: {
-      delay: 0.2,
-    }, */
+    transition: {
+      delay: 0.5,
+    },
   },
   enlarge: {
     scale: 1.2,
@@ -32,9 +32,10 @@ const ViewBox = () => {
       style={{
         width: "10rem",
         height: "10rem",
+        backgroundColor: "red",
       }}
       variants={variants}
-      animate="hide"
+      initial="hide"
       whileInView="show"
       whileHover={"enlarge"}
       /* viewport={{

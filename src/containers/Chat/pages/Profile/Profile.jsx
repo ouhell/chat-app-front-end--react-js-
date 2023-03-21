@@ -154,7 +154,6 @@ const Profile = () => {
               validation.errorMessage = "connection error";
             })
             .finally(() => {
-              console.log("email exists check");
               if (emailCounter.current !== counter) return;
               setValidation("email", validation);
             });

@@ -2,6 +2,7 @@ import { Avatar, Dropdown } from "antd";
 import { MoreDotsSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import c from "./TextMessage.module.scss";
 import { motion } from "framer-motion";
+import { forwardRef } from "react";
 
 const formatDate = (date) => {
   const hours = (date.getHours() + "").padStart(2, "0");
@@ -18,7 +19,7 @@ const items = [
   },
 ];
 
-const TextMessage = ({ message, userId, deleteMessage }) => {
+const TextMessage = ({ message, userId, deleteMessage }, ref) => {
   const sentDate = new Date(message.sent_date);
 
   const menuOnClick = ({ key }) => {
@@ -32,6 +33,7 @@ const TextMessage = ({ message, userId, deleteMessage }) => {
 
   return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{
@@ -80,4 +82,4 @@ const TextMessage = ({ message, userId, deleteMessage }) => {
   );
 };
 
-export default TextMessage;
+export default forwardRef(TextMessage);

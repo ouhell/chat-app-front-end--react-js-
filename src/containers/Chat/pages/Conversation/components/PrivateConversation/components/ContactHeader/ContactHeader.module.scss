@@ -1,3 +1,5 @@
+@import "../../../../../../../../helpers//scss//variables.module.scss";
+
 .ContactHeader {
   display: flex;
   gap: 1rem;
@@ -18,7 +20,7 @@
     width: 2rem;
     color: var(--primary-soft);
     cursor: pointer;
-    @media (min-width: 701px) {
+    @media (min-width: $navigationHide) {
       display: none;
     }
   }

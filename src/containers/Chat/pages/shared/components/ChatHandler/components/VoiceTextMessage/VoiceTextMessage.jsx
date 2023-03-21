@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import c from "./VoiceTextMessage.module.scss";
 
 import { LoadingOutlined } from "@ant-design/icons";
@@ -32,7 +32,7 @@ const items = [
   },
 ];
 
-const VoiceTextMessage = ({ message, userId, deleteMessage }) => {
+const VoiceTextMessage = ({ message, userId, deleteMessage }, ref) => {
   /* const audioContext = useRef(new AudioContext());
   const track = useRef(); */
   const audio = useRef();
@@ -68,6 +68,7 @@ const VoiceTextMessage = ({ message, userId, deleteMessage }) => {
   const isSender = userId === message.sender._id;
   return (
     <motion.div
+      ref={ref}
       layout
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{
@@ -207,4 +208,4 @@ const VoiceTextMessage = ({ message, userId, deleteMessage }) => {
   );
 };
 
-export default VoiceTextMessage;
+export default forwardRef(VoiceTextMessage);

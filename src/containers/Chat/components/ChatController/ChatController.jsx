@@ -55,7 +55,6 @@ const ChatController = () => {
       ChatActions.on({
         event: "receive message",
         callback: (message) => {
-          console.log("received message :", message);
           dispatch(
             ChatActions.addMessage({
               conversation_id: message.conversation,
@@ -70,7 +69,6 @@ const ChatController = () => {
       ChatActions.on({
         event: "remove message",
         callback: (message) => {
-          console.log("received message remove call :", message);
           const messageId = message.trueId ? message.trueId : message._id;
           dispatch(
             ChatActions.deleteMessage({

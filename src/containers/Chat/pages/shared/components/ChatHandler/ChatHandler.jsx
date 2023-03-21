@@ -8,7 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import { AnimatePresence } from "framer-motion";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+import Scroller from "./components/Scroller/Scroller";
 
 const renderMessages = (
   data,
@@ -90,13 +91,54 @@ const ChatHandler = ({
   fetchMessages,
 }) => {
   const dispatch = useDispatch();
+  const [showScroller, setShowScroller] = useState(false);
   const userData = useSelector((state) => state.auth.userData);
   const chatContainer = useRef();
+  const isFirstRender = useRef(true);
+  const prevData = useRef(data);
+  const scrollerTimeout = useRef();
+
   useEffect(() => {
-    if (chatContainer.current) {
-      chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
+    if (!chatContainer.current || prevData.current.length > data.length) return;
+    const scrollDistance = chatContainer.current.scrollTop;
+    const scrollHeight = chatContainer.current.scrollHeight;
+    const clientHeight = chatContainer.current.clientHeight;
+    const unscrolledHeigth = scrollHeight - scrollDistance - clientHeight; // heigth hidden in the bottom
+
+    if (unscrolledHeigth > 250) {
+      const lastMessage = data[data.length - 1];
+
+      if (
+        !isFirstRender.current && // so it scroll when switching conversations
+        prevData.current.length !== data.length && // so it scroll when data isLoaded
+        lastMessage && // if message is undefined
+        lastMessage.sender._id !== userData.userId // if last sender is not user
+      )
+        return toggleScroller();
     }
+
+    scrollChat();
   }, [data]);
+
+  useEffect(() => {
+    prevData.current = data;
+    isFirstRender.current = false;
+  });
+
+  function toggleScroller() {
+    clearTimeout(scrollerTimeout.current);
+    if (!showScroller) {
+      setShowScroller(true);
+    }
+    scrollerTimeout.current = setTimeout(() => {
+      setShowScroller(false);
+    }, 3500);
+  }
+
+  function scrollChat() {
+    if (chatContainer.current)
+      chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
+  }
 
   function deleteMessage(message) {
     let messageId = message._id;
@@ -128,8 +170,12 @@ const ChatHandler = ({
 
   return (
     <div className={classes.ChatHandler} ref={chatContainer}>
-      <AnimatePresence initial={false} mode="popLayout">
-        <div className={classes.MessageContainer}>
+      <div className={classes.MessageContainer}>
+        <AnimatePresence
+          presenceAffectsLayout={true}
+          initial={false}
+          mode="popLayout"
+        >
           {renderMessages(
             data,
             isLoading,
@@ -137,8 +183,17 @@ const ChatHandler = ({
             fetchMessages,
             deleteMessage
           )}
-        </div>
-      </AnimatePresence>
+        </AnimatePresence>
+      </div>
+
+      <Scroller
+        onScroll={() => {
+          scrollChat();
+          clearTimeout(scrollerTimeout.current);
+          setShowScroller(false);
+        }}
+        show={showScroller}
+      />
     </div>
   );
 };

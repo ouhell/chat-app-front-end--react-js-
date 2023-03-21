@@ -147,8 +147,6 @@ const VoiceRecorder = ({ conversationId }) => {
     rms = rms.toFixed(2);
     if (rms > 0.5) rms = 0.5;
 
-    /*  console.log("voicepitch", rms); */
-
     let style = `0 0 1rem ${rms}rem red`;
 
     if (rms < 0.04) style = initialRecordIconStyle;
@@ -171,7 +169,6 @@ const VoiceRecorder = ({ conversationId }) => {
     testAudio.currentTime = 1e101;
     testAudio.volume = 0;
     testAudio.onended = () => {
-      console.log("duration", testAudio.duration);
       const senderInfo = {
         _id: userData.userId,
         username: userData.username,

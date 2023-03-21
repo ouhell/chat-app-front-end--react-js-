@@ -36,7 +36,7 @@ const variants = {
 const Home = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  console.log("main path : ", location.pathname);
+
   return (
     <div className={c.Home}>
       <motion.header className={c.Header}>

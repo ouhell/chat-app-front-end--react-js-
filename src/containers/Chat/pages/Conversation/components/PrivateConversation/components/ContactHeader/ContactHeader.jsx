@@ -98,7 +98,6 @@ const ContactHeader = ({ isBlocked }) => {
   };
 
   const blockUser = () => {
-    console.log("blocked user", contactId);
     axios
       .put(
         "/api/userapi/blockUser",
@@ -126,7 +125,6 @@ const ContactHeader = ({ isBlocked }) => {
   };
 
   const unblockUser = () => {
-    console.log("blocked user", contactId);
     axios
       .put(
         "/api/userapi/unblockUser",

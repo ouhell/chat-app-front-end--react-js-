@@ -38,7 +38,7 @@ export default function Chat() {
             }
           }}
         >
-          <AnimatePresence initial={false} mode={"wait"}>
+          <AnimatePresence mode={"wait"}>
             <Routes location={location} key={pathname}>
               <Route
                 path="/chats/:conversationId/*"

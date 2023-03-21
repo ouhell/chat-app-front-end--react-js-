@@ -10,6 +10,36 @@ import Contact from "./components/Contact";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 
+const contactContainerAnimation = {
+  hidden: {
+    opacity: 0,
+  },
+  shown: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+  exit: {
+    opacity: 0,
+  },
+};
+
+const contactAnimations = {
+  hidden: {
+    opacity: 0,
+    y: "20%",
+  },
+  shown: {
+    opacity: 1,
+    y: 0,
+  },
+  exit: {
+    opacity: 0,
+    y: "20%",
+  },
+};
+
 const ContactDisplayer = () => {
   const [seachtext, setSearchtext] = useState("");
   const contactData = useSelector((state) => state.chat.contacts);
@@ -89,19 +119,32 @@ const ContactDisplayer = () => {
         <Empty description="No contact" />
       ) : null}
 
-      <div className={classes.ContactList} ref={parent}>
-        {filterContact().map((contact, i) => {
-          return (
-            <div key={contact._id}>
-              <Contact
-                contactInfo={contact}
-                userData={userData}
+      <motion.div
+        className={classes.ContactList}
+        variants={contactContainerAnimation}
+        initial="hidden"
+        animate="shown"
+        exit="exit"
+        /*   ref={parent} */
+      >
+        <AnimatePresence mode="popLayout">
+          {filterContact().map((contact, i) => {
+            return (
+              <motion.div
+                variants={contactAnimations}
+                exit={{
+                  opacity: 0,
+                  y: "-20%",
+                }}
+                layout
                 key={contact._id}
-              />
-            </div>
-          );
-        })}
-      </div>
+              >
+                <Contact contactInfo={contact} userData={userData} />
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 };

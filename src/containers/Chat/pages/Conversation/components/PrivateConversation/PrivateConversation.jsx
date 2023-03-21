@@ -9,18 +9,6 @@ import { motion } from "framer-motion";
 import { pageAnimation } from "../../../shared/animation/animationHandler";
 import InputHandler from "../../../shared/components/InputHandler/InputHandler";
 function PrivateConversation({ isLoading, isError, data, fetchMessages }) {
-  /* console.log("conversation :", conversation);
-  const isContactBlocked = conversation
-    ? conversation.conversation.blocked.find((user) => user === contactId)
-      ? true
-      : false
-    : false;
-  const isUserBlocked = conversation
-    ? conversation.conversation.blocked.find((user) => user === userData.userid)
-      ? true
-      : false
-    : false; */
-
   return (
     <motion.div
       /* variants={conversationAnimationVariants}

@@ -136,13 +136,13 @@ const Main = () => {
         <motion.div
           className={c.Visualisation}
           initial={{
-            x: "10%",
-            y: "10%",
+            x: "7%",
+            y: "7%",
             opacity: 0.5,
           }}
           animate={{
-            x: "10%",
-            y: "10%",
+            x: "7%",
+            y: "7%",
             opacity: 0.5,
             transition: {
               duration: 0,

@@ -80,6 +80,10 @@ function NavBar() {
   return (
     <motion.div
       className={classes.NavBar}
+      initial={{
+        x: "-100%",
+        opacity: 0,
+      }}
       animate={
         isMobileSize && isOpen
           ? {
@@ -100,20 +104,21 @@ function NavBar() {
               x: "-100%",
               opacity: 0,
               transition: {
+                opacity: { duration: 0.1 },
                 type: "spring",
-                stiffness: "900",
-                damping: 55,
+                stiffness: "300",
+                damping: 30,
               },
             }
           : {
               position: "relative",
               width: "25rem",
-              marginLeft: 0,
+              x: 0,
               opacity: 1,
               transition: {
                 type: "spring",
-                stiffness: "900",
-                damping: 10,
+                stiffness: "500",
+                damping: 30,
               },
             }
       }

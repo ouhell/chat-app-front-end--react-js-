@@ -1,6 +1,7 @@
 .ChatHandler {
   height: 100%;
   overflow-y: auto;
+  position: relative;
   .MessageContainer {
     min-height: 100%;
     padding: 1rem;

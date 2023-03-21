@@ -22,7 +22,7 @@
       }
 
       .Content {
-        color: var(--primary-blank-lighter);
+        color: #e9eef0;
         word-spacing: 3px;
       }
 
@@ -30,12 +30,13 @@
         display: flex;
         justify-content: space-around;
         gap: 2rem;
+        margin: 1rem 0;
         .PrimaryButton {
           border: none;
           padding: 0.7rem 2rem;
           background-color: transparent;
           color: white;
-          transition: color 0.2s ease, outline 0.2s ease;
+
           border-radius: 0.15rem;
           cursor: pointer;
           border-radius: 0.15rem;
@@ -54,7 +55,7 @@
           padding: 0.7rem 2rem;
           background-color: transparent;
           color: white;
-          transition: color 0.2s ease, outline 0.2s ease;
+          transition: color 0.2s ease;
           outline: 1px solid var(--primary-soft);
           border-radius: 0.15rem;
           cursor: pointer;

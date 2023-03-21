@@ -21,7 +21,7 @@ const ChatSlice = createSlice({
     emit: (state, action) => {
       const event = action.payload.event;
       const data = action.payload.data;
-      console.log("emitting :", data, "to :", event);
+
       socket.emit(event, data);
     },
     off: function (state, action) {
