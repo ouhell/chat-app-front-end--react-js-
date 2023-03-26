@@ -1,8 +1,15 @@
 import { Avatar, Dropdown, Skeleton } from "antd";
-import axios from "axios";
+
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useSearchParams } from "react-router-dom";
+import {
+  blackListUser,
+  blockContact,
+  deleteContact,
+  getContactProfileData,
+  unblockContact,
+} from "../../../../../../../../client/ApiClient";
 import {
   MenuSvg,
   MoreDotsSvg,
@@ -46,12 +53,7 @@ const ContactHeader = ({ isBlocked }) => {
   const fetchContactData = () => {
     setIsLoading(true);
     setisError(false);
-    axios
-      .get("/api/userapi/contact/" + conversationId, {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
+    getContactProfileData(userData.access_token, conversationId)
       .then((res) => {
         dispatch(
           ChatActions.addContact({
@@ -70,12 +72,7 @@ const ContactHeader = ({ isBlocked }) => {
 
   const removeContact = () => {
     console.log("removing :", contactId);
-    axios
-      .delete("/api/userapi/user-contact/" + contactId, {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
+    deleteContact(userData.access_token, contactId)
       .then((res) => {
         dispatch(ChatActions.removeContact({ contactId: conversationId }));
         dispatch(ChatActions.removeConversation({ conversationId }));
@@ -84,12 +81,7 @@ const ContactHeader = ({ isBlocked }) => {
   };
   const blackListContact = () => {
     console.log("removing :", contactId);
-    axios
-      .put("/api/userapi/blackList/" + contactId, null, {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
+    blackListUser(userData.access_token, contactId)
       .then((res) => {
         dispatch(ChatActions.removeContact({ contactId: conversationId }));
         dispatch(ChatActions.removeConversation({ conversationId }));
@@ -98,19 +90,7 @@ const ContactHeader = ({ isBlocked }) => {
   };
 
   const blockUser = () => {
-    axios
-      .put(
-        "/api/userapi/blockUser",
-        {
-          conversationId,
-          blockedUserId: contactId,
-        },
-        {
-          headers: {
-            authorization: "Bearer " + userData.access_token,
-          },
-        }
-      )
+    blockContact(userData.access_token, contactId)
       .then(() => {
         dispatch(
           NotifActions.notify({
@@ -125,19 +105,7 @@ const ContactHeader = ({ isBlocked }) => {
   };
 
   const unblockUser = () => {
-    axios
-      .put(
-        "/api/userapi/unblockUser",
-        {
-          conversationId,
-          blockedUserId: contactId,
-        },
-        {
-          headers: {
-            authorization: "Bearer " + userData.access_token,
-          },
-        }
-      )
+    unblockContact(userData.access_token, contactId)
       .then(() => {
         dispatch(
           NotifActions.notify({

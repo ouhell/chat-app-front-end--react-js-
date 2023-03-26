@@ -1,7 +1,7 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Avatar, Button, Collapse, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import axios from "axios";
+
 import { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +9,7 @@ import BasicSpinner from "../../../../../../shared/components/BasicSpinner/Basic
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import ContactRequest from "./components/ContactRequest/ContactRequest";
 import c from "./NotificationDisplayer.module.scss";
+import { getContactRequests } from "../../../../../../client/ApiClient";
 
 const NotificationDisplayer = () => {
   let { loaded, data: requests } = useSelector((state) => state.chat.requests);
@@ -24,12 +25,7 @@ const NotificationDisplayer = () => {
     if (isLoading) return;
     setIsLoading(true);
 
-    axios
-      .get("/api/userapi/request", {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
+    getContactRequests(userData.access_token)
       .then((res) => {
         dispatch(ChatActions.setRequests(res.data));
         dispatch(

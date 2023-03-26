@@ -5,11 +5,12 @@ import BasicSpinner from "../../../../../../shared/components/BasicSpinner/Basic
 import ImageMessage from "./components/ImageMessage/ImageMessage";
 import VoiceTextMessage from "./components/VoiceTextMessage/VoiceTextMessage";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
+
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import { AnimatePresence } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import Scroller from "./components/Scroller/Scroller";
+import { deleteMessageApi } from "../../../../../../client/ApiClient";
 
 const renderMessages = (
   data,
@@ -143,29 +144,22 @@ const ChatHandler = ({
   function deleteMessage(message) {
     let messageId = message._id;
     if (message.trueId) messageId = message.trueId;
+    deleteMessageApi(userData.access_token, messageId).then(() => {
+      console.log("deleted :", messageId);
+      dispatch(
+        ChatActions.emit({
+          event: "delete message",
+          data: message,
+        })
+      );
 
-    axios
-      .delete("api/messagerie/messages/" + messageId, {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
-      .then(() => {
-        console.log("deleted :", messageId);
-        dispatch(
-          ChatActions.emit({
-            event: "delete message",
-            data: message,
-          })
-        );
-
-        dispatch(
-          ChatActions.deleteMessage({
-            conversation_id: message.conversation,
-            id: message._id,
-          })
-        );
-      });
+      dispatch(
+        ChatActions.deleteMessage({
+          conversation_id: message.conversation,
+          id: message._id,
+        })
+      );
+    });
   }
 
   return (

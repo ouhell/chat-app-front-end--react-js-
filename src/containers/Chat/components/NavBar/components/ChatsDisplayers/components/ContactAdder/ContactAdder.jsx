@@ -1,9 +1,14 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Input, Modal, Button, Avatar } from "antd";
-import axios from "axios";
+
 import { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  addContactRequest,
+  deleteContactRequest,
+  getContactCandidates,
+} from "../../../../../../../../client/ApiClient";
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import Candidate from "./components/Candidate/Candidate";
 import c from "./ContactAdder.module.scss";
@@ -27,12 +32,7 @@ const ContactAdder = ({ open, onCancel }) => {
     if (isLoading) return;
     setIsLoading(true);
 
-    axios
-      .get("/api/userapi/request/candidates?search=" + searchtext.trim(), {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
+    getContactCandidates(userData.access_token, searchtext)
       .then((res) => {
         setData(res.data);
       })
@@ -53,20 +53,7 @@ const ContactAdder = ({ open, onCancel }) => {
       return newState;
     });
 
-    axios
-      .post(
-        "/api/userapi/request",
-        {
-          destinator: id,
-        },
-        {
-          headers: {
-            authorization:
-              "Bearer " +
-              JSON.parse(localStorage.getItem("userData")).access_token,
-          },
-        }
-      )
+    addContactRequest(userData.access_token, id)
       .then((res) => {
         setCandidateState((prevState) => {
           const newState = { ...prevState };
@@ -86,6 +73,7 @@ const ContactAdder = ({ open, onCancel }) => {
         );
       })
       .catch((err) => {
+        console.log("add request error :", err);
         setCandidateState((prevState) => {
           const newState = { ...prevState };
           newState[id] = {
@@ -124,12 +112,7 @@ const ContactAdder = ({ open, onCancel }) => {
       return newState;
     });
 
-    axios
-      .delete("api/userapi/request/" + candidateState[id].request, {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
+    deleteContactRequest(userData.access_token, candidateState[id].request)
       .then((res) => {
         dispatch(ChatActions.removeRequest(candidateState[id].request));
 

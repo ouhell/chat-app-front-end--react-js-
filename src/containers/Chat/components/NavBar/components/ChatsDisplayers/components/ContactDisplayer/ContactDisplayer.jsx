@@ -3,12 +3,13 @@ import { SearchSvg } from "../../../../../../../../shared/assets/svg/SvgProvider
 import { useCallback, useEffect, useState } from "react";
 import { Button, Empty, Result } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
-import axios from "axios";
+
 import BasicSpinner from "../../../../../../../../shared/components/BasicSpinner/BasicSpinner";
 import { useDispatch, useSelector } from "react-redux";
 import Contact from "./components/Contact";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
+import { getContacts } from "../../../../../../../../client/ApiClient";
 
 const contactContainerAnimation = {
   hidden: {
@@ -63,12 +64,7 @@ const ContactDisplayer = () => {
   const fetchContacts = useCallback(() => {
     setIsLoading(true);
     setIsError(false);
-    axios
-      .get("api/userapi/contact", {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
+    getContacts(userData.access_token)
       .then((res) => {
         dispatch(ChatActions.setContacts(res.data));
       })

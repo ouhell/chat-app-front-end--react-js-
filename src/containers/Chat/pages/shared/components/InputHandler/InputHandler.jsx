@@ -6,7 +6,7 @@ import {
   AttatchmentSvg,
 } from "../../../../../../shared/assets/svg/SvgProvider";
 import { useState } from "react";
-import axios from "axios";
+
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useRef } from "react";

@@ -1,8 +1,9 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Result, Button } from "antd";
-import axios from "axios";
+
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { getPublicConversations } from "../../../../../../../../client/ApiClient";
 import { SearchSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import BasicSpinner from "../../../../../../../../shared/components/BasicSpinner/BasicSpinner";
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
@@ -31,12 +32,7 @@ const PublicConversationDisplayer = () => {
   function fetchPublicConversation() {
     setIsLoading(true);
     setIsError(false);
-    axios
-      .get("api/messagerie/public/conversations", {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
+    getPublicConversations(userData.access_token)
       .then((res) => {
         dispatch(ChatActions.setPublicConvos(res.data));
       })

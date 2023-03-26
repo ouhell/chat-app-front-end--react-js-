@@ -2,6 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 import { notification } from "antd";
 
 const initialState = {};
+const generateState = () => {
+  const initialState = {};
+  return initialState;
+};
 
 /* const [api, contextHolder] = notification.useNotification(); */
 const NotificationSlice = createSlice({
@@ -14,7 +18,7 @@ const NotificationSlice = createSlice({
       });
     },
     resetState: (state, action) => {
-      state = { ...initialState };
+      return generateState();
     },
   },
 });

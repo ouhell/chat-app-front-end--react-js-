@@ -1,13 +1,14 @@
 import classes from "./Signin.module.scss";
 import { Input, Button } from "antd";
 import { useState } from "react";
-import axios from "axios";
+
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AuthActions } from "../../../../store/slices/authenticationSlice";
 import { NotifActions } from "../../../../store/slices/NotificationSlice";
 import { motion } from "framer-motion";
+import { apiLogin } from "../../../../client/ApiClient";
 
 const variants = {
   visible: {
@@ -41,11 +42,7 @@ const Signin = () => {
   const signIn = () => {
     if (isSigningIn) return;
     setIsSigningIn(true);
-    axios
-      .post("api/auth/login", {
-        identifier: signinData.identifier.value.trim(),
-        password: signinData.password.value.trim(),
-      })
+    apiLogin(signinData)
       .then((res) => {
         dispatch(AuthActions.login(res.data));
       })
