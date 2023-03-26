@@ -1,5 +1,4 @@
 import { Avatar, Button, Input, Skeleton, Spin, notification } from "antd";
-import axios from "axios";
 
 import {
   UnlockOutlined,
@@ -16,6 +15,13 @@ import { AuthActions } from "../../../../store/slices/authenticationSlice";
 import { AnimatePresence, motion } from "framer-motion";
 import { pageAnimation } from "../shared/animation/animationHandler";
 import { NotifActions } from "../../../../store/slices/NotificationSlice";
+import {
+  apiCheckEmailExists,
+  apiCheckUsernameExists,
+  getProfileData,
+  updateProfileData,
+  updateProfilePicture,
+} from "../../../../client/ApiClient";
 
 const Profile = () => {
   const usernameCounter = useRef(0);
@@ -59,9 +65,7 @@ const Profile = () => {
           setloading("username", true);
           usernameCounter.current++;
           const counter = usernameCounter.current;
-
-          axios
-            .get("/api/auth/usernameExist/" + testingValue)
+          apiCheckUsernameExists(testingValue)
             .then((res) => {
               if (res.data && testingValue !== userData.username) {
                 validation.isValid = false;
@@ -141,8 +145,7 @@ const Profile = () => {
           emailCounter.current++;
           const counter = emailCounter.current;
 
-          axios
-            .get("/api/auth/emailExist/" + testingValue)
+          apiCheckEmailExists(testingValue)
             .then((res) => {
               if (res.data) {
                 validation.isValid = false;
@@ -256,12 +259,7 @@ const Profile = () => {
       if (isLoading) return;
       setIsLoading(true);
       setIsError(false);
-      axios
-        .get("api/userapi/profile", {
-          headers: {
-            authorization: "Bearer " + userData.access_token,
-          },
-        })
+      getProfileData(userData.access_token)
         .then((res) => {
           setProfilePicture(res.data.profile_picture);
 
@@ -325,12 +323,7 @@ const Profile = () => {
     for (let feild in updateFormData.feilds) {
       updateData[feild] = updateFormData.feilds[feild].value;
     }
-    axios
-      .put("api/userapi/profile", updateData, {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
+    updateProfileData(userData.access_token, updateData)
       .then((res) => {
         currentProfile.current = updateData;
 
@@ -354,19 +347,15 @@ const Profile = () => {
     function (image) {
       if (isUpdatingPic || !image) return;
       setIsUpdatingPic(true);
-      const data = new FormData();
-      data.append("profile_pic", image);
-      axios
-        .put("api/userapi/profile/picture", data, {
-          headers: {
-            authorization: "Bearer " + userData.access_token,
-          },
-        })
+
+      updateProfilePicture(userData.access_token, image)
         .then((res) => {
           setProfilePicture(res.data.newUrl);
           dispatch(AuthActions.setProfilePicture(res.data.newUrl));
         })
-        .catch((err) => {})
+        .catch((err) => {
+          console.log(err);
+        })
         .finally(() => {
           setIsUpdatingPic(false);
         });

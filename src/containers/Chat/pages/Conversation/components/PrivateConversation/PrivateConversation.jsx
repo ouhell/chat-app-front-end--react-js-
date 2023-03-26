@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useCallback } from "react";
 import { useEffect } from "react";
 import { conversationAnimationVariants } from "../../shared/conversationAnimation";

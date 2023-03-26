@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { ChatActions } from "../../../../store/slices/ChatSlice";
-import axios from "axios";
+import { getContactRequests } from "../../../../client/ApiClient";
 const ChatController = () => {
   const { pathname } = useLocation();
 
@@ -11,12 +11,7 @@ const ChatController = () => {
   const dispatch = useDispatch();
 
   const fetchNotifications = () => {
-    axios
-      .get("/api/userapi/request", {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
+    getContactRequests(userData.access_token)
       .then((res) => {
         dispatch(ChatActions.setRequests(res.data));
         dispatch(

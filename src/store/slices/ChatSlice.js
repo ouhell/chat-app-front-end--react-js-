@@ -11,6 +11,18 @@ const initialState = {
     data: [],
   },
 };
+const generateState = () => {
+  const initialState = {
+    conversations: {},
+    contacts: {},
+    publicConvos: [],
+    requests: {
+      loaded: false,
+      data: [],
+    },
+  };
+  return initialState;
+};
 
 const socket = io(HostName);
 socket.re;
@@ -124,7 +136,7 @@ const ChatSlice = createSlice({
     },
     resetState: (state, action) => {
       socket.removeAllListeners();
-      state = { ...initialState };
+      return generateState();
     },
   },
 });

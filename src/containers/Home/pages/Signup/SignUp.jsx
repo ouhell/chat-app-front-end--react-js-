@@ -1,7 +1,7 @@
 import classes from "./Signup.module.scss";
 import { Input, Button } from "antd";
 import { Fragment, useState } from "react";
-import axios from "axios";
+
 import {
   UnlockOutlined,
   LockOutlined,
@@ -12,6 +12,11 @@ import {
 import { NavLink, useNavigate } from "react-router-dom";
 import { useRef } from "react";
 import { motion } from "framer-motion";
+import {
+  apiCheckEmailExists,
+  apiCheckUsernameExists,
+  apiSignup,
+} from "../../../../client/ApiClient";
 
 const variants = {
   visible: {
@@ -66,8 +71,7 @@ const SignUp = () => {
           usernameCounter.current++;
           const counter = usernameCounter.current;
 
-          axios
-            .get("/api/auth/usernameExist/" + testingValue)
+          apiCheckUsernameExists(testingValue)
             .then((res) => {
               if (res.data) {
                 validation.isValid = false;
@@ -142,8 +146,7 @@ const SignUp = () => {
           emailCounter.current++;
           const counter = emailCounter.current;
 
-          axios
-            .get("/api/auth/emailExist/" + testingValue)
+          apiCheckEmailExists(testingValue)
             .then((res) => {
               if (res.data) {
                 validation.isValid = false;
@@ -276,8 +279,7 @@ const SignUp = () => {
       userData[feild] = signupFormData.feilds[feild].value.trim();
     }
 
-    axios
-      .post("api/auth/signup", userData)
+    apiSignup(userData)
       .then((res) => {
         navigate("/signin");
       })

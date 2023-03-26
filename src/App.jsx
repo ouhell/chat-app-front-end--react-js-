@@ -5,7 +5,8 @@ import { Route, Routes } from "react-router-dom";
 
 import classes from "./App.module.scss";
 //import Chat from "./containers/Chat/Chat";
-//import Home from "./containers/Home/Home";
+import Home from "./containers/Home/Home";
+import Loading from "./pages/Loading/Loading";
 
 function wait() {
   return new Promise((resolve, reject) => {
@@ -13,9 +14,9 @@ function wait() {
   });
 }
 
-const Home = lazy(() => {
+/* const Home = lazy(() => {
   return import("./containers/Home/Home");
-});
+}); */
 const Chat = lazy(() => {
   return import("./containers/Chat/Chat");
 });
@@ -27,8 +28,7 @@ function App() {
 
   return (
     <div className={classes.App}>
-      {/* {contextHolder} */}
-      <Suspense fallback={<h1>Loading...</h1>}>
+      <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/*" element={MainElement} />
         </Routes>

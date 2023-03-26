@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ComponentActions } from "../../../../../../../../../store/slices/ComponentSlice";
 import { useEffect } from "react";
 import { useCallback } from "react";
-import axios from "axios";
+
 import { getConversation } from "../../../../../../../../../client/ApiClient";
 
 const emptyArray = [];

@@ -1,9 +1,13 @@
 import c from "./ContactRequest.module.scss";
 import { Avatar, Button } from "antd";
 import { useState } from "react";
-import axios from "axios";
+
 import { useDispatch } from "react-redux";
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
+import {
+  addContact,
+  deleteContactRequest,
+} from "../../../../../../../../client/ApiClient";
 const ContactRequest = ({ requestData, userData, removerequest }) => {
   const [isCancelLoading, setIsCancelLoading] = useState(false);
   const [isAcceptLoading, setIsAcceptLoading] = useState(false);
@@ -15,12 +19,7 @@ const ContactRequest = ({ requestData, userData, removerequest }) => {
 
     setIsCancelLoading(true);
 
-    axios
-      .delete("api/userapi/request/" + requestData._id, {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
+    deleteContactRequest(userData.access_token, requestData._id)
       .then((res) => {
         dispatch(ChatActions.removeRequest(requestData._id));
 
@@ -52,12 +51,7 @@ const ContactRequest = ({ requestData, userData, removerequest }) => {
 
     setIsAcceptLoading(true);
 
-    axios
-      .post("api/userapi/user-contact/" + requestData._id, null, {
-        headers: {
-          authorization: "Bearer " + userData.access_token,
-        },
-      })
+    addContact(userData.access_token, requestData._id)
       .then((res) => {
         dispatch(ChatActions.removeRequest(requestData._id));
         dispatch(

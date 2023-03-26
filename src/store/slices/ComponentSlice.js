@@ -3,10 +3,16 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isNavOpen: false,
 };
+const generateState = () => {
+  const initialState = {
+    isNavOpen: false,
+  };
+  return initialState;
+};
 
 const ComponentSlice = createSlice({
   name: "componentReducer",
-  initialState: { ...initialState },
+  initialState: generateState(),
   reducers: {
     openNav: (state, action) => {
       state.isNavOpen = true;
@@ -15,7 +21,7 @@ const ComponentSlice = createSlice({
       state.isNavOpen = false;
     },
     resetState: (state, action) => {
-      state = { ...initialState };
+      return generateState();
     },
   },
 });
