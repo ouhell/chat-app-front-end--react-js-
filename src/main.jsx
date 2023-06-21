@@ -10,14 +10,17 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "@fontsource/roboto/900.css";
 import "./index.css";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Store from "./store/ReduxStore";
 
 //redux configuration
 
 // axios configuration
 axios.defaults.baseURL = HostName;
-
+axios.interceptors.response.use(response => response,error  => {
+  console.log(error)
+  return error;
+})
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Router>
     <Provider store={Store}>
