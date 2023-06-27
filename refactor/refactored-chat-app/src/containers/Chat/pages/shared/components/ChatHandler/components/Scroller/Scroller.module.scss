@@ -1,0 +1,24 @@
+.Scroller {
+  margin-top: -2rem;
+  position: sticky;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+
+  border-radius: 100%;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--primary-soft);
+  .IconHolder {
+    display: grid;
+    place-items: center;
+    svg {
+      width: 1.2rem;
+      transform: rotate(-90deg);
+      color: white;
+    }
+  }
+}

@@ -1,0 +1,114 @@
+.PublicConversationDisplayer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .SearchBarContainer {
+    padding: 0.8rem var(--nav-chat-side-pad);
+    .SearchBarHolder {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      color: var(--primary-blank);
+      border-radius: 2rem;
+      height: 2rem;
+      background-color: var(--primary-light);
+      box-shadow: 0 0.1rem 0.5rem #cccc;
+      padding: 0 0.5rem;
+      gap: 0.2rem;
+
+      transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      svg {
+        width: 1.4rem;
+      }
+      .SearchBar {
+        display: block;
+        font-weight: 500;
+        border: none;
+        background-color: transparent;
+        height: 100%;
+        width: 100%;
+        color: inherit;
+
+        &:focus-visible,
+        &:hover {
+          outline: none;
+        }
+      }
+
+      &:focus-within,
+      &:hover {
+        color: inherit;
+        box-shadow: 0 0.1rem 0.5rem rgb(155, 149, 149);
+      }
+    }
+  }
+
+  .Conversations {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    overflow-x: hidden;
+    overflow-y: overlay;
+
+    .ConversationLink {
+      text-decoration: none;
+
+      .Conversation {
+        height: 3.5rem;
+        background-color: var(--primary-light);
+        box-shadow: 0 0 1rem var(--primary-blank);
+        padding: 1rem;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-overflow: ellipsis;
+        text-transform: capitalize;
+        color: var(--primary-hard);
+        transition: color 0.2s ease;
+        &:after {
+          content: "";
+          background-color: var(--primary-hard);
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 95%;
+          z-index: -1;
+          transition: right 0.3s ease, background-color 0.2s ease;
+        }
+      }
+      &.active {
+        .Conversation {
+          color: white;
+
+          &:after {
+            // background-color:   var(--primary-soft);
+            background: linear-gradient(
+              to right,
+              var(--primary-hard),
+              var(--primary-soft)
+            );
+
+            // right: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .Button {
+    &:hover {
+      color: var(--primary-soft);
+      border-color: var(--primary-soft);
+    }
+  }
+}

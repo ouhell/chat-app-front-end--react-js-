@@ -1,0 +1,75 @@
+@import "../../../../helpers//scss//variables.module.scss";
+
+.NavBar {
+  height: 100%;
+  position: relative;
+  max-height: 100vh;
+  display: flex;
+  z-index: 10;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: hsl(200deg 33% 98%);
+  padding: 0;
+
+  min-width: 20rem;
+  width: 20rem;
+
+  .CloseArrow {
+    display: none;
+    @media screen and (max-width: $navigationHide) {
+      display: block;
+    }
+  }
+
+  .TopNavigation {
+    min-height: 4rem;
+    width: 100%;
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 0.15rem 0.5rem rgb(219, 214, 214);
+
+    background-color: var(--primary-light);
+
+    .TopNavigationItem {
+      color: var(--primary-grey);
+
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+
+      svg {
+        width: 1.6rem;
+      }
+      &:hover {
+        transform: scale(1.15);
+      }
+
+      &.active {
+        color: var(--primary-hard);
+      }
+    }
+  }
+
+  .Content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+  }
+
+  .Logout {
+    text-align: center;
+    padding: 0.5rem;
+    background-color: var(--primary-light);
+    box-shadow: 0 0 1rem var(--primary-grey);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.1s ease;
+
+    &:hover {
+      font-weight: bolder;
+    }
+  }
+}

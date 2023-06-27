@@ -1,0 +1,27 @@
+.Chat {
+  --navbar-close: 700px;
+
+  height: 100%;
+
+  .MainSection {
+    height: 100%;
+    display: flex;
+    gap: 0.2rem;
+    background-color: hsl(200deg 33% 98%);
+
+    .MainContent {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+    .SideContent {
+      height: 100%;
+      min-width: 20rem;
+      width: 20rem;
+
+      @media screen and (max-width: 1200px) {
+        display: none;
+      }
+    }
+  }
+}
