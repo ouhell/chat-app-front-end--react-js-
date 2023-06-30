@@ -1,26 +1,26 @@
 import classes from "./ChatHandler.module.scss";
-import { Button, Empty, Result, Spin } from "antd";
+import { Button, Empty, Result } from "antd";
 import TextMessage from "./components/TextMessage/TextMessage";
 import BasicSpinner from "../../../../../../shared/components/BasicSpinner/BasicSpinner";
 import ImageMessage from "./components/ImageMessage/ImageMessage";
 import VoiceTextMessage from "./components/VoiceTextMessage/VoiceTextMessage";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import { AnimatePresence } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import Scroller from "./components/Scroller/Scroller";
 import { deleteMessageApi } from "../../../../../../client/ApiClient";
+import { useAppSelector } from "../../../../../../store/ReduxHooks";
 
 const renderMessages = (
-  data,
-  isLoading,
-  isError,
-  fetchMessages,
-  deleteMessage
+  data: Message[],
+  isLoading: boolean,
+  isError: boolean,
+  fetchMessages: () => void,
+  deleteMessage: (messageId: Message) => void,
+  userId: string
 ) => {
-  const userId = JSON.parse(localStorage.getItem("userData")).userId;
-
   if (isLoading)
     return (
       <div className={classes.NoLoad}>
@@ -46,7 +46,7 @@ const renderMessages = (
       />
     );
 
-  return data.map((message, i) => {
+  return data.map((message) => {
     switch (message.content_type) {
       case "text":
         return (
@@ -83,21 +83,27 @@ const renderMessages = (
     }
   });
 };
-
+export type ChatHandlerProps = {
+  data: Message[];
+  isLoading: boolean;
+  isError: boolean;
+  fetchMessages: () => void;
+};
 const ChatHandler = ({
   data,
   isLoading,
   isError,
 
   fetchMessages,
-}) => {
+}: ChatHandlerProps) => {
   const dispatch = useDispatch();
   const [showScroller, setShowScroller] = useState(false);
-  const userData = useSelector((state) => state.auth.userData);
-  const chatContainer = useRef();
+
+  const userData = useAppSelector((state) => state.auth.userData);
+  const chatContainer = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
   const prevData = useRef(data);
-  const scrollerTimeout = useRef();
+  const scrollerTimeout = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     if (!chatContainer.current || prevData.current.length > data.length) return;
@@ -113,7 +119,7 @@ const ChatHandler = ({
         !isFirstRender.current && // so it scroll when switching conversations
         prevData.current.length !== data.length && // so it scroll when data isLoaded
         lastMessage && // if message is undefined
-        lastMessage.sender._id !== userData.userId // if last sender is not user
+        lastMessage.sender._id !== userData?.userId // if last sender is not user
       )
         return toggleScroller();
     }
@@ -141,25 +147,27 @@ const ChatHandler = ({
       chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
   }
 
-  function deleteMessage(message) {
+  function deleteMessage(message: Message) {
     let messageId = message._id;
     if (message.trueId) messageId = message.trueId;
-    deleteMessageApi(userData.access_token, messageId).then(() => {
-      console.log("deleted :", messageId);
-      dispatch(
-        ChatActions.emit({
-          event: "delete message",
-          data: message,
-        })
-      );
+    deleteMessageApi(userData?.access_token ?? "undefined", messageId).then(
+      () => {
+        console.log("deleted :", messageId);
+        dispatch(
+          ChatActions.emit({
+            event: "delete message",
+            data: message,
+          })
+        );
 
-      dispatch(
-        ChatActions.deleteMessage({
-          conversation_id: message.conversation,
-          id: message._id,
-        })
-      );
-    });
+        dispatch(
+          ChatActions.deleteMessage({
+            conversation_id: message.conversation,
+            id: message._id,
+          })
+        );
+      }
+    );
   }
 
   return (
@@ -175,7 +183,8 @@ const ChatHandler = ({
             isLoading,
             isError,
             fetchMessages,
-            deleteMessage
+            deleteMessage,
+            userData?.access_token ?? "undefined"
           )}
         </AnimatePresence>
       </div>

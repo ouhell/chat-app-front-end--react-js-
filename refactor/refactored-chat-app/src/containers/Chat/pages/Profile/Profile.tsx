@@ -7,7 +7,7 @@ import {
   CheckOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import c from "./Profile.module.scss";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,31 +22,51 @@ import {
   updateProfileData,
   updateProfilePicture,
 } from "../../../../client/ApiClient";
+import { useAppSelector } from "../../../../store/ReduxHooks";
+
+type Validation = {
+  isValid: boolean;
+  errorMessage: string;
+};
+
+type InputConfig = {
+  type: "text" | "password";
+  prefix: ReactNode;
+  placeHolder: string;
+  maxLength: number;
+  visibilityToggle?: boolean;
+};
+
+type Field = {
+  label: string;
+  value: string;
+  validation: (value: string) => any;
+  isValid: boolean;
+  errorMessage: string;
+  isTouched: boolean;
+  isLoading: boolean;
+  input_config: InputConfig;
+};
+
+type FormData = {
+  feilds: { [key: string]: Field };
+};
 
 const Profile = () => {
   const usernameCounter = useRef(0);
-  const userData = useSelector((state) => state.auth.userData);
+  const userData = useAppSelector((state) => state.auth.userData);
   const emailCounter = useRef(0);
-  const currentProfile = useRef({});
+  const currentProfile = useRef<{ [key: string]: string }>({});
   const dispatch = useDispatch();
 
-  const [updateFormData, setUpdateFormData] = useState({
+  const [updateFormData, setUpdateFormData] = useState<FormData>({
     feilds: {
-      init: function () {
-        for (let i in this) {
-          if (typeof this[i] == "object") {
-            this[i].parent = this;
-          }
-        }
-        delete this.init;
-        return this;
-      },
       username: {
-        label_name: "Username",
+        label: "Username",
         value: "",
-        validation: (value) => {
+        validation: (value: string) => {
           const testingValue = value.trim();
-          const validation = {
+          const validation: Validation = {
             isValid: true,
             errorMessage: "",
           };
@@ -62,12 +82,17 @@ const Profile = () => {
           }
 
           // check if username already exists
-          setloading("username", true);
+
+          setUpdateFormData((old) => {
+            const newFormData = structuredClone(old);
+            newFormData.feilds.username.isLoading = true;
+            return newFormData;
+          });
           usernameCounter.current++;
           const counter = usernameCounter.current;
           apiCheckUsernameExists(testingValue)
             .then((res) => {
-              if (res.data && testingValue !== userData.username) {
+              if (res.data && testingValue !== userData?.username) {
                 validation.isValid = false;
                 validation.errorMessage = "username already exists!";
               }
@@ -94,11 +119,11 @@ const Profile = () => {
         },
       },
       personal_name: {
-        label_name: "Personal Name",
+        label: "Personal Name",
         value: "",
-        validation: (value) => {
+        validation: (value: string) => {
           const testingValue = value.trim();
-          const validation = {
+          const validation: Validation = {
             isValid: true,
             errorMessage: "",
           };
@@ -106,6 +131,7 @@ const Profile = () => {
           if (testingValue.length < 4) {
             validation.isValid = false;
             validation.errorMessage = "name must be longer than 3 characters";
+
             return setValidation("personal_name", validation);
           }
 
@@ -123,9 +149,9 @@ const Profile = () => {
         },
       },
       email: {
-        label_name: "E-mail",
+        label: "E-mail",
         value: "",
-        validation: (value) => {
+        validation: (value: string) => {
           const testingValue = value.trim();
           const validation = {
             isValid: true,
@@ -141,7 +167,11 @@ const Profile = () => {
             return setValidation("email", validation);
           }
 
-          setloading("email", true);
+          setUpdateFormData((old) => {
+            const newFormData = structuredClone(old);
+            newFormData.feilds.email.isLoading = true;
+            return newFormData;
+          });
           emailCounter.current++;
           const counter = emailCounter.current;
 
@@ -172,7 +202,7 @@ const Profile = () => {
           maxLength: 60,
         },
       },
-    }.init(),
+    },
   });
 
   const [profilePicture, setProfilePicture] = useState();
@@ -180,7 +210,7 @@ const Profile = () => {
   const [isError, setIsError] = useState(false);
   const [isUpdatingInfo, setIsUpdatingInfo] = useState(false);
   const [isUpdatingPic, setIsUpdatingPic] = useState(false);
-  const fileUploader = useRef();
+  const fileUploader = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchProfileData();
@@ -206,38 +236,41 @@ const Profile = () => {
     }
   }
 
-  const resetFeildsParent = useCallback(function (feilds) {
-    (feilds.init = function () {
-      for (let i in this) {
-        if (typeof this[i] == "object") {
-          this[i].parent = this;
-        }
-      }
-      delete this.init;
-    }),
-      feilds.init();
-  }, []);
+  // const resetFeildsParent = useCallback(function (feilds : Field) {
+  //   (feilds.init = function () {
+  //     for (let i in this) {
+  //       if (typeof this[i] == "object") {
+  //         this[i].parent = this;
+  //       }
+  //     }
+  //     delete this.init;
+  //   }),
+  //     feilds.init();
+  // }, []);
 
-  const setloading = useCallback(function (key, value) {
-    setUpdateFormData((prevFormData) => {
-      const newFormData = { ...prevFormData };
-      const newFeilds = { ...newFormData.feilds };
-      const selectedFeild = { ...newFeilds[key] };
+  // const setloading = useCallback(function (key : string, value : string) {
+  //   setUpdateFormData((prevFormData) => {
+  //     const newFormData = { ...prevFormData };
+  //     const newFeilds = { ...newFormData.feilds };
+  //     const selectedFeild = { ...newFeilds[key] };
 
-      selectedFeild.isTouched = true;
-      selectedFeild.isValid = false;
-      selectedFeild.isLoading = value;
+  //     selectedFeild.isTouched = true;
+  //     selectedFeild.isValid = false;
+  //     // selectedFeild.isLoading = value;
 
-      newFeilds[key] = selectedFeild;
+  //     newFeilds[key] = selectedFeild;
 
-      resetFeildsParent(newFeilds);
+  //     // resetFeildsParent(newFeilds);
 
-      newFormData.feilds = newFeilds;
-      return newFormData;
-    });
-  }, []);
+  //     newFormData.feilds = newFeilds;
+  //     return newFormData;
+  //   });
+  // }, []);
 
-  const setValidation = useCallback(function (key, validation) {
+  const setValidation = useCallback(function (
+    key: string,
+    validation: Validation
+  ) {
     setUpdateFormData((prevFormData) => {
       const newFormData = { ...prevFormData };
       const newFeilds = { ...newFormData.feilds };
@@ -248,18 +281,19 @@ const Profile = () => {
       selectedFeild.errorMessage = validation.errorMessage;
       selectedFeild.isLoading = false;
       newFeilds[key] = selectedFeild;
-      resetFeildsParent(newFeilds);
+      // resetFeildsParent(newFeilds);
       newFormData.feilds = newFeilds;
       return newFormData;
     });
-  }, []);
+  },
+  []);
 
   const fetchProfileData = useCallback(
     function () {
       if (isLoading) return;
       setIsLoading(true);
       setIsError(false);
-      getProfileData(userData.access_token)
+      getProfileData(userData?.access_token ?? "undefined")
         .then((res) => {
           setProfilePicture(res.data.profile_picture);
 
@@ -277,7 +311,7 @@ const Profile = () => {
               newFeilds[key] = selectedFeild;
             }
 
-            resetFeildsParent(newFeilds);
+            // resetFeildsParent(newFeilds);
             newFormData.feilds = newFeilds;
             return newFormData;
           });
@@ -294,7 +328,7 @@ const Profile = () => {
     [isLoading, isError]
   );
 
-  const changeValue = useCallback(function (key, newValue) {
+  const changeValue = useCallback(function (key: string, newValue: string) {
     setUpdateFormData((prevFormData) => {
       const newFormData = { ...prevFormData };
       const newFeilds = { ...newFormData.feilds };
@@ -304,7 +338,7 @@ const Profile = () => {
       selectedFeild.value = newValue;
 
       newFeilds[key] = selectedFeild;
-      resetFeildsParent(newFeilds);
+      // resetFeildsParent(newFeilds);
       newFormData.feilds = newFeilds;
       return newFormData;
     });
@@ -319,11 +353,11 @@ const Profile = () => {
       return validateAll();
     }
     setIsUpdatingInfo(true);
-    const updateData = {};
+    const updateData: { [key: string]: string } = {};
     for (let feild in updateFormData.feilds) {
       updateData[feild] = updateFormData.feilds[feild].value;
     }
-    updateProfileData(userData.access_token, updateData)
+    updateProfileData(userData?.access_token ?? "undefined", updateData)
       .then((res) => {
         currentProfile.current = updateData;
 
@@ -344,11 +378,11 @@ const Profile = () => {
   }
 
   const updatePic = useCallback(
-    function (image) {
+    function (image: File) {
       if (isUpdatingPic || !image) return;
       setIsUpdatingPic(true);
 
-      updateProfilePicture(userData.access_token, image)
+      updateProfilePicture(userData?.access_token ?? "undefined", image)
         .then((res) => {
           setProfilePicture(res.data.newUrl);
           dispatch(AuthActions.setProfilePicture(res.data.newUrl));
@@ -387,7 +421,7 @@ const Profile = () => {
                 display: "none",
               }}
               onChange={(e) => {
-                updatePic(e.target.files[0]);
+                updatePic(e.target.files?.[0] as File);
               }}
             />
             <Spin
@@ -402,7 +436,7 @@ const Profile = () => {
             >
               <Avatar
                 onClick={() => {
-                  fileUploader.current.click();
+                  fileUploader.current?.click();
                 }}
                 size={90}
                 src={profilePicture}
@@ -411,7 +445,7 @@ const Profile = () => {
                 }}
                 className={"util-pointer util-capitalized " + c.ProfilPic}
               >
-                {userData.username[0]}
+                {userData?.username[0] ?? "U"}
               </Avatar>
             </Spin>
           </div>
@@ -425,8 +459,8 @@ const Profile = () => {
               const config = feild.input_config;
 
               const props = {
-                onChange: (e) => {
-                  changeValue(key, e.target.value, key);
+                onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                  changeValue(key, e.target.value);
                 },
                 value: feild.value,
                 maxLength: config.maxLength,
@@ -435,7 +469,7 @@ const Profile = () => {
                 status:
                   !feild.isValid && feild.isTouched && !feild.isLoading
                     ? "error"
-                    : "normal",
+                    : ("" as "error" | ""),
                 prefix: config.prefix,
                 suffix: feild.isValid ? (
                   <CheckOutlined
@@ -450,17 +484,18 @@ const Profile = () => {
                     }}
                   />
                 ) : null,
+                visibilityToggle: false,
               };
 
-              let InputType = Input;
+              let InputType: typeof Input = Input;
 
-              if (config.type === "input.password") {
-                InputType = Input.Password;
-                props.visibilityToggle = config.visibilityToggle;
+              if (config.type === "password") {
+                InputType = Input.Password as typeof Input;
+                props.visibilityToggle = !!config.visibilityToggle;
               }
               return (
                 <div className={c.DataChanger} key={key}>
-                  <label className={c.Label}>{feild.label_name}</label>
+                  <label className={c.Label}>{feild.label}</label>
                   <div className={c.InputHolder}>
                     {feild.errorMessage ? (
                       <div className={c.InputError}>{feild.errorMessage}</div>

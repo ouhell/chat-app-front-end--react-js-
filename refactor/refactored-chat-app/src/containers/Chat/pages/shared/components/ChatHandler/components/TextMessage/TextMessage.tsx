@@ -4,7 +4,7 @@ import c from "./TextMessage.module.scss";
 import { motion } from "framer-motion";
 import { forwardRef } from "react";
 
-const formatDate = (date) => {
+const formatDate = (date: Date) => {
   const hours = (date.getHours() + "").padStart(2, "0");
   const minutes = (date.getMinutes() + "").padStart(2, "0");
 
@@ -19,10 +19,19 @@ const items = [
   },
 ];
 
-const TextMessage = ({ message, userId, deleteMessage }, ref) => {
+type MessageProps = {
+  message: Message;
+  userId: string;
+  deleteMessage: (message: Message) => void;
+};
+
+const TextMessage = (
+  { message, userId, deleteMessage }: MessageProps,
+  ref: any
+) => {
   const sentDate = new Date(message.sent_date);
 
-  const menuOnClick = ({ key }) => {
+  const menuOnClick = ({ key }: { key: string }) => {
     switch (key) {
       case "delete":
         if (!message.temporary) deleteMessage(message);

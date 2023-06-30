@@ -3,15 +3,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { ChatActions } from "../../../../store/slices/ChatSlice";
 import { getContactRequests } from "../../../../client/ApiClient";
+import { useAppSelector } from "../../../../store/ReduxHooks";
 const ChatController = () => {
   const { pathname } = useLocation();
 
-  const userData = useSelector((state) => state.auth.userData);
+  const userData = useAppSelector((state) => state.auth.userData);
 
   const dispatch = useDispatch();
 
   const fetchNotifications = () => {
-    getContactRequests(userData.access_token)
+    getContactRequests(userData?.access_token ?? "undefined")
       .then((res) => {
         dispatch(ChatActions.setRequests(res.data));
         dispatch(
@@ -42,7 +43,7 @@ const ChatController = () => {
     dispatch(
       ChatActions.emit({
         event: "self connect",
-        data: userData.userId,
+        data: userData?.userId,
       })
     );
 

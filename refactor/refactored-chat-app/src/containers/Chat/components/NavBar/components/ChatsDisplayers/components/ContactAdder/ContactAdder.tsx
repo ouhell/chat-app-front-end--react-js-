@@ -12,13 +12,24 @@ import {
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import Candidate from "./components/Candidate/Candidate";
 import c from "./ContactAdder.module.scss";
-
-const ContactAdder = ({ open, onCancel }) => {
+import { useAppSelector } from "../../../../../../../../store/ReduxHooks";
+type ContactAdderProps = {
+  open: boolean;
+  onCancel: (...args: any[]) => any;
+};
+const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const userData = useSelector((state) => state.auth.userData);
-  const [data, setData] = useState([]);
+  const userData = useAppSelector((state) => state.auth.userData);
+  const [data, setData] = useState<User[]>([]);
   const [searchtext, setSearchtext] = useState("");
-  const [candidateState, setCandidateState] = useState({});
+  const [candidateState, setCandidateState] = useState<{
+    [key: string]: {
+      sendLoading?: boolean;
+      isCancelLoading?: boolean;
+      sent?: boolean;
+      request?: string | null;
+    };
+  }>({});
 
   const dispatch = useDispatch();
 
@@ -32,7 +43,7 @@ const ContactAdder = ({ open, onCancel }) => {
     if (isLoading) return;
     setIsLoading(true);
 
-    getContactCandidates(userData.access_token, searchtext)
+    getContactCandidates(userData?.access_token ?? "undefined", searchtext)
       .then((res) => {
         setData(res.data);
       })
@@ -44,7 +55,7 @@ const ContactAdder = ({ open, onCancel }) => {
       });
   };
 
-  const sendRequest = (id) => {
+  const sendRequest = (id: string) => {
     setCandidateState((prevState) => {
       const newState = { ...prevState };
       newState[id] = {
@@ -53,7 +64,7 @@ const ContactAdder = ({ open, onCancel }) => {
       return newState;
     });
 
-    addContactRequest(userData.access_token, id)
+    addContactRequest(userData?.access_token ?? "undefined", id)
       .then((res) => {
         setCandidateState((prevState) => {
           const newState = { ...prevState };
@@ -96,7 +107,7 @@ const ContactAdder = ({ open, onCancel }) => {
       });
     }, 3000); */
   };
-  const cancelRequest = (id) => {
+  const cancelRequest = (id: string) => {
     if (!candidateState[id]) return;
     if (!candidateState[id].request) return;
 
@@ -112,7 +123,10 @@ const ContactAdder = ({ open, onCancel }) => {
       return newState;
     });
 
-    deleteContactRequest(userData.access_token, candidateState[id].request)
+    deleteContactRequest(
+      userData?.access_token ?? "undefined",
+      candidateState[id].request ?? ""
+    )
       .then((res) => {
         dispatch(ChatActions.removeRequest(candidateState[id].request));
 

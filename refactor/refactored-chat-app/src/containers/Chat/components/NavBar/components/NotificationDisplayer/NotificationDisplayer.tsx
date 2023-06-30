@@ -10,13 +10,16 @@ import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import ContactRequest from "./components/ContactRequest/ContactRequest";
 import c from "./NotificationDisplayer.module.scss";
 import { getContactRequests } from "../../../../../../client/ApiClient";
+import { useAppSelector } from "../../../../../../store/ReduxHooks";
 
 const NotificationDisplayer = () => {
-  let { loaded, data: requests } = useSelector((state) => state.chat.requests);
+  let { loaded, data: requests } = useAppSelector(
+    (state) => state.chat.requests
+  );
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const userData = useSelector((state) => state.auth.userData);
+  const userData = useAppSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
 
   const [requestHolder] = useAutoAnimate();
@@ -25,13 +28,13 @@ const NotificationDisplayer = () => {
     if (isLoading) return;
     setIsLoading(true);
 
-    getContactRequests(userData.access_token)
+    getContactRequests(userData?.access_token ?? "undefined")
       .then((res) => {
         dispatch(ChatActions.setRequests(res.data));
         dispatch(
           ChatActions.on({
             event: "receive request",
-            callbacl: (request) => {
+            callback: (request) => {
               dispatch(ChatActions.addRequest(request));
             },
           })
@@ -39,7 +42,7 @@ const NotificationDisplayer = () => {
         dispatch(
           ChatActions.on({
             event: "canceled request",
-            callbacl: (requestId) => {
+            callback: (requestId) => {
               dispatch(ChatActions.removeRequest(requestId));
             },
           })
@@ -58,11 +61,6 @@ const NotificationDisplayer = () => {
   }, []);
 
   const { Panel } = Collapse;
-  const text = `
-  A dog is a type of domesticated animal.
-  Known for its loyalty and faithfulness,
-  it can be found as a welcome guest in many households across the world.
-`;
 
   const requestNumber = !isLoading ? ` (${requests.length})` : "";
   return (
@@ -97,7 +95,7 @@ const NotificationDisplayer = () => {
                 <ContactRequest
                   key={requestData._id}
                   requestData={requestData}
-                  userData={userData}
+                  removeRequest={(id: string) => {}}
                 />
               );
             })}

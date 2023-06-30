@@ -16,8 +16,10 @@ import { ComponentActions } from "../../../../store/slices/ComponentSlice.js";
 import { NotifActions } from "../../../../store/slices/NotificationSlice.js";
 import { ChatActions } from "../../../../store/slices/ChatSlice.js";
 import useResize from "../../../../helpers/hooks/useResize.jsx";
+// @ts-ignore
 import { navigationHide } from "../../../../helpers/scss/variables.module.scss";
 import { motion } from "framer-motion";
+import { useAppSelector } from "../../../../store/ReduxHooks.js";
 const navbarBreakPoint = Number.parseInt(navigationHide);
 
 const DropDownItems = [
@@ -55,13 +57,14 @@ function NavBar() {
   );
   const startY = useRef(0);
   const startX = useRef(0);
-  const isOpen = useSelector((state) => state.component.isNavOpen);
-  const userData = useSelector((state) => state.auth.userData);
+
+  const isOpen = useAppSelector((state) => state.component.isNavOpen);
+  const userData = useAppSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { windowHeigth, windowWidth } = useResize();
 
-  const menuOnClick = ({ key }) => {
+  const menuOnClick = ({ key }: { key: string }) => {
     switch (key) {
       case "logout":
         dispatch(ChatActions.resetState());
@@ -70,8 +73,12 @@ function NavBar() {
         dispatch(AuthActions.resetState());
         dispatch(AuthActions.logout());
         navigate("/");
+        break;
       case "profile":
         dispatch(ComponentActions.closeNav());
+        break;
+      default:
+        break;
     }
   };
 
@@ -93,7 +100,7 @@ function NavBar() {
               opacity: 1,
               transition: {
                 type: "spring",
-                stiffness: "900",
+                stiffness: 900,
                 damping: 55,
               },
             }
@@ -106,7 +113,7 @@ function NavBar() {
               transition: {
                 opacity: { duration: 0.1 },
                 type: "spring",
-                stiffness: "300",
+                stiffness: 300,
                 damping: 30,
               },
             }
@@ -117,7 +124,7 @@ function NavBar() {
               opacity: 1,
               transition: {
                 type: "spring",
-                stiffness: "500",
+                stiffness: 500,
                 damping: 30,
               },
             }
@@ -157,7 +164,7 @@ function NavBar() {
         })}
         <div className={classes.topNavItem}>
           <Dropdown
-            trigger={"click"}
+            trigger={["click"]}
             menu={{
               items: DropDownItems,
               onClick: menuOnClick,
@@ -165,9 +172,9 @@ function NavBar() {
           >
             <Avatar
               className="util-pointer util-capitalized"
-              src={userData.profile_picture}
+              src={userData?.profile_picture ?? ""}
             >
-              {userData.username[0]}
+              {userData?.username[0] ?? "U"}
             </Avatar>
           </Dropdown>
         </div>

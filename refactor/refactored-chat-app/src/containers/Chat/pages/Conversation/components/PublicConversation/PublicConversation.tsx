@@ -3,7 +3,18 @@ import ChatHeader from "./components/ChatHeader/ChatHeader";
 import c from "./PublicConversation.module.scss";
 import { motion } from "framer-motion";
 import { conversationAnimationVariants } from "../../shared/conversationAnimation";
-const PublicConversation = ({ isLoading, isError, data, fetchMessages }) => {
+type PublicConversationProps = {
+  isLoading: boolean;
+  isError: boolean;
+  data: Message[];
+  fetchMessages: () => void;
+};
+const PublicConversation = ({
+  isLoading,
+  isError,
+  data,
+  fetchMessages,
+}: PublicConversationProps) => {
   return (
     <motion.div
       /* variants={conversationAnimationVariants}

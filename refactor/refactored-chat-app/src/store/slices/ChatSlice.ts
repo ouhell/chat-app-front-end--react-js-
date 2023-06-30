@@ -1,10 +1,14 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { io } from "socket.io-client";
 import { HostName } from "../../client/ApiClient";
 
 type ChatState = {
-  conversations: { [id: string]: Conversation };
-  contacts: { [id: string]: User };
+  conversations: {
+    [id: string]: { conversation: Conversation; messages: Message[] };
+  };
+  contacts: {
+    [id: string]: Contact;
+  };
   publicConvos: Conversation[];
   requests: {
     loaded: boolean;
@@ -34,7 +38,7 @@ const ChatSlice = createSlice({
 
       socket.emit(event, data);
     },
-    off: function (_, action) {
+    off: function (_, action: PayloadAction<{ event: string }>) {
       const event = action.payload.event;
 
       socket.removeAllListeners(event);
@@ -42,7 +46,12 @@ const ChatSlice = createSlice({
     offAll: () => {
       socket.removeAllListeners();
     },
-    on: (_, { payload: { event, callback } }) => {
+    on: (
+      _,
+      {
+        payload: { event, callback },
+      }: PayloadAction<{ event: string; callback: (...args: any[]) => any }>
+    ) => {
       socket.removeAllListeners(event);
       socket.on(event, callback);
     },
@@ -91,9 +100,9 @@ const ChatSlice = createSlice({
 
       state.conversations[conversation_id].messages = newMessages;
     },
-    setContacts: (state, action) => {
+    setContacts: (state, action: PayloadAction<Contact[]>) => {
       const contactList = action.payload;
-      let newContacts = {};
+      let newContacts: ChatState["contacts"] = {};
 
       contactList.forEach((contact) => {
         newContacts[contact._id] = contact;
@@ -132,7 +141,7 @@ const ChatSlice = createSlice({
       newRequests.push(newRequest);
       state.requests.data = newRequests;
     },
-    resetState: (state, action) => {
+    resetState: (state) => {
       socket.removeAllListeners();
       state = structuredClone(initialState);
       return state;

@@ -8,20 +8,24 @@ import { useEffect } from "react";
 import { useCallback } from "react";
 
 import { getConversation } from "../../../../../../../../../client/ApiClient";
+import { useAppSelector } from "../../../../../../../../../store/ReduxHooks";
 
-const emptyArray = [];
+type ContactProps = {
+  contactInfo: Contact;
+};
 
-const Contact = ({ contactInfo, userData }) => {
-  const conversation = useSelector(
+const Contact = ({ contactInfo }: ContactProps) => {
+  const conversation = useAppSelector(
     (state) => state.chat.conversations[contactInfo._id]
   );
+  const userData = useAppSelector((state) => state.auth.userData);
 
-  const messages = conversation ? conversation.messages : emptyArray;
+  const messages = conversation ? conversation.messages : [];
 
   const dispatch = useDispatch();
 
   const fetchMessages = useCallback(() => {
-    getConversation(contactInfo._id, userData.access_token)
+    getConversation(contactInfo._id, userData?.access_token ?? "undefined")
       .then((res) => {
         dispatch(ChatActions.emit({ event: "chat", data: contactInfo._id }));
 
@@ -42,7 +46,7 @@ const Contact = ({ contactInfo, userData }) => {
     if (messages.length === 0) return "";
 
     const lastMessage = messages[messages.length - 1];
-    const sender = lastMessage.sender._id === userData.userId ? "you : " : "";
+    const sender = lastMessage.sender._id === userData?.userId ? "you : " : "";
     switch (lastMessage.content_type) {
       case "text":
         return sender + lastMessage.message;

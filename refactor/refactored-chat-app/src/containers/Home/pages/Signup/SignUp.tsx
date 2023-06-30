@@ -1,6 +1,6 @@
 import classes from "./Signup.module.scss";
 import { Input, Button } from "antd";
-import { Fragment, useState } from "react";
+import { Fragment, ReactNode, useState } from "react";
 
 import {
   UnlockOutlined,
@@ -29,20 +29,38 @@ const variants = {
   hidden: { opacity: 0, y: 15 },
 };
 
+type Validation = {
+  isValid: boolean;
+  errorMessage: string;
+};
+
+type InputConfig = {
+  type: "text" | "password";
+  prefix: ReactNode;
+  placeHolder: string;
+  maxLength: number;
+  visibilityToggle?: boolean;
+};
+
+type Field = {
+  value: string;
+  validation: (value: string) => any;
+  isValid: boolean;
+  errorMessage: string;
+  isTouched: boolean;
+  isLoading: boolean;
+  input_config: InputConfig;
+};
+
+type FormData = {
+  feilds: { [key: string]: Field };
+};
+
 const SignUp = () => {
   const usernameCounter = useRef(0);
   const emailCounter = useRef(0);
-  const [signupFormData, setSignupFormData] = useState({
+  const [signupFormData, setSignupFormData] = useState<FormData>({
     feilds: {
-      init: function () {
-        for (let i in this) {
-          if (typeof this[i] == "object") {
-            this[i].parent = this;
-          }
-        }
-        delete this.init;
-        return this;
-      },
       username: {
         value: "",
         validation: (value) => {
@@ -67,7 +85,12 @@ const SignUp = () => {
           }
 
           // check if username already exists
-          setloading("username", true);
+          // setloading("username", true);
+          setSignupFormData((old) => {
+            const newFormData = structuredClone(old);
+            newFormData.feilds.username.isLoading = true;
+            return newFormData;
+          });
           usernameCounter.current++;
           const counter = usernameCounter.current;
 
@@ -142,7 +165,12 @@ const SignUp = () => {
             return setValidation("email", validation);
           }
 
-          setloading("email", true);
+          // setloading("email", true);
+          setSignupFormData((old) => {
+            const newFormData = structuredClone(old);
+            newFormData.feilds.email.isLoading = true;
+            return newFormData;
+          });
           emailCounter.current++;
           const counter = emailCounter.current;
 
@@ -181,10 +209,12 @@ const SignUp = () => {
             isValid: true,
             errorMessage: "",
           };
-
-          this.parent.confrim_password.validation(
-            this.parent.confrim_password.value
+          signupFormData.feilds.confrim_password.validation(
+            signupFormData.feilds.confrim_password.value
           );
+          // this.parent.confrim_password.validation(
+          //   this.parent.confrim_password.value
+          // );
           // check that it is longer than 8
           if (testingValue.length < 8) {
             validation.isValid = false;
@@ -223,7 +253,7 @@ const SignUp = () => {
         isTouched: false,
         isLoading: false,
         input_config: {
-          type: "input.password",
+          type: "password",
           prefix: <UnlockOutlined className={classes.PrefixIcon} />,
           placeHolder: "Password",
           visibilityToggle: true,
@@ -239,7 +269,7 @@ const SignUp = () => {
             errorMessage: "",
           };
 
-          if (testingValue !== this.parent.password.value.trim()) {
+          if (testingValue !== signupFormData.feilds.password.value.trim()) {
             validation.isValid = false;
 
             return setValidation("confrim_password", validation);
@@ -259,7 +289,7 @@ const SignUp = () => {
           maxLength: 25,
         },
       },
-    }.init(),
+    },
   });
   const [isSigningUp, setIsSigningUp] = useState(false);
   const navigate = useNavigate();
@@ -273,11 +303,16 @@ const SignUp = () => {
 
     setIsSigningUp(true);
 
-    const userData = {};
+    const userData = {
+      username: signupFormData.feilds.username.value,
+      email: signupFormData.feilds.email.value,
+      personal_name: signupFormData.feilds.personal_name.value,
+      password: signupFormData.feilds.password.value,
+    };
 
-    for (let feild in signupFormData.feilds) {
-      userData[feild] = signupFormData.feilds[feild].value.trim();
-    }
+    // for (let feild in signupFormData.feilds) {
+    //   userData[feild] = signupFormData.feilds[feild].value.trim();
+    // }
 
     apiSignup(userData)
       .then((res) => {
@@ -311,38 +346,38 @@ const SignUp = () => {
     }
   }
 
-  function resetFeildsParent(feilds) {
-    (feilds.init = function () {
-      for (let i in this) {
-        if (typeof this[i] == "object") {
-          this[i].parent = this;
-        }
-      }
-      delete this.init;
-    }),
-      feilds.init();
-  }
+  // function resetFeildsParent(feilds) {
+  //   (feilds.init = function () {
+  //     for (let i in this) {
+  //       if (typeof this[i] == "object") {
+  //         this[i].parent = this;
+  //       }
+  //     }
+  //     delete this.init;
+  //   }),
+  //     feilds.init();
+  // }
 
-  function setloading(key: string, value: string) {
-    setSignupFormData((prevFormData) => {
-      const newFormData = { ...prevFormData };
-      const newFeilds = { ...newFormData.feilds };
-      const selectedFeild = { ...newFeilds[key] };
+  // function setloading(key: string, value: string) {
+  //   setSignupFormData((prevFormData) => {
+  //     const newFormData = { ...prevFormData };
+  //     const newFeilds = { ...newFormData.feilds };
+  //     const selectedFeild = { ...newFeilds[key] };
 
-      selectedFeild.isTouched = true;
-      selectedFeild.isValid = false;
-      selectedFeild.isLoading = value;
+  //     selectedFeild.isTouched = true;
+  //     selectedFeild.isValid = false;
+  //     selectedFeild.isLoading = value;
 
-      newFeilds[key] = selectedFeild;
+  //     newFeilds[key] = selectedFeild;
 
-      resetFeildsParent(newFeilds);
+  //     // resetFeildsParent(newFeilds);
 
-      newFormData.feilds = newFeilds;
-      return newFormData;
-    });
-  }
+  //     newFormData.feilds = newFeilds;
+  //     return newFormData;
+  //   });
+  // }
 
-  function setValidation(key: string, validation: string) {
+  function setValidation(key: string, validation: Validation) {
     setSignupFormData((prevFormData) => {
       const newFormData = { ...prevFormData };
       const newFeilds = { ...newFormData.feilds };
@@ -353,13 +388,13 @@ const SignUp = () => {
       selectedFeild.errorMessage = validation.errorMessage;
       selectedFeild.isLoading = false;
       newFeilds[key] = selectedFeild;
-      resetFeildsParent(newFeilds);
+      // resetFeildsParent(newFeilds);
       newFormData.feilds = newFeilds;
       return newFormData;
     });
   }
 
-  function changeValue(key, newValue) {
+  function changeValue(key: string, newValue: string) {
     setSignupFormData((prevFormData) => {
       const newFormData = { ...prevFormData };
       const newFeilds = { ...newFormData.feilds };
@@ -369,7 +404,7 @@ const SignUp = () => {
       selectedFeild.value = newValue;
 
       newFeilds[key] = selectedFeild;
-      resetFeildsParent(newFeilds);
+      // resetFeildsParent(newFeilds);
       newFormData.feilds = newFeilds;
       return newFormData;
     });
@@ -406,7 +441,7 @@ const SignUp = () => {
             const feild = signupFormData.feilds[key];
             const config = feild.input_config;
             const props = {
-              onChange: (e) => {
+              onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                 changeValue(key, e.target.value);
               },
               value: feild.value,
@@ -416,7 +451,7 @@ const SignUp = () => {
               status:
                 !feild.isValid && feild.isTouched && !feild.isLoading
                   ? "error"
-                  : "normal",
+                  : ("normal" as "error" | ""),
               prefix: config.prefix,
               suffix: feild.isValid ? (
                 <CheckOutlined
@@ -431,15 +466,16 @@ const SignUp = () => {
                   }}
                 />
               ) : null,
+              visibilityToggle: false,
             };
             let InputType = Input;
 
-            const isPasswordInput = config.type === "input.password";
+            const isPasswordInput = config.type === "password";
 
             if (isPasswordInput) {
-              InputType = Input.Password;
+              InputType = Input.Password as typeof Input;
 
-              props.visibilityToggle = config.visibilityToggle;
+              props.visibilityToggle = !!config.visibilityToggle;
             }
 
             return (

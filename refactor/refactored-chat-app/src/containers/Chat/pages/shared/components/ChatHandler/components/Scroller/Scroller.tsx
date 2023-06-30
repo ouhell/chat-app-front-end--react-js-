@@ -1,7 +1,11 @@
 import C from "./Scroller.module.scss";
 import { ArrowBackSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import { AnimatePresence, motion } from "framer-motion";
-const Scroller = ({ onScroll, show }) => {
+type ScrollerProps = {
+  onScroll: () => void;
+  show: boolean;
+};
+const Scroller = ({ onScroll, show }: ScrollerProps) => {
   return (
     <AnimatePresence>
       {show && (

@@ -1,8 +1,9 @@
 import { Avatar, Dropdown, Skeleton } from "antd";
 
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
+
 import {
   blackListUser,
   blockContact,
@@ -18,10 +19,12 @@ import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import { ComponentActions } from "../../../../../../../../store/slices/ComponentSlice";
 import { NotifActions } from "../../../../../../../../store/slices/NotificationSlice";
 import c from "./ContactHeader.module.scss";
+import { useAppSelector } from "../../../../../../../../store/ReduxHooks";
 
-const ContactHeader = ({ isBlocked }) => {
-  const { conversationId, contactId } = useParams();
-  const contactData = useSelector(
+const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
+  const { conversationId = "undefined", contactId = "undefined" } = useParams();
+
+  const contactData = useAppSelector(
     (state) => state.chat.contacts[conversationId]
   );
 
@@ -48,12 +51,12 @@ const ContactHeader = ({ isBlocked }) => {
 
   const dispatch = useDispatch();
 
-  const userData = useSelector((state) => state.auth.userData);
+  const userData = useAppSelector((state) => state.auth.userData);
 
   const fetchContactData = () => {
     setIsLoading(true);
     setisError(false);
-    getContactProfileData(userData.access_token, conversationId)
+    getContactProfileData(userData?.access_token ?? "undefined", conversationId)
       .then((res) => {
         dispatch(
           ChatActions.addContact({
@@ -72,7 +75,7 @@ const ContactHeader = ({ isBlocked }) => {
 
   const removeContact = () => {
     console.log("removing :", contactId);
-    deleteContact(userData.access_token, contactId)
+    deleteContact(userData?.access_token ?? "undefined", contactId)
       .then((res) => {
         dispatch(ChatActions.removeContact({ contactId: conversationId }));
         dispatch(ChatActions.removeConversation({ conversationId }));
@@ -81,7 +84,7 @@ const ContactHeader = ({ isBlocked }) => {
   };
   const blackListContact = () => {
     console.log("removing :", contactId);
-    blackListUser(userData.access_token, contactId)
+    blackListUser(userData?.access_token ?? "undefined", contactId)
       .then((res) => {
         dispatch(ChatActions.removeContact({ contactId: conversationId }));
         dispatch(ChatActions.removeConversation({ conversationId }));
@@ -90,7 +93,7 @@ const ContactHeader = ({ isBlocked }) => {
   };
 
   const blockUser = () => {
-    blockContact(userData.access_token, contactId)
+    blockContact(userData?.access_token ?? "undefined", contactId)
       .then(() => {
         dispatch(
           NotifActions.notify({
@@ -105,7 +108,7 @@ const ContactHeader = ({ isBlocked }) => {
   };
 
   const unblockUser = () => {
-    unblockContact(userData.access_token, contactId)
+    unblockContact(userData?.access_token ?? "undefined", contactId)
       .then(() => {
         dispatch(
           NotifActions.notify({
@@ -119,7 +122,7 @@ const ContactHeader = ({ isBlocked }) => {
       });
   };
 
-  const dropDownClickHandler = ({ key }) => {
+  const dropDownClickHandler = ({ key }: { key: string }) => {
     switch (key) {
       case "remove":
         removeContact();

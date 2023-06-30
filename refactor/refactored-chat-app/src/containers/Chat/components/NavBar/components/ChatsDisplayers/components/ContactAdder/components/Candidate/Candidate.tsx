@@ -1,19 +1,33 @@
 import c from "./Candidate.module.scss";
 import { Avatar, Button } from "antd";
+
+type CandidateProps = {
+  candInfo: User;
+  candidateState: {
+    [key: string]: {
+      sendLoading?: boolean;
+      isCancelLoading?: boolean;
+      sent?: boolean;
+      request?: string | null;
+    };
+  };
+  sendRequest: (id: string) => any;
+  cancelRequest: (id: string) => any;
+};
 const Candidate = ({
   candInfo,
   candidateState,
   sendRequest,
   cancelRequest,
-}) => {
+}: CandidateProps) => {
   let buttonLoading = false;
   let isCancelLoading = false;
   let isSent = false;
 
   if (candidateState[candInfo._id]) {
-    buttonLoading = candidateState[candInfo._id].sendLoading;
-    isSent = candidateState[candInfo._id].sent;
-    isCancelLoading = candidateState[candInfo._id].isCancelLoading;
+    buttonLoading = !!candidateState[candInfo._id].sendLoading;
+    isSent = !!candidateState[candInfo._id].sent;
+    isCancelLoading = !!candidateState[candInfo._id].isCancelLoading;
   }
 
   return (

@@ -10,6 +10,7 @@ import Contact from "./components/Contact";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import { getContacts } from "../../../../../../../../client/ApiClient";
+import { useAppSelector } from "../../../../../../../../store/ReduxHooks";
 
 const contactContainerAnimation = {
   hidden: {
@@ -43,13 +44,12 @@ const contactAnimations = {
 
 const ContactDisplayer = () => {
   const [seachtext, setSearchtext] = useState("");
-  const contactData = useSelector((state) => state.chat.contacts);
+  const contactData = useAppSelector((state) => state.chat.contacts);
   const contacts = Object.keys(contactData).map((key) => contactData[key]);
   const [isloading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const userData = useSelector((state) => state.auth.userData);
+  const userData = useAppSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
-  const [parent, enableAnimate] = useAutoAnimate();
 
   const filterContact = () => {
     return contacts.filter((contact, i) => {
@@ -64,7 +64,7 @@ const ContactDisplayer = () => {
   const fetchContacts = useCallback(() => {
     setIsLoading(true);
     setIsError(false);
-    getContacts(userData.access_token)
+    getContacts(userData?.access_token ?? "undefined")
       .then((res) => {
         dispatch(ChatActions.setContacts(res.data));
       })
@@ -95,7 +95,7 @@ const ContactDisplayer = () => {
           ></input>
         </div>
       </div>
-      <BasicSpinner spinning={isloading} />
+      <BasicSpinner size="default" spinning={isloading} />
 
       {isError ? (
         <Result
@@ -135,7 +135,7 @@ const ContactDisplayer = () => {
                 layout
                 key={contact._id}
               >
-                <Contact contactInfo={contact} userData={userData} />
+                <Contact contactInfo={contact} />
               </motion.div>
             );
           })}

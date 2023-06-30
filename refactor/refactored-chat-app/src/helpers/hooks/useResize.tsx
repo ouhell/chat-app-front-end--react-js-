@@ -7,13 +7,12 @@ const useResize = () => {
   });
 
   const resize = useCallback(() => {
-    throttle(
+    throttle(() => {
       setWindowDimensions({
         windowWidth: window.innerWidth,
         windowHeigth: window.innerHeight,
-      }),
-      1000
-    );
+      });
+    }, 1000);
   }, []);
 
   useEffect(() => {

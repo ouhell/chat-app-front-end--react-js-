@@ -5,16 +5,17 @@ import { ComponentActions } from "../../../../../../../../../store/slices/Compon
 import { useEffect } from "react";
 import { ChatActions } from "../../../../../../../../../store/slices/ChatSlice";
 import { getConversation } from "../../../../../../../../../client/ApiClient";
+import { useAppSelector } from "../../../../../../../../../store/ReduxHooks";
 
-const Conversation = ({ data }) => {
+const Conversation = ({ data }: { data: Conversation }) => {
   const dispatch = useDispatch();
-  const conversation = useSelector(
+  const conversation = useAppSelector(
     (state) => state.chat.conversations[data._id]
   );
-  const userData = useSelector((state) => state.auth.userData);
+  const userData = useAppSelector((state) => state.auth.userData);
 
   const fetchMessages = () => {
-    getConversation(data._id, userData.access_token)
+    getConversation(data._id, userData?.access_token ?? "undefined")
       .then((res) => {
         dispatch(ChatActions.emit({ event: "chat", data: data._id }));
 

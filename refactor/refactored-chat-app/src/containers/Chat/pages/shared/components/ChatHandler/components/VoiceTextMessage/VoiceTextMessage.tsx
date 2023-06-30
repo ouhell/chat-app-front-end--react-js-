@@ -1,7 +1,6 @@
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, useRef, useState } from "react";
 import c from "./VoiceTextMessage.module.scss";
 
-import { LoadingOutlined } from "@ant-design/icons";
 import {
   PlayCircleSvg,
   PauseCircleSvg,
@@ -9,7 +8,7 @@ import {
 } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import { Dropdown, Slider, Spin, Avatar } from "antd";
 import { motion } from "framer-motion";
-function formatTime(time) {
+function formatTime(time: number) {
   if (Number.isNaN(time) || time === Infinity) return "00:00";
   const secs = `${parseInt(`${time % 60}`)}`.padStart(2, "0");
   const mins = `${parseInt(`${(time / 60) % 60}`)}`;
@@ -17,7 +16,7 @@ function formatTime(time) {
   return `${mins}:${secs}`;
 }
 
-const formatDate = (date) => {
+const formatDate = (date: Date) => {
   const hours = (date.getHours() + "").padStart(2, "0");
   const minutes = (date.getMinutes() + "").padStart(2, "0");
 
@@ -31,11 +30,18 @@ const items = [
     danger: true,
   },
 ];
-
-const VoiceTextMessage = ({ message, userId, deleteMessage }, ref) => {
+type MessageProps = {
+  message: Message;
+  userId: string;
+  deleteMessage: (message: Message) => void;
+};
+const VoiceTextMessage = (
+  { message, userId, deleteMessage }: MessageProps,
+  ref: any
+) => {
   /* const audioContext = useRef(new AudioContext());
   const track = useRef(); */
-  const audio = useRef();
+  const audio = useRef<HTMLAudioElement>(null);
   const sentDate = new Date(message.sent_date);
 
   const [metaDataConfig, setMetaDataConfig] = useState({
@@ -44,10 +50,9 @@ const VoiceTextMessage = ({ message, userId, deleteMessage }, ref) => {
     loaded: false,
   });
 
-  const [isAllSet, setIsAllSet] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const menuOnClick = ({ key }) => {
+  const menuOnClick = ({ key }: { key: string }) => {
     switch (key) {
       case "delete":
         deleteMessage(message);
@@ -60,9 +65,9 @@ const VoiceTextMessage = ({ message, userId, deleteMessage }, ref) => {
     } */
 
     if (isPlaying) {
-      await audio.current.pause();
+      await audio.current?.pause();
     } else {
-      await audio.current.play();
+      await audio.current?.play();
     }
   }
   const isSender = userId === message.sender._id;
@@ -128,7 +133,7 @@ const VoiceTextMessage = ({ message, userId, deleteMessage }, ref) => {
           max={metaDataConfig.full_duration}
           onChange={(value) => {
             if (!metaDataConfig.loaded) return;
-            audio.current.currentTime = value;
+            if (audio.current) audio.current.currentTime = value;
           }}
           value={metaDataConfig.currentTiming}
           style={{
@@ -167,7 +172,7 @@ const VoiceTextMessage = ({ message, userId, deleteMessage }, ref) => {
         }}
         ref={audio}
         src={message.content}
-        onLoadedMetadata={async (e) => {
+        onLoadedMetadata={async (e: React.ChangeEvent<HTMLAudioElement>) => {
           if (e.target.duration === Infinity) {
             setTimeout(() => {
               e.target.currentTime = 0;
@@ -185,7 +190,7 @@ const VoiceTextMessage = ({ message, userId, deleteMessage }, ref) => {
             loaded: true,
           });
         }}
-        onTimeUpdate={(e) => {
+        onTimeUpdate={(e: React.ChangeEvent<HTMLAudioElement>) => {
           setMetaDataConfig({
             ...metaDataConfig,
             currentTiming: e.target.currentTime,
@@ -198,7 +203,7 @@ const VoiceTextMessage = ({ message, userId, deleteMessage }, ref) => {
         onPlay={() => {
           setIsPlaying(true);
         }}
-        onEnded={async (e) => {
+        onEnded={async (e: React.ChangeEvent<HTMLAudioElement>) => {
           await e.target.pause();
           if (e.target.duration !== 0) e.target.currentTime = 0;
           e.target.volume = 1;

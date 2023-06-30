@@ -49,7 +49,10 @@ const Signin = () => {
   const signIn = () => {
     if (isSigningIn) return;
     setIsSigningIn(true);
-    apiLogin(signinData)
+    apiLogin({
+      identifier: signinData["identifier"].value,
+      password: signinData["password"].value,
+    })
       .then((res) => {
         dispatch(AuthActions.login(res.data));
       })

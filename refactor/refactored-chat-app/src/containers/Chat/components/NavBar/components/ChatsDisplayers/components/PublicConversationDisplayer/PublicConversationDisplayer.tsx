@@ -9,15 +9,18 @@ import BasicSpinner from "../../../../../../../../shared/components/BasicSpinner
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import Conversation from "./Conversation/Conversation";
 import c from "./PublicConversationDisplayer.module.scss";
+import { useAppSelector } from "../../../../../../../../store/ReduxHooks";
 
 const PublicConversationDisplayer = () => {
   const [searchtext, setSearchtext] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const publicConversations = useSelector((state) => state.chat.publicConvos);
+  const publicConversations = useAppSelector(
+    (state) => state.chat.publicConvos
+  );
 
-  const userData = useSelector((state) => state.auth.userData);
+  const userData = useAppSelector((state) => state.auth.userData);
 
   const dispatch = useDispatch();
 
@@ -32,7 +35,7 @@ const PublicConversationDisplayer = () => {
   function fetchPublicConversation() {
     setIsLoading(true);
     setIsError(false);
-    getPublicConversations(userData.access_token)
+    getPublicConversations(userData?.access_token ?? "undefined")
       .then((res) => {
         dispatch(ChatActions.setPublicConvos(res.data));
       })
@@ -63,7 +66,7 @@ const PublicConversationDisplayer = () => {
           ></input>
         </div>
       </div>
-      <BasicSpinner spinning={isLoading} />
+      <BasicSpinner size="default" spinning={isLoading} />
       {isError ? (
         <Result
           status={"error"}

@@ -1,6 +1,5 @@
-import React, { lazy, Suspense } from "react";
-import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { lazy, Suspense } from "react";
+
 import { Route, Routes } from "react-router-dom";
 
 import classes from "./App.module.scss";

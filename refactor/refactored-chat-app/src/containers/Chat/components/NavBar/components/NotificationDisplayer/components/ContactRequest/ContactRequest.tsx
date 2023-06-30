@@ -8,9 +8,15 @@ import {
   addContact,
   deleteContactRequest,
 } from "../../../../../../../../client/ApiClient";
-const ContactRequest = ({ requestData, userData, removerequest }) => {
+import { useAppSelector } from "../../../../../../../../store/ReduxHooks";
+type ContactRequest = {
+  requestData: Request;
+  removeRequest: (id: string) => any;
+};
+const ContactRequest = ({ requestData, removeRequest }: ContactRequest) => {
   const [isCancelLoading, setIsCancelLoading] = useState(false);
   const [isAcceptLoading, setIsAcceptLoading] = useState(false);
+  const userData = useAppSelector((state) => state.auth.userData);
 
   const dispatch = useDispatch();
 
@@ -19,7 +25,7 @@ const ContactRequest = ({ requestData, userData, removerequest }) => {
 
     setIsCancelLoading(true);
 
-    deleteContactRequest(userData.access_token, requestData._id)
+    deleteContactRequest(userData?.access_token ?? "undefined", requestData._id)
       .then((res) => {
         dispatch(ChatActions.removeRequest(requestData._id));
 
@@ -51,7 +57,7 @@ const ContactRequest = ({ requestData, userData, removerequest }) => {
 
     setIsAcceptLoading(true);
 
-    addContact(userData.access_token, requestData._id)
+    addContact(userData?.access_token ?? "undefined", requestData._id)
       .then((res) => {
         dispatch(ChatActions.removeRequest(requestData._id));
         dispatch(
@@ -72,7 +78,7 @@ const ContactRequest = ({ requestData, userData, removerequest }) => {
       });
   };
 
-  const userIsSender = requestData.requester._id === userData.userId;
+  const userIsSender = requestData.requester._id === userData?.userId;
   const opponent = userIsSender
     ? requestData.destinator
     : requestData.requester;

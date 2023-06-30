@@ -19,7 +19,11 @@ export const getConversation = (
   });
 };
 
-export const sendTextMessage = (message, conversationId, accessToken) => {
+export const sendTextMessage = (
+  message: string,
+  conversationId: string,
+  accessToken: string
+) => {
   return axios.post(
     "api/messages/" + conversationId,
     {
@@ -33,21 +37,29 @@ export const sendTextMessage = (message, conversationId, accessToken) => {
   );
 };
 
-export const sendImage = (formData, conversationId, accessToken) => {
+export const sendImage = (
+  formData: FormData,
+  conversationId: string,
+  accessToken: string
+) => {
   return axios.post(`api/messages/${conversationId}/image`, formData, {
     headers: {
       authorization: "Bearer " + accessToken,
     },
   });
 };
-export const sendVoiceMessage = (formData, conversationId, accessToken) => {
+export const sendVoiceMessage = (
+  formData: FormData,
+  conversationId: string,
+  accessToken: string
+) => {
   return axios.post(`api/messages/${conversationId}/voice`, formData, {
     headers: {
       authorization: "Bearer " + accessToken,
     },
   });
 };
-export const deleteMessageApi = (accessToken, messageId) => {
+export const deleteMessageApi = (accessToken: string, messageId: string) => {
   return axios.delete("api/messages/" + messageId, {
     headers: {
       authorization: "Bearer " + accessToken,
@@ -55,7 +67,7 @@ export const deleteMessageApi = (accessToken, messageId) => {
   });
 };
 
-export const getPublicConversations = (accessToken) => {
+export const getPublicConversations = (accessToken: string) => {
   return axios.get("api/users/conversations/public ", {
     headers: {
       authorization: "Bearer " + accessToken,
@@ -63,21 +75,21 @@ export const getPublicConversations = (accessToken) => {
   });
 };
 
-export const getContacts = (accessToken) => {
+export const getContacts = (accessToken: string) => {
   return axios.get("api/users/contacts", {
     headers: {
       authorization: "Bearer " + accessToken,
     },
   });
 };
-export const addContact = (accessToken, requestId) => {
+export const addContact = (accessToken: string, requestId: string) => {
   return axios.post("api/users/contacts/" + requestId, null, {
     headers: {
       authorization: "Bearer " + accessToken,
     },
   });
 };
-export const deleteContact = (accessToken, contactId) => {
+export const deleteContact = (accessToken: string, contactId: string) => {
   return axios.delete("api/users/contacts/" + contactId, {
     headers: {
       authorization: "Bearer " + accessToken,
@@ -85,21 +97,21 @@ export const deleteContact = (accessToken, contactId) => {
   });
 };
 
-export const blackListUser = (accessToken, userId) => {
+export const blackListUser = (accessToken: string, userId: string) => {
   return axios.patch(`/contacts/${userId}/blacklist`, null, {
     headers: {
       authorization: "Bearer " + accessToken,
     },
   });
 };
-export const blockContact = (accessToken, contactId) => {
+export const blockContact = (accessToken: string, contactId: string) => {
   return axios.patch(`/contacts/${contactId}/block`, null, {
     headers: {
       authorization: "Bearer " + accessToken,
     },
   });
 };
-export const unblockContact = (accessToken, contactId) => {
+export const unblockContact = (accessToken: string, contactId: string) => {
   return axios.patch(`/contacts/${contactId}/unblock`, null, {
     headers: {
       authorization: "Bearer " + accessToken,
@@ -107,21 +119,27 @@ export const unblockContact = (accessToken, contactId) => {
   });
 };
 
-export const getContactRequests = (accessToken) => {
+export const getContactRequests = (accessToken: string) => {
   return axios.get("api/users/requests", {
     headers: {
       authorization: "Bearer " + accessToken,
     },
   });
 };
-export const addContactRequest = (accessToken, destinatorId) => {
+export const addContactRequest = (
+  accessToken: string,
+  destinatorId: string
+) => {
   return axios.post("/api/users/requests/" + destinatorId, null, {
     headers: {
       authorization: "Bearer " + accessToken,
     },
   });
 };
-export const deleteContactRequest = (accessToken, requestId) => {
+export const deleteContactRequest = (
+  accessToken: string,
+  requestId: string
+) => {
   return axios.delete("api/users/requests/" + requestId, {
     headers: {
       authorization: "Bearer " + accessToken,
@@ -129,7 +147,10 @@ export const deleteContactRequest = (accessToken, requestId) => {
   });
 };
 
-export const getContactCandidates = (accessToken, searchtext) => {
+export const getContactCandidates = (
+  accessToken: string,
+  searchtext: string
+) => {
   return axios.get(
     "/api/users/candidates/contacts?search=" + searchtext.trim(),
     {
@@ -140,21 +161,24 @@ export const getContactCandidates = (accessToken, searchtext) => {
   );
 };
 
-export const getProfileData = (accessToken) => {
+export const getProfileData = (accessToken: string) => {
   return axios.get("api/users/profile", {
     headers: {
       authorization: "Bearer " + accessToken,
     },
   });
 };
-export const updateProfileData = (accessToken, updateData) => {
+export const updateProfileData = (
+  accessToken: string,
+  updateData: { [key: string]: string }
+) => {
   return axios.patch("api/users/profile", updateData, {
     headers: {
       authorization: "Bearer " + accessToken,
     },
   });
 };
-export const updateProfilePicture = (accessToken, image) => {
+export const updateProfilePicture = (accessToken: string, image: File) => {
   const data = new FormData();
   data.append("profile_pic", image);
 
@@ -165,7 +189,10 @@ export const updateProfilePicture = (accessToken, image) => {
   });
 };
 
-export const getContactProfileData = (accessToken, conversationId) => {
+export const getContactProfileData = (
+  accessToken: string,
+  conversationId: string
+) => {
   return axios.get(`/api/users/profile/${conversationId}/contact`, {
     headers: {
       authorization: "Bearer " + accessToken,
@@ -173,18 +200,26 @@ export const getContactProfileData = (accessToken, conversationId) => {
   });
 };
 
-export const apiLogin = (signinData) => {
+export const apiLogin = (signinData: {
+  identifier: string;
+  password: string;
+}) => {
   return axios.post("api/auth/login", {
-    identifier: signinData.identifier.value.trim(),
-    password: signinData.password.value.trim(),
+    identifier: signinData.identifier.trim(),
+    password: signinData.password.trim(),
   });
 };
-export const apiSignup = (userData) => {
+export const apiSignup = (userData: {
+  username: string;
+  personal_name: string;
+  email: string;
+  password: string;
+}) => {
   return axios.post("api/auth/signup", userData);
 };
-export const apiCheckUsernameExists = (username) => {
+export const apiCheckUsernameExists = (username: string) => {
   return axios.get("/api/auth/check/username/" + username);
 };
-export const apiCheckEmailExists = (email) => {
+export const apiCheckEmailExists = (email: string) => {
   return axios.get("/api/auth/check/email/" + email);
 };

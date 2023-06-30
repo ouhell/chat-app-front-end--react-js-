@@ -2,36 +2,45 @@ import c from "./VoiceRecorder.module.scss";
 import { MicSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
 
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import { NotifActions } from "../../../../../../../../store/slices/NotificationSlice";
-import { message } from "antd";
+
 import { sendVoiceMessage } from "../../../../../../../../client/ApiClient";
+import { useAppSelector } from "../../../../../../../../store/ReduxHooks";
 
 const initialRecordIconStyle = "none";
 
-const initialAudioConfig = {
+type AudioConfig = {
+  audioContext: AudioContext | null;
+  audioSource: MediaStreamAudioSourceNode | null;
+  audioAnalyser: AnalyserNode | null;
+  dataArray: Float32Array;
+  mediaStream: MediaStream | null;
+  mediaRecorder: MediaRecorder | null;
+};
+
+const initialAudioConfig: AudioConfig = {
   audioContext: null,
   audioSource: null,
   audioAnalyser: null,
-  dataArray: [],
+  dataArray: new Float32Array(),
   mediaStream: null,
   mediaRecorder: null,
 };
 
-const VoiceRecorder = ({ conversationId }) => {
+const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
   const [isGettingPermission, setIsGettingPermission] = useState(false);
   const [isRocordReady, setIsRecordReady] = useState(false);
   const [isRecording, setisRecording] = useState(false);
 
-  const audioChunks = useRef([]);
+  const audioChunks = useRef<Blob[]>([]);
   const audioConfig = useRef({ ...initialAudioConfig });
   const shouldDraw = useRef(false);
-  const micHolder = useRef();
-  const recordTimout = useRef();
+  const micHolder = useRef<HTMLElement>(null);
+  const recordTimeout = useRef<number>();
 
-  const userData = useSelector((state) => state.auth.userData);
+  const userData = useAppSelector((state) => state.auth.userData);
 
   const dispatch = useDispatch();
   /* 
@@ -98,7 +107,7 @@ const VoiceRecorder = ({ conversationId }) => {
           setIsRecordReady(true);
 
           //start recording
-          recordTimout.current = window.setTimeout(() => {
+          recordTimeout.current = window.setTimeout(() => {
             console.log("timout");
             endRecordingAudio();
           }, 5000);
@@ -133,7 +142,7 @@ const VoiceRecorder = ({ conversationId }) => {
   function draw() {
     if (!shouldDraw.current) return;
 
-    audioConfig.current.audioAnalyser.getFloatTimeDomainData(
+    audioConfig.current.audioAnalyser?.getFloatTimeDomainData(
       audioConfig.current.dataArray
     );
 
@@ -144,14 +153,15 @@ const VoiceRecorder = ({ conversationId }) => {
     rms /= audioConfig.current.dataArray.length;
 
     rms = rms * 10;
-    rms = rms.toFixed(2);
+    rms = parseFloat(rms.toFixed(2));
     if (rms > 0.5) rms = 0.5;
 
     let style = `0 0 1rem ${rms}rem red`;
 
     if (rms < 0.04) style = initialRecordIconStyle;
 
-    micHolder.current.style.boxShadow = style;
+    if (micHolder.current) micHolder.current.style.boxShadow = style;
+
     requestAnimationFrame(draw);
   }
 
@@ -170,15 +180,19 @@ const VoiceRecorder = ({ conversationId }) => {
     testAudio.volume = 0;
     testAudio.onended = () => {
       const senderInfo = {
-        _id: userData.userId,
-        username: userData.username,
-        profile_picture: userData.profile_picture,
+        _id: userData?.userId,
+        username: userData?.username,
+        profile_picture: userData?.profile_picture,
       };
 
       data.append("voice", blob);
-      data.append("duration", testAudio.duration);
+      // data.append("duration", testAudio.duration);
 
-      sendVoiceMessage(data, conversationId, userData.access_token)
+      sendVoiceMessage(
+        data,
+        conversationId,
+        userData?.access_token ?? "undefined"
+      )
         .then((res) => {
           const newMessage = { ...res.data, sender: senderInfo };
           dispatch(
@@ -222,7 +236,7 @@ const VoiceRecorder = ({ conversationId }) => {
       );
       testAudio.pause();
       testAudio.src = "";
-      testAudio = null;
+      // testAudio = null;
     };
     testAudio.play();
   }
@@ -234,12 +248,13 @@ const VoiceRecorder = ({ conversationId }) => {
   function endRecordingAudio() {
     if (!isRocordReady || !isRecording) return;
 
-    audioConfig.current.mediaRecorder.stop();
+    audioConfig.current.mediaRecorder?.stop();
 
     shouldDraw.current = false;
-    micHolder.current.style.boxShadow = initialRecordIconStyle;
+    if (micHolder.current)
+      micHolder.current.style.boxShadow = initialRecordIconStyle;
     setisRecording(false);
-    window.clearTimeout(recordTimout.current);
+    window.clearTimeout(recordTimeout.current);
     revokeMedia();
   }
 
@@ -250,6 +265,7 @@ const VoiceRecorder = ({ conversationId }) => {
         if (isRecording) endRecordingAudio();
         else startRecordingAudio();
       }}
+      // @ts-ignore
       isrecording={isRecording ? "true" : "false"}
     >
       <span /* style={recordIconStyle} */ ref={micHolder}>

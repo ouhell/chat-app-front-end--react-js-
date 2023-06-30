@@ -12,8 +12,17 @@ const items = [
   },
 ];
 
-const ImageMessage = ({ message, userId, deleteMessage }, ref) => {
-  const menuOnClick = ({ key }) => {
+type MessageProps = {
+  message: Message;
+  userId: string;
+  deleteMessage: (message: Message) => void;
+};
+
+const ImageMessage = (
+  { message, userId, deleteMessage }: MessageProps,
+  ref: any
+) => {
+  const menuOnClick = ({ key }: { key: string }) => {
     switch (key) {
       case "delete":
         deleteMessage(message);

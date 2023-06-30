@@ -15,17 +15,21 @@ import { Popover } from "antd";
 import EmojiPicker from "emoji-picker-react";
 import VoiceRecorder from "./components/VoiceRecorder/VoiceRecorder";
 import { sendImage, sendTextMessage } from "../../../../../../client/ApiClient";
+import { useAppSelector } from "../../../../../../store/ReduxHooks";
 
 const InputHandler = ({
   sendAllowed,
 
   conversationId,
+}: {
+  sendAllowed: boolean;
+  conversationId: string;
 }) => {
   const [message, setMessage] = useState("");
 
-  const fileInput = useRef();
-  const textInput = useRef();
-  const userData = useSelector((state) => state.auth.userData);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const textInput = useRef<HTMLInputElement>(null);
+  const userData = useAppSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
 
   const sendMessage = () => {
@@ -36,12 +40,16 @@ const InputHandler = ({
     const generatedId = Math.random() * 10;
 
     const senderInfo = {
-      _id: userData.userId,
-      username: userData.username,
-      profile_picture: userData.profile_picture,
+      _id: userData?.userId,
+      username: userData?.username,
+      profile_picture: userData?.profile_picture,
     };
 
-    sendTextMessage(readyMessage, conversationId, userData.access_token)
+    sendTextMessage(
+      readyMessage,
+      conversationId,
+      userData?.access_token ?? "undefined"
+    )
       .then((res) => {
         const newMessage = { ...res.data, sender: senderInfo };
         dispatch(
@@ -87,8 +95,8 @@ const InputHandler = ({
 
     setMessage("");
   };
-  const sendFile = (file, value) => {
-    const userId = userData.userId;
+  const sendFile = (file: File, value: string) => {
+    const userId = userData?.userId;
 
     const generatedId = Math.random() * 10;
 
@@ -96,12 +104,12 @@ const InputHandler = ({
     data.append("file", file);
 
     const senderInfo = {
-      _id: userData.userId,
-      username: userData.username,
-      profile_picture: userData.profile_picture,
+      _id: userData?.userId,
+      username: userData?.username,
+      profile_picture: userData?.profile_picture,
     };
 
-    sendImage(data, conversationId, userData.access_token)
+    sendImage(data, conversationId, userData?.access_token ?? "undefined")
       .then((res) => {
         /* chatSocket.emit("send message", res.data); */
         const newMessage = { ...res.data, sender: senderInfo };
@@ -157,7 +165,7 @@ const InputHandler = ({
             display: "none",
           }}
           onChange={(e) => {
-            sendFile(e.target.files[0], e.target.value);
+            sendFile(e.target.files?.[0] as File, e.target.value);
           }}
         />
         <AttatchmentSvg
@@ -165,7 +173,7 @@ const InputHandler = ({
             rotate: "45deg",
           }}
           onClick={() => {
-            fileInput.current.click();
+            fileInput.current?.click();
           }}
         />
         <input
@@ -192,12 +200,13 @@ const InputHandler = ({
               previewConfig={{
                 showPreview: false,
               }}
+              // @ts-ignore
               emojiStyle="facebook"
               onEmojiClick={(emoji) => {
                 setMessage((prevMassage) => {
                   return prevMassage + emoji.emoji;
                 });
-                textInput.current.focus();
+                textInput.current?.focus();
               }}
             />
           }
@@ -210,7 +219,7 @@ const InputHandler = ({
           className={classes.Sender}
           onClick={() => {
             sendMessage();
-            textInput.current.focus();
+            textInput.current?.focus();
           }}
         >
           <SendArrowSvg />

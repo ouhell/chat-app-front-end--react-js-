@@ -6,7 +6,7 @@ interface Conversation {
   blackList: Array<Types.ObjectId>;
   lockedInvite: boolean;
   admins: Array<Types.ObjectId>;
-  creation_date: Date;
+  creation_date: string;
   name: string;
 }
 interface User {
@@ -28,6 +28,9 @@ interface Message {
   content: string;
   content_type: string;
   hidden: boolean;
+  trueId?: string;
+  error?: boolean;
+  temporary?: boolean;
 }
 
 interface Request {
@@ -35,4 +38,11 @@ interface Request {
   requester: typeof Types.ObjectId;
   destinator: typeof Types.ObjectId;
   date: Date;
+}
+
+interface Contact {
+  _id: string;
+  identifier: string;
+  creation_date: string;
+  user: User;
 }
