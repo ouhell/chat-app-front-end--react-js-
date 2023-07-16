@@ -172,7 +172,7 @@ function NavBar() {
           >
             <Avatar
               className="util-pointer util-capitalized"
-              src={userData?.profile_picture ?? ""}
+              src={userData?.profile_picture}
             >
               {userData?.username[0] ?? "U"}
             </Avatar>

@@ -25,16 +25,13 @@ const Contact = ({ contactInfo }: ContactProps) => {
   const dispatch = useDispatch();
 
   const fetchMessages = useCallback(() => {
-    getConversation(contactInfo._id, userData?.access_token ?? "undefined")
+    getConversation(contactInfo._id, userData?.access_token ?? "undefined", {
+      skip: 0,
+    })
       .then((res) => {
         dispatch(ChatActions.emit({ event: "chat", data: contactInfo._id }));
 
-        dispatch(
-          ChatActions.setConversation({
-            conversation_id: contactInfo._id,
-            data: res.data,
-          })
-        );
+        dispatch(ChatActions.setConversation(res.data));
       })
       .catch((err) => {
         console.log("fetch messages error" + contactInfo._id, err);

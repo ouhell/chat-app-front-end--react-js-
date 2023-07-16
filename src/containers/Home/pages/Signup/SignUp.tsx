@@ -87,8 +87,12 @@ const SignUp = () => {
           // check if username already exists
           // setloading("username", true);
           setSignupFormData((old) => {
-            const newFormData = structuredClone(old);
-            newFormData.feilds.username.isLoading = true;
+            const newFormData = { ...old };
+            const newFeilds = { ...newFormData.feilds };
+            const newFeild = { ...newFeilds.username };
+            newFeild.isLoading = true;
+            newFeilds.username = newFeild;
+            newFormData.feilds = newFeilds;
             return newFormData;
           });
           usernameCounter.current++;
@@ -167,8 +171,12 @@ const SignUp = () => {
 
           // setloading("email", true);
           setSignupFormData((old) => {
-            const newFormData = structuredClone(old);
-            newFormData.feilds.email.isLoading = true;
+            const newFormData = { ...old };
+            const newFeilds = { ...newFormData.feilds };
+            const newFeild = { ...newFeilds.email };
+            newFeild.isLoading = true;
+            newFeilds.email = newFeild;
+            newFormData.feilds = newFeilds;
             return newFormData;
           });
           emailCounter.current++;
@@ -209,9 +217,9 @@ const SignUp = () => {
             isValid: true,
             errorMessage: "",
           };
-          signupFormData.feilds.confrim_password.validation(
-            signupFormData.feilds.confrim_password.value
-          );
+          // signupFormData.feilds.confrim_password.validation(
+          //   signupFormData.feilds.confrim_password.value
+          // );
           // this.parent.confrim_password.validation(
           //   this.parent.confrim_password.value
           // );
@@ -260,35 +268,35 @@ const SignUp = () => {
           maxLength: 25,
         },
       },
-      confrim_password: {
-        value: "",
-        validation: function (value) {
-          const testingValue = value.trim();
-          const validation = {
-            isValid: true,
-            errorMessage: "",
-          };
+      // confrim_password: {
+      //   value: "",
+      //   validation: function (value) {
+      //     const testingValue = value.trim();
+      //     const validation = {
+      //       isValid: true,
+      //       errorMessage: "",
+      //     };
 
-          if (testingValue !== signupFormData.feilds.password.value.trim()) {
-            validation.isValid = false;
+      //     if (testingValue !== signupFormData.feilds.password.value.trim()) {
+      //       validation.isValid = false;
 
-            return setValidation("confrim_password", validation);
-          }
+      //       return setValidation("confrim_password", validation);
+      //     }
 
-          setValidation("confrim_password", validation);
-        },
-        isValid: false,
-        errorMessage: "",
-        isTouched: false,
-        isLoading: false,
-        input_config: {
-          type: "password",
-          prefix: <LockOutlined className={classes.PrefixIcon} />,
-          placeHolder: "Confirm Password",
-          visibilityToggle: false,
-          maxLength: 25,
-        },
-      },
+      //     setValidation("confrim_password", validation);
+      //   },
+      //   isValid: false,
+      //   errorMessage: "",
+      //   isTouched: false,
+      //   isLoading: false,
+      //   input_config: {
+      //     type: "password",
+      //     prefix: <LockOutlined className={classes.PrefixIcon} />,
+      //     placeHolder: "Confirm Password",
+      //     visibilityToggle: false,
+      //     maxLength: 25,
+      //   },
+      // },
     },
   });
   const [isSigningUp, setIsSigningUp] = useState(false);
@@ -440,6 +448,7 @@ const SignUp = () => {
           {Object.keys(signupFormData.feilds).map((key, i) => {
             const feild = signupFormData.feilds[key];
             const config = feild.input_config;
+
             const props = {
               onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                 changeValue(key, e.target.value);
@@ -483,6 +492,7 @@ const SignUp = () => {
                 className={classes.InputHolder}
                 variants={variants}
                 key={key}
+                
               >
                 {feild.errorMessage ? (
                   <div className={classes.InputError}>{feild.errorMessage}</div>

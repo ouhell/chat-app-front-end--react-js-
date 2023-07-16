@@ -84,8 +84,12 @@ const Profile = () => {
           // check if username already exists
 
           setUpdateFormData((old) => {
-            const newFormData = structuredClone(old);
-            newFormData.feilds.username.isLoading = true;
+            const newFormData = { ...old };
+            const newFeilds = { ...newFormData.feilds };
+            const newFeild = { ...newFeilds.username };
+            newFeild.isLoading = true;
+            newFeilds.username = newFeild;
+            newFormData.feilds = newFeilds;
             return newFormData;
           });
           usernameCounter.current++;
@@ -168,8 +172,12 @@ const Profile = () => {
           }
 
           setUpdateFormData((old) => {
-            const newFormData = structuredClone(old);
-            newFormData.feilds.email.isLoading = true;
+            const newFormData = { ...old };
+            const newFeilds = { ...newFormData.feilds };
+            const newFeild = { ...newFeilds.email };
+            newFeild.isLoading = true;
+            newFeilds.email = newFeild;
+            newFormData.feilds = newFeilds;
             return newFormData;
           });
           emailCounter.current++;

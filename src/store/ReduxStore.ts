@@ -13,7 +13,7 @@ const store = configureStore({
   middleware: (getDefault) => {
     return getDefault({
       serializableCheck: {
-        // ignoreActions: [ChatSlice.actions],
+        ignoreActions: true,
       },
     });
   },

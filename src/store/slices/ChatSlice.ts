@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { io } from "socket.io-client";
 import { HostName } from "../../client/ApiClient";
+import { MessagesPayload } from "../../client/responseTypes/messageResponses";
 
 type ChatState = {
   conversations: {
@@ -14,6 +15,11 @@ type ChatState = {
     loaded: boolean;
     data: Request[];
   };
+};
+
+type AddMessageContent = {
+  conversation_id: string;
+  newMessage: Message;
 };
 
 const initialState: ChatState = {
@@ -55,9 +61,16 @@ const ChatSlice = createSlice({
       socket.removeAllListeners(event);
       socket.on(event, callback);
     },
-    setConversation: (state, action) => {
-      const { conversation_id, data } = action.payload;
-      state.conversations[conversation_id] = data;
+    setConversation: (state, action: PayloadAction<MessagesPayload>) => {
+      const { conversation, messages } = action.payload;
+
+      const newMessages = [
+        ...(state.conversations[conversation._id]?.messages ?? []),
+      ];
+      state.conversations[conversation._id] = {
+        conversation: conversation,
+        messages: messages.data,
+      };
     },
     setConversationMessages: (state, action) => {
       const { conversation_id, newMessages } = action.payload;
@@ -70,7 +83,7 @@ const ChatSlice = createSlice({
       delete newConversations[conversationId];
       state.conversations = newConversations;
     },
-    addMessage: (state, action) => {
+    addMessage: (state, action: PayloadAction<AddMessageContent>) => {
       const { conversation_id, newMessage } = action.payload;
       let newMessages = [];
       if (state.conversations[conversation_id]) {

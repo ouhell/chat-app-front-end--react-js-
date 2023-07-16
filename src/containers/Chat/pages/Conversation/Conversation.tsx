@@ -31,13 +31,8 @@ const Conversation = () => {
     getConversation(conversationId, userData?.access_token ?? "undefined")
       .then((res) => {
         dispatch(ChatActions.emit({ event: "chat", data: conversationId }));
-
-        dispatch(
-          ChatActions.setConversation({
-            conversation_id: conversationId,
-            data: res.data,
-          })
-        );
+        console.log(res.data);
+        dispatch(ChatActions.setConversation(res.data));
       })
       .catch((err) => {
         console.log("fetching messages error", err);

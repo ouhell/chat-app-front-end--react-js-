@@ -1,4 +1,5 @@
 import axios from "axios";
+import { MessagesPayload } from "./responseTypes/messageResponses";
 
 const isdev = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
 
@@ -10,13 +11,28 @@ console.log("Hostname", HostName);
 
 export const getConversation = (
   conversationId: string,
-  accessToken: string
+  accessToken: string,
+  params?: {
+    skip: number;
+    [key: string]: string | number;
+  }
 ) => {
-  return axios.get("api/messages/" + conversationId, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
-  });
+  const urlParams = new URLSearchParams();
+  if (params)
+    for (let key in params) {
+      urlParams.append(key, params[key] as string);
+    }
+
+  console.log("params", urlParams.toString());
+
+  return axios.get<MessagesPayload>(
+    "api/messages/" + conversationId + "?" + urlParams.toString(),
+    {
+      headers: {
+        authorization: "Bearer " + accessToken,
+      },
+    }
+  );
 };
 
 export const sendTextMessage = (

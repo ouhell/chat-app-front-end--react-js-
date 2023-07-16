@@ -184,7 +184,7 @@ const ChatHandler = ({
             isError,
             fetchMessages,
             deleteMessage,
-            userData?.access_token ?? "undefined"
+            userData?.userId ?? "undefined"
           )}
         </AnimatePresence>
       </div>

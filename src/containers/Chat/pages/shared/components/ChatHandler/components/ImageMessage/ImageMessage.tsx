@@ -3,7 +3,8 @@ import { LoadingOutlined } from "@ant-design/icons";
 import c from "./ImageMessage.module.scss";
 import { MoreDotsSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import { motion } from "framer-motion";
-import { forwardRef } from "react";
+
+import React from "react";
 const items = [
   {
     label: "delete message",
@@ -92,4 +93,4 @@ const ImageMessage = (
   );
 };
 
-export default forwardRef(ImageMessage);
+export default React.forwardRef(ImageMessage);

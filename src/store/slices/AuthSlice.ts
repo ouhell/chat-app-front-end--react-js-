@@ -46,7 +46,7 @@ const AuthenticationSlice = createSlice({
         JSON.stringify({ ...state.userData, profile_picture: action.payload })
       );
 
-      const newUserData = structuredClone(state.userData) as UserData;
+      const newUserData = { ...state.userData } as UserData;
       newUserData.profile_picture = action.payload;
       state.userData = newUserData;
     },
@@ -55,7 +55,7 @@ const AuthenticationSlice = createSlice({
         "userData",
         JSON.stringify({ ...state.userData, username: action.payload })
       );
-      const newUserData = structuredClone(state.userData) as UserData;
+      const newUserData = { ...state.userData } as UserData;
       newUserData.username = action.payload;
       state.userData = newUserData;
     },

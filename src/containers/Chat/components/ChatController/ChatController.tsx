@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { ChatActions } from "../../../../store/slices/ChatSlice";
 import { getContactRequests } from "../../../../client/ApiClient";
 import { useAppSelector } from "../../../../store/ReduxHooks";
+import { NotifActions } from "../../../../store/slices/NotificationSlice";
 const ChatController = () => {
   const { pathname } = useLocation();
 
@@ -73,6 +74,13 @@ const ChatController = () => {
             })
           );
         },
+      })
+    );
+
+    dispatch(
+      ChatActions.on({
+        event: "added Conversation",
+        callback: (conversation_id: string) => {},
       })
     );
   }, []);
