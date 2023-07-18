@@ -5,7 +5,13 @@ import { MessagesPayload } from "../../client/responseTypes/messageResponses";
 
 type ChatState = {
   conversations: {
-    [id: string]: { conversation: Conversation; messages: Message[] };
+    [id: string]: {
+      conversation: Conversation;
+      messages: Message[];
+      props: {
+        loadedLast: boolean;
+      };
+    };
   };
   contacts: {
     [id: string]: Contact;
@@ -63,13 +69,25 @@ const ChatSlice = createSlice({
     },
     setConversation: (state, action: PayloadAction<MessagesPayload>) => {
       const { conversation, messages } = action.payload;
-
+      const set = new Set<string>();
       const newMessages = [
+        ...messages.data,
         ...(state.conversations[conversation._id]?.messages ?? []),
-      ];
+      ].filter((msg) => {
+        if (set.has(msg._id)) return false;
+        set.add(msg._id);
+        return true;
+      });
+      console.log("new data", messages.data);
+      console.log("new messages: ", newMessages);
       state.conversations[conversation._id] = {
         conversation: conversation,
-        messages: messages.data,
+        messages: newMessages,
+        props: {
+          loadedLast:
+            !!state.conversations[conversation._id]?.props.loadedLast ||
+            messages.isLastPage,
+        },
       };
     },
     setConversationMessages: (state, action) => {

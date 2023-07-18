@@ -1,13 +1,9 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { ChatActions } from "../../../../store/slices/ChatSlice";
 import { getContactRequests } from "../../../../client/ApiClient";
 import { useAppSelector } from "../../../../store/ReduxHooks";
-import { NotifActions } from "../../../../store/slices/NotificationSlice";
 const ChatController = () => {
-  const { pathname } = useLocation();
-
   const userData = useAppSelector((state) => state.auth.userData);
 
   const dispatch = useDispatch();
@@ -80,7 +76,7 @@ const ChatController = () => {
     dispatch(
       ChatActions.on({
         event: "added Conversation",
-        callback: (conversation_id: string) => {},
+        callback: () => {},
       })
     );
   }, []);

@@ -24,11 +24,16 @@ const Conversation = () => {
   const [isError, setIsError] = useState(false);
   const dispatch = useDispatch();
 
-  const fetchMessages = useCallback(() => {
-    setIsLoading(true);
-    setIsError(false);
+  const fetchMessages = () => {
+    if (conversation ? !conversation.messages.length : true) {
+      setIsLoading(true);
+    }
 
-    getConversation(conversationId, userData?.access_token ?? "undefined")
+    setIsError(false);
+    console.log("fetching from : ", conversation);
+    getConversation(conversationId, userData?.access_token ?? "undefined", {
+      skip: conversation?.messages.length ?? 0,
+    })
       .then((res) => {
         dispatch(ChatActions.emit({ event: "chat", data: conversationId }));
         console.log(res.data);
@@ -41,7 +46,7 @@ const Conversation = () => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [conversationId]);
+  };
 
   useEffect(() => {
     if (!conversation) fetchMessages();

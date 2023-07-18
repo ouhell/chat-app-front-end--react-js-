@@ -1,6 +1,6 @@
 import c from "./Conversation.module.scss";
 import { NavLink } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { ComponentActions } from "../../../../../../../../../store/slices/ComponentSlice";
 import { useEffect } from "react";
 import { ChatActions } from "../../../../../../../../../store/slices/ChatSlice";
@@ -19,12 +19,7 @@ const Conversation = ({ data }: { data: Conversation }) => {
       .then((res) => {
         dispatch(ChatActions.emit({ event: "chat", data: data._id }));
 
-        dispatch(
-          ChatActions.setConversation({
-            conversation_id: data._id,
-            data: res.data,
-          })
-        );
+        dispatch(ChatActions.setConversation(res.data));
       })
       .catch((err) => {
         console.log("fetching public messages error", err);

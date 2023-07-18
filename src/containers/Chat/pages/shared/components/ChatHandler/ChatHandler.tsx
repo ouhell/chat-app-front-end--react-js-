@@ -12,6 +12,7 @@ import { useRef, useEffect, useState } from "react";
 import Scroller from "./components/Scroller/Scroller";
 import { deleteMessageApi } from "../../../../../../client/ApiClient";
 import { useAppSelector } from "../../../../../../store/ReduxHooks";
+import { useParams } from "react-router-dom";
 
 const renderMessages = (
   data: Message[],
@@ -98,7 +99,10 @@ const ChatHandler = ({
 }: ChatHandlerProps) => {
   const dispatch = useDispatch();
   const [showScroller, setShowScroller] = useState(false);
-
+  const { conversationId } = useParams();
+  const conversationProps = useAppSelector(
+    (state) => state.chat.conversations[conversationId ?? "undefined"]?.props
+  );
   const userData = useAppSelector((state) => state.auth.userData);
   const chatContainer = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
@@ -106,6 +110,7 @@ const ChatHandler = ({
   const scrollerTimeout = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
+    console.log("conv id", conversationId);
     if (!chatContainer.current || prevData.current.length > data.length) return;
     const scrollDistance = chatContainer.current.scrollTop;
     const scrollHeight = chatContainer.current.scrollHeight;
@@ -126,6 +131,29 @@ const ChatHandler = ({
 
     scrollChat();
   }, [data]);
+
+  useEffect(() => {
+    const upLoadHandler = () => {
+      if (!chatContainer.current) return;
+      const scrollableDiv = chatContainer.current;
+      let scrollTop = scrollableDiv.scrollTop;
+      // let scrollHeight = scrollableDiv.scrollHeight;
+      // let clientHeight = scrollableDiv.clientHeight;
+
+      if (
+        scrollTop <= 0 && conversationProps
+          ? !conversationProps.loadedLast
+          : false
+      ) {
+        fetchMessages();
+      }
+    };
+    chatContainer.current?.addEventListener("scroll", upLoadHandler);
+    return () => {
+      chatContainer.current?.removeEventListener("scroll", upLoadHandler);
+    };
+  }, [chatContainer.current, conversationProps]);
+  // console.log("props dd", conversationProps);
 
   useEffect(() => {
     prevData.current = data;

@@ -23,8 +23,6 @@ export const getConversation = (
       urlParams.append(key, params[key] as string);
     }
 
-  console.log("params", urlParams.toString());
-
   return axios.get<MessagesPayload>(
     "api/messages/" + conversationId + "?" + urlParams.toString(),
     {

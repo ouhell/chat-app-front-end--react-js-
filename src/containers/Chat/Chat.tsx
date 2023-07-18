@@ -2,7 +2,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import classes from "./Chat.module.scss";
 import NavBar from "./components/NavBar/NavBar";
 import { useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Profile from "./pages/Profile/Profile";
 import { ComponentActions } from "../../store/slices/ComponentSlice";
 import Default from "./pages/Default/Default";

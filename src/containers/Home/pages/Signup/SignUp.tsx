@@ -1,10 +1,9 @@
 import classes from "./Signup.module.scss";
 import { Input, Button } from "antd";
-import { Fragment, ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 
 import {
   UnlockOutlined,
-  LockOutlined,
   UserOutlined,
   CheckOutlined,
   LoadingOutlined,
@@ -105,7 +104,7 @@ const SignUp = () => {
                 validation.errorMessage = "username already exists!";
               }
             })
-            .catch((err) => {
+            .catch((_) => {
               validation.isValid = false;
               validation.errorMessage = "connection error";
             })
@@ -189,7 +188,7 @@ const SignUp = () => {
                 validation.errorMessage = "email already exists!";
               }
             })
-            .catch((err) => {
+            .catch((_) => {
               validation.isValid = false;
               validation.errorMessage = "connection error";
             })
@@ -323,7 +322,7 @@ const SignUp = () => {
     // }
 
     apiSignup(userData)
-      .then((res) => {
+      .then((_) => {
         navigate("/signin");
       })
       .catch((err) => {
@@ -445,7 +444,7 @@ const SignUp = () => {
           initial="hidden"
           animate="visible"
         >
-          {Object.keys(signupFormData.feilds).map((key, i) => {
+          {Object.keys(signupFormData.feilds).map((key) => {
             const feild = signupFormData.feilds[key];
             const config = feild.input_config;
 
@@ -492,7 +491,6 @@ const SignUp = () => {
                 className={classes.InputHolder}
                 variants={variants}
                 key={key}
-                
               >
                 {feild.errorMessage ? (
                   <div className={classes.InputError}>{feild.errorMessage}</div>

@@ -1,8 +1,8 @@
 import c from "./Contact.module.scss";
 import { NavLink } from "react-router-dom";
-import { Avatar, message } from "antd";
+import { Avatar } from "antd";
 import { ChatActions } from "../../../../../../../../../store/slices/ChatSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { ComponentActions } from "../../../../../../../../../store/slices/ComponentSlice";
 import { useEffect } from "react";
 import { useCallback } from "react";
