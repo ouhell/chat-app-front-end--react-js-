@@ -1,41 +1,53 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { ChatActions } from "../../../../store/slices/ChatSlice";
-import { getContactRequests } from "../../../../client/ApiClient";
+import { getContactRequests, getContacts } from "../../../../client/ApiClient";
 import { useAppSelector } from "../../../../store/ReduxHooks";
 const ChatController = () => {
   const userData = useAppSelector((state) => state.auth.userData);
 
   const dispatch = useDispatch();
 
+  const fetchContacts = () => {
+    getContacts(userData?.access_token ?? "undefined").then((res) => {
+      dispatch(ChatActions.setContacts(res.data));
+    });
+  };
+
   const fetchNotifications = () => {
-    getContactRequests(userData?.access_token ?? "undefined")
-      .then((res) => {
-        dispatch(ChatActions.setRequests(res.data));
-        dispatch(
-          ChatActions.on({
-            event: "receive request",
-            callback: (request) => {
-              dispatch(ChatActions.addRequest(request));
-            },
-          })
-        );
-        dispatch(
-          ChatActions.on({
-            event: "canceled request",
-            callback: (requestId) => {
-              dispatch(ChatActions.removeRequest(requestId));
-            },
-          })
-        );
-      })
-      .catch((err) => {
-        console.log("fetch request error :", err);
-      });
+    getContactRequests(userData?.access_token ?? "undefined").then((res) => {
+      dispatch(ChatActions.setRequests(res.data));
+      dispatch(
+        ChatActions.on({
+          event: "receive request",
+          callback: (request) => {
+            dispatch(ChatActions.addRequest(request));
+          },
+        })
+      );
+      dispatch(
+        ChatActions.on({
+          event: "canceled request",
+          callback: (requestId) => {
+            dispatch(ChatActions.removeRequest(requestId));
+          },
+        })
+      );
+    });
   };
 
   useEffect(() => {
     fetchNotifications();
+
+    dispatch(
+      ChatActions.on({
+        event: "accepted request",
+        callback: (request: Request) => {
+          dispatch(ChatActions.removeRequest(request._id));
+          fetchContacts();
+        },
+      })
+    );
 
     dispatch(
       ChatActions.emit({
@@ -77,6 +89,22 @@ const ChatController = () => {
       ChatActions.on({
         event: "added Conversation",
         callback: () => {},
+      })
+    );
+
+    dispatch(
+      ChatActions.on({
+        event: "user blocked",
+        callback: (conversation_id: string, user_id: string) => {
+          console.log("received socket block", {
+            convID: conversation_id,
+            blockedMF: user_id,
+          });
+          ChatActions.setUserBanned({
+            bannedUser: user_id,
+            conversationId: conversation_id,
+          });
+        },
       })
     );
   }, []);

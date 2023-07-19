@@ -46,8 +46,8 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
     },
   ];
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setisError] = useState(false);
+  const [_isLoading, setIsLoading] = useState(false);
+  const [_isError, setisError] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -76,7 +76,7 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
   const removeContact = () => {
     console.log("removing :", contactId);
     deleteContact(userData?.access_token ?? "undefined", contactId)
-      .then((res) => {
+      .then((_res) => {
         dispatch(ChatActions.removeContact({ contactId: conversationId }));
         dispatch(ChatActions.removeConversation({ conversationId }));
       })
@@ -85,7 +85,7 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
   const blackListContact = () => {
     console.log("removing :", contactId);
     blackListUser(userData?.access_token ?? "undefined", contactId)
-      .then((res) => {
+      .then((_res) => {
         dispatch(ChatActions.removeContact({ contactId: conversationId }));
         dispatch(ChatActions.removeConversation({ conversationId }));
       })
@@ -94,7 +94,23 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
 
   const blockUser = () => {
     blockContact(userData?.access_token ?? "undefined", contactId)
-      .then(() => {
+      .then((res) => {
+        console.log("blocking res", res);
+        dispatch(
+          ChatActions.emit({
+            event: "block",
+            data: {
+              conversationId: conversationId,
+              blockedUser: contactId,
+            },
+          })
+        );
+        dispatch(
+          ChatActions.setUserBanned({
+            bannedUser: contactId,
+            conversationId: conversationId,
+          })
+        );
         dispatch(
           NotifActions.notify({
             type: "success",
@@ -114,6 +130,12 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
           NotifActions.notify({
             type: "success",
             message: "user unblocked",
+          })
+        );
+        dispatch(
+          ChatActions.setUserUnbanned({
+            bannedUser: contactId,
+            conversationId: conversationId,
           })
         );
       })

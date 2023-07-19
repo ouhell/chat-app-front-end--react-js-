@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { NavLink, Route, Routes } from "react-router-dom";
 import { motion } from "framer-motion";
 import classes from "./ChatDisplayer.module.scss";
 import ContactDisplayer from "./components/ContactDisplayer/ContactDisplayer";

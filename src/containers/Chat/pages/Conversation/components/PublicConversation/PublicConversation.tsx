@@ -2,7 +2,6 @@ import ChatHandler from "../../../shared/components/ChatHandler/ChatHandler";
 import ChatHeader from "./components/ChatHeader/ChatHeader";
 import c from "./PublicConversation.module.scss";
 import { motion } from "framer-motion";
-import { conversationAnimationVariants } from "../../shared/conversationAnimation";
 type PublicConversationProps = {
   isLoading: boolean;
   isError: boolean;

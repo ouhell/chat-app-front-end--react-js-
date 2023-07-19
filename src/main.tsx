@@ -18,9 +18,9 @@ import store from "./store/ReduxStore";
 axios.defaults.baseURL = HostName;
 axios.interceptors.response.use(
   (response) => response,
-  (error) => {
+  (error: AxiosError) => {
     console.log(error);
-    return error;
+    return Promise.reject(error);
   }
 );
 console.log("main js ");

@@ -113,7 +113,7 @@ export const MoreDotsSvg = (props: SVGProps<SVGSVGElement>) => {
     </svg>
   );
 };
-export const ChatBlobsSvg = (props: SVGProps<SVGSVGElement>) => {
+export const ChatBlobsSvg = (_props: SVGProps<SVGSVGElement>) => {
   return (
     <svg viewBox="0 0 500 500" enableBackground="new 0 0 500 500">
       <g>

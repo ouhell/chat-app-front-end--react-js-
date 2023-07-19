@@ -8,12 +8,6 @@ import Home from "./containers/Home/Home";
 import Loading from "./pages/Loading/Loading";
 import { useAppSelector } from "./store/ReduxHooks";
 
-function wait() {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, 3000);
-  });
-}
-
 /* const Home = lazy(() => {
   return import("./containers/Home/Home");
 }); */

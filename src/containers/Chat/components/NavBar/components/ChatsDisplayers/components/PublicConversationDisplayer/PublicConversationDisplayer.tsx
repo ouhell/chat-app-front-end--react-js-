@@ -2,7 +2,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Result, Button } from "antd";
 
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { getPublicConversations } from "../../../../../../../../client/ApiClient";
 import { SearchSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import BasicSpinner from "../../../../../../../../shared/components/BasicSpinner/BasicSpinner";

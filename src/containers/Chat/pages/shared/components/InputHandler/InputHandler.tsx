@@ -1,14 +1,12 @@
 import classes from "./InputHandler.module.scss";
 import {
-  MicSvg,
   MoodSvg,
   SendArrowSvg,
   AttatchmentSvg,
 } from "../../../../../../shared/assets/svg/SvgProvider";
 import { useState } from "react";
 
-import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useRef } from "react";
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import { Popover } from "antd";
@@ -37,7 +35,7 @@ const InputHandler = ({
 
     const readyMessage = message.trim();
     if (!readyMessage) return;
-    const generatedId = Math.random() * 10;
+    const generatedId = Math.random() * 10 + "t";
 
     const senderInfo = {
       _id: userData?.userId,
@@ -76,14 +74,17 @@ const InputHandler = ({
         );
       });
 
-    const tempMessage = {
+    const tempMessage: Message = {
       _id: generatedId,
       sender: senderInfo,
       message: readyMessage,
       content_type: "text",
       conversation: conversationId,
-      sent_date: Date.now(),
+      sent_date: new Date(),
       temporary: true,
+      edited_date: undefined,
+      content: "",
+      hidden: false,
     };
 
     dispatch(
@@ -95,10 +96,8 @@ const InputHandler = ({
 
     setMessage("");
   };
-  const sendFile = (file: File, value: string) => {
-    const userId = userData?.userId;
-
-    const generatedId = Math.random() * 10;
+  const sendFile = (file: File) => {
+    const generatedId = Math.random() * 10 + "t";
 
     const data = new FormData();
     data.append("file", file);
@@ -127,7 +126,7 @@ const InputHandler = ({
           })
         );
       })
-      .catch((err) => {
+      .catch((_) => {
         dispatch(
           ChatActions.deleteMessage({
             conversation_id: conversationId,
@@ -136,14 +135,17 @@ const InputHandler = ({
         );
       });
 
-    const message = {
+    const message: Message = {
       _id: generatedId,
       sender: senderInfo,
       content: URL.createObjectURL(file),
       conversation: conversationId,
       content_type: "image",
-      sent_date: Date.now(),
+      sent_date: new Date(),
       temporary: true,
+      edited_date: undefined,
+      hidden: false,
+      message: "",
     };
 
     dispatch(
@@ -165,7 +167,7 @@ const InputHandler = ({
             display: "none",
           }}
           onChange={(e) => {
-            sendFile(e.target.files?.[0] as File, e.target.value);
+            sendFile(e.target.files?.[0] as File);
           }}
         />
         <AttatchmentSvg

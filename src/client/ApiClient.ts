@@ -112,21 +112,21 @@ export const deleteContact = (accessToken: string, contactId: string) => {
 };
 
 export const blackListUser = (accessToken: string, userId: string) => {
-  return axios.patch(`/contacts/${userId}/blacklist`, null, {
+  return axios.patch(`/api/users//contacts/${userId}/blacklist`, null, {
     headers: {
       authorization: "Bearer " + accessToken,
     },
   });
 };
 export const blockContact = (accessToken: string, contactId: string) => {
-  return axios.patch(`/contacts/${contactId}/block`, null, {
+  return axios.patch(`/api/users/contacts/${contactId}/block`, null, {
     headers: {
       authorization: "Bearer " + accessToken,
     },
   });
 };
 export const unblockContact = (accessToken: string, contactId: string) => {
-  return axios.patch(`/contacts/${contactId}/unblock`, null, {
+  return axios.patch(`/api/users/contacts/${contactId}/unblock`, null, {
     headers: {
       authorization: "Bearer " + accessToken,
     },

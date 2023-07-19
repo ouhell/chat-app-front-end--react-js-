@@ -158,7 +158,7 @@ const ChatHandler = ({
   useEffect(() => {
     prevData.current = data;
     isFirstRender.current = false;
-  });
+  }, []);
 
   function toggleScroller() {
     clearTimeout(scrollerTimeout.current);

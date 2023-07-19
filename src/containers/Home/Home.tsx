@@ -1,10 +1,4 @@
-import {
-  NavLink,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Signin from "./pages/Signin/SignIn";
 import SignUp from "./pages/Signup/SignUp";
 import Main from "./pages/Main/Main";

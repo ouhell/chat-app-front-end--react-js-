@@ -1,11 +1,10 @@
 import { useState, useRef } from "react";
 import ChatsDisplayer from "./components/ChatsDisplayers/ChatsDisplayer.jsx";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   ChatSvg,
   NotificationBellSvg,
-  MenuSvg,
   ArrowBackSvg,
 } from "../../../../shared/assets/svg/SvgProvider.js";
 import classes from "./NavBar.module.scss";
@@ -62,7 +61,7 @@ function NavBar() {
   const userData = useAppSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { windowHeigth, windowWidth } = useResize();
+  const { windowWidth } = useResize();
 
   const menuOnClick = ({ key }: { key: string }) => {
     switch (key) {

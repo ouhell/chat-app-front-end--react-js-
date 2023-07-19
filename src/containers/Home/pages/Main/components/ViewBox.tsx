@@ -1,5 +1,5 @@
-import { motion, useInView } from "framer-motion";
-import React, { useRef } from "react";
+import { motion } from "framer-motion";
+import { useRef } from "react";
 
 const variants = {
   hide: {
@@ -22,9 +22,9 @@ const variants = {
 
 const ViewBox = () => {
   const ref = useRef<any>();
-  const inView = useInView(ref, {
-    margin: "-120px",
-  });
+  // const inView = useInView(ref, {
+  //   margin: "-120px",
+  // });
 
   return (
     <motion.div

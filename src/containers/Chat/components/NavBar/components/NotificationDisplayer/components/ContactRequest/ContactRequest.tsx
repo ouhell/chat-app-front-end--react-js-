@@ -13,7 +13,7 @@ type ContactRequest = {
   requestData: Request;
   removeRequest: (id: string) => any;
 };
-const ContactRequest = ({ requestData, removeRequest }: ContactRequest) => {
+const ContactRequest = ({ requestData }: ContactRequest) => {
   const [isCancelLoading, setIsCancelLoading] = useState(false);
   const [isAcceptLoading, setIsAcceptLoading] = useState(false);
   const userData = useAppSelector((state) => state.auth.userData);
@@ -26,7 +26,7 @@ const ContactRequest = ({ requestData, removeRequest }: ContactRequest) => {
     setIsCancelLoading(true);
 
     deleteContactRequest(userData?.access_token ?? "undefined", requestData._id)
-      .then((res) => {
+      .then((_) => {
         dispatch(ChatActions.removeRequest(requestData._id));
 
         dispatch(
@@ -63,6 +63,12 @@ const ContactRequest = ({ requestData, removeRequest }: ContactRequest) => {
         dispatch(
           ChatActions.emit({
             event: "cancel request",
+            data: requestData,
+          })
+        );
+        dispatch(
+          ChatActions.emit({
+            event: "accept request",
             data: requestData,
           })
         );

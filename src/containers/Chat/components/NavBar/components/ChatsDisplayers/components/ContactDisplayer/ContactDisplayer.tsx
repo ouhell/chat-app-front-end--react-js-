@@ -5,9 +5,8 @@ import { Button, Empty, Result } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
 
 import BasicSpinner from "../../../../../../../../shared/components/BasicSpinner/BasicSpinner";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Contact from "./components/Contact";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import { getContacts } from "../../../../../../../../client/ApiClient";
 import { useAppSelector } from "../../../../../../../../store/ReduxHooks";
@@ -52,7 +51,7 @@ const ContactDisplayer = () => {
   const dispatch = useDispatch();
 
   const filterContact = () => {
-    return contacts.filter((contact, i) => {
+    return contacts.filter((contact) => {
       const filtertext = seachtext.trim().toLowerCase();
       return (
         contact.user.username.toLowerCase().includes(filtertext) ||
@@ -68,7 +67,7 @@ const ContactDisplayer = () => {
       .then((res) => {
         dispatch(ChatActions.setContacts(res.data));
       })
-      .catch((err) => {
+      .catch(() => {
         setIsError(true);
       })
       .finally(() => {
@@ -124,7 +123,7 @@ const ContactDisplayer = () => {
         /*   ref={parent} */
       >
         <AnimatePresence mode="popLayout">
-          {filterContact().map((contact, i) => {
+          {filterContact().map((contact) => {
             return (
               <motion.div
                 variants={contactAnimations}

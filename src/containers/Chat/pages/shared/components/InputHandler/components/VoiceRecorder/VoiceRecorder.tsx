@@ -1,7 +1,7 @@
 import c from "./VoiceRecorder.module.scss";
 import { MicSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import { useState, useRef, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import { NotifActions } from "../../../../../../../../store/slices/NotificationSlice";
@@ -172,7 +172,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
 
     const url = window.URL.createObjectURL(blob);
     audioChunks.current = [];
-    const generatedId = Math.random() * 10;
+    const generatedId = Math.random() * 10 + "y";
     const data = new FormData();
 
     let testAudio = new Audio(url);
@@ -211,7 +211,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
             })
           );
         })
-        .catch((err) => {
+        .catch((_err) => {
           dispatch(
             ChatActions.deleteMessage({
               conversation_id: conversationId,
@@ -219,14 +219,17 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
             })
           );
         });
-      const tempMessage = {
+      const tempMessage: Message = {
         _id: generatedId,
         sender: senderInfo,
         content: url,
         conversation: conversationId,
         content_type: "voice",
         temporary: true,
-        sent_date: Date.now(),
+        sent_date: new Date(),
+        hidden: false,
+        message: "",
+        edited_date: undefined,
       };
       dispatch(
         ChatActions.addMessage({

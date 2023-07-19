@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Route, Routes, useParams } from "react-router-dom";
 import { getConversation } from "../../../../client/ApiClient";
@@ -25,9 +25,14 @@ const Conversation = () => {
   const dispatch = useDispatch();
 
   const fetchMessages = () => {
-    if (conversation ? !conversation.messages.length : true) {
+    const isAdditionalMessages = conversation
+      ? conversation.messages.length
+      : false;
+    if (!isAdditionalMessages) {
       setIsLoading(true);
     }
+
+    console.log("foootch");
 
     setIsError(false);
     console.log("fetching from : ", conversation);
@@ -36,12 +41,12 @@ const Conversation = () => {
     })
       .then((res) => {
         dispatch(ChatActions.emit({ event: "chat", data: conversationId }));
-        console.log(res.data);
+
         dispatch(ChatActions.setConversation(res.data));
       })
       .catch((err) => {
         console.log("fetching messages error", err);
-        setIsError(true);
+        if (!isAdditionalMessages) setIsError(true);
       })
       .finally(() => {
         setIsLoading(false);

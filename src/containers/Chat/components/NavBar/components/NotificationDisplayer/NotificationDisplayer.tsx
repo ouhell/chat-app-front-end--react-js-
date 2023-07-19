@@ -1,11 +1,10 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { Avatar, Button, Collapse, Spin } from "antd";
+import { Collapse, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
 import { useState } from "react";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import BasicSpinner from "../../../../../../shared/components/BasicSpinner/BasicSpinner";
+import { useDispatch } from "react-redux";
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import ContactRequest from "./components/ContactRequest/ContactRequest";
 import c from "./NotificationDisplayer.module.scss";
@@ -95,7 +94,7 @@ const NotificationDisplayer = () => {
                 <ContactRequest
                   key={requestData._id}
                   requestData={requestData}
-                  removeRequest={(id: string) => {}}
+                  removeRequest={() => {}}
                 />
               );
             })}

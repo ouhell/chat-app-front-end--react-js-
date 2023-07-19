@@ -1,8 +1,6 @@
-import { Avatar, Button, Input, Skeleton, Spin, notification } from "antd";
+import { Avatar, Button, Input, Skeleton, Spin } from "antd";
 
 import {
-  UnlockOutlined,
-  LockOutlined,
   UserOutlined,
   CheckOutlined,
   LoadingOutlined,
@@ -10,9 +8,9 @@ import {
 import { ReactNode, useEffect, useRef, useState } from "react";
 import c from "./Profile.module.scss";
 import { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { AuthActions } from "../../../../store/slices/AuthSlice";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { pageAnimation } from "../shared/animation/animationHandler";
 import { NotifActions } from "../../../../store/slices/NotificationSlice";
 import {
@@ -101,7 +99,7 @@ const Profile = () => {
                 validation.errorMessage = "username already exists!";
               }
             })
-            .catch((err) => {
+            .catch((_err) => {
               validation.isValid = false;
               validation.errorMessage = "connection error";
             })
@@ -190,7 +188,7 @@ const Profile = () => {
                 validation.errorMessage = "email already exists!";
               }
             })
-            .catch((err) => {
+            .catch((_err) => {
               validation.isValid = false;
               validation.errorMessage = "connection error";
             })
@@ -326,7 +324,7 @@ const Profile = () => {
 
           currentProfile.current = res.data;
         })
-        .catch((err) => {
+        .catch((_err) => {
           setIsError(true);
         })
         .finally(() => {
@@ -366,7 +364,7 @@ const Profile = () => {
       updateData[feild] = updateFormData.feilds[feild].value;
     }
     updateProfileData(userData?.access_token ?? "undefined", updateData)
-      .then((res) => {
+      .then((_res) => {
         currentProfile.current = updateData;
 
         dispatch(

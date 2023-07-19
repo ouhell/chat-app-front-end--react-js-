@@ -44,7 +44,13 @@ const ChatSlice = createSlice({
   name: "chatReducer",
   initialState: structuredClone(initialState),
   reducers: {
-    emit: (_, action) => {
+    emit: (
+      _,
+      action: PayloadAction<{
+        event: string;
+        data: any;
+      }>
+    ) => {
       const event = action.payload.event;
       const data = action.payload.data;
 
@@ -171,6 +177,33 @@ const ChatSlice = createSlice({
       const newRequests = [...state.requests.data];
       newRequests.push(newRequest);
       state.requests.data = newRequests;
+    },
+    setUserBanned: (
+      state,
+      action: PayloadAction<{
+        bannedUser: string;
+        conversationId: string;
+      }>
+    ) => {
+      const { bannedUser, conversationId } = action.payload;
+      console.log("blocking slice", action.payload);
+      if (!state.conversations[conversationId]) return;
+      state.conversations[conversationId].conversation.blocked.push(bannedUser);
+    },
+    setUserUnbanned: (
+      state,
+      action: PayloadAction<{
+        bannedUser: string;
+        conversationId: string;
+      }>
+    ) => {
+      const { bannedUser, conversationId } = action.payload;
+      console.log("blocking slice", action.payload);
+      if (!state.conversations[conversationId]) return;
+      state.conversations[conversationId].conversation.blocked =
+        state.conversations[conversationId].conversation.blocked.filter(
+          (usr) => usr !== bannedUser
+        );
     },
     resetState: (state) => {
       socket.removeAllListeners();

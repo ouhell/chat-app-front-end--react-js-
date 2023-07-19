@@ -1,9 +1,9 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { Input, Modal, Button, Avatar } from "antd";
+import { Input, Modal, Button } from "antd";
 
 import { useEffect } from "react";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   addContactRequest,
   deleteContactRequest,
@@ -213,7 +213,7 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
           onSearch={fetchCandidates}
         />
         <div className={c.Candidates} ref={candidateHolder}>
-          {data.map((candInfo, index) => {
+          {data.map((candInfo) => {
             return (
               <Candidate
                 cancelRequest={cancelRequest}
