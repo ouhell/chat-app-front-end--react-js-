@@ -42,9 +42,8 @@ const Main = () => {
               y: 0,
               opacity: 1,
               transition: {
-                type: "spring",
-                stiffness: 100,
-                damping: 20,
+                duration: 1.4,
+                ease: [0.25, 0.25, 0.25, 0.75],
               },
             }}
             viewport={{
@@ -57,11 +56,11 @@ const Main = () => {
             className={c.Content}
             initial={{
               x: "30%",
-              opacity: 0.5,
+              opacity: 0,
             }}
             animate={{
               x: "30%",
-              opacity: 0.5,
+              opacity: 0,
               transition: {
                 duration: 0,
               },
@@ -70,27 +69,27 @@ const Main = () => {
               x: 0,
               opacity: 1,
               transition: {
-                type: "spring",
-                stiffness: 50,
-                damping: 20,
+                duration: 1.4,
+                ease: [0.25, 0.25, 0.25, 0.75],
+                delay: 0.4,
               },
             }}
             viewport={{
               once: true,
             }}
           >
-            Connecting you with ease. Experience smooth communication and
+            "Connecting you with ease. Experience smooth communication and
             real-time interactions. Stay connected, stay engaged, and enjoy
             hassle-free conversations with our simple chat application."
           </motion.div>
           <motion.div
             initial={{
-              x: "-100%",
-              opacity: 0.3,
+              x: "-30%",
+              opacity: 0,
             }}
             animate={{
-              x: "-100%",
-              opacity: 0.3,
+              x: "-30%",
+              opacity: 0,
               transition: {
                 duration: 0,
               },
@@ -101,6 +100,7 @@ const Main = () => {
               transition: {
                 type: "spring",
                 damping: 20,
+                delay: 0.5,
               },
             }}
             viewport={{
@@ -129,14 +129,14 @@ const Main = () => {
         <motion.div
           className={c.Visualisation}
           initial={{
-            x: "7%",
-            y: "7%",
-            opacity: 0.5,
+            // x: 100,
+            // y: 100,
+            opacity: 0,
           }}
           animate={{
-            x: "7%",
-            y: "7%",
-            opacity: 0.5,
+            // x: 100,
+            // y: 100,
+            opacity: 0,
             transition: {
               duration: 0,
             },
@@ -146,9 +146,9 @@ const Main = () => {
             y: 0,
             opacity: 1,
             transition: {
-              type: "spring",
-              stiffness: 50,
-              damping: 20,
+              duration: 1,
+              delay: 1.5,
+              ease: [0.25, 0.25, 0.25, 0.75],
             },
           }}
           viewport={{
