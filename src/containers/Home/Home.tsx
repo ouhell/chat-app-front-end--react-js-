@@ -47,7 +47,7 @@ const Home = () => {
               navigate("/");
             }}
           >
-            ShutApp
+            ChatEase
           </m.div>
         </motion.div>
         <motion.div className={c.NavigationHolder} variants={variants}>

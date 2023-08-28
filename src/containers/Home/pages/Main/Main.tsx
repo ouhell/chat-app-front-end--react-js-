@@ -51,7 +51,7 @@ const Main = () => {
               once: true,
             }}
           >
-            The Ultimate Communication Platform
+            Seamless Conversations Made Simple
           </motion.div>
           <motion.div
             className={c.Content}
@@ -79,14 +79,9 @@ const Main = () => {
               once: true,
             }}
           >
-            {" "}
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dicta
-            reiciendis voluptatum numquam quas a tempore expedita necessitatibus
-            nihil unde amet enim exercitationem, autem, similique consequatur?
-            Quaerat ut iusto voluptatem quis inventore vero voluptatibus sequi
-            voluptatum provident, voluptate atque. Commodi in reiciendis
-            architecto eos modi iusto cupiditate provident molestiae voluptatum
-            saepe!{" "}
+            Connecting you with ease. Experience smooth communication and
+            real-time interactions. Stay connected, stay engaged, and enjoy
+            hassle-free conversations with our simple chat application."
           </motion.div>
           <motion.div
             initial={{

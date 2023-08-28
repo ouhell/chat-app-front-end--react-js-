@@ -6,10 +6,11 @@ import { ChatActions } from "../../../../store/slices/ChatSlice";
 import { motion } from "framer-motion";
 import InputHandler from "../shared/components/InputHandler/InputHandler";
 import PrivateConversation from "./components/PrivateConversation/PrivateConversation";
-import PublicConversation from "./components/PublicConversation/PublicConversation";
+import PublicConversation from "./components/GroupConversation/GroupConversation";
 import C from "./Conversation.module.scss";
 import { pageAnimation } from "../shared/animation/animationHandler";
 import { useAppSelector } from "../../../../store/ReduxHooks";
+import GroupConversation from "./components/GroupConversation/GroupConversation";
 const Conversation = () => {
   const { conversationId = "undefined" } = useParams();
 
@@ -62,17 +63,6 @@ const Conversation = () => {
       <Routes>
         <Route
           element={
-            <PrivateConversation
-              data={messages}
-              fetchMessages={fetchMessages}
-              isError={isError}
-              isLoading={isLoading}
-            />
-          }
-          path="/:contactId"
-        />
-        <Route
-          element={
             <PublicConversation
               data={messages}
               fetchMessages={fetchMessages}
@@ -81,6 +71,28 @@ const Conversation = () => {
             />
           }
           path="/"
+        />
+        <Route
+          element={
+            <GroupConversation
+              data={messages}
+              fetchMessages={fetchMessages}
+              isError={isError}
+              isLoading={isLoading}
+            />
+          }
+          path="/group"
+        />
+        <Route
+          element={
+            <PrivateConversation
+              data={messages}
+              fetchMessages={fetchMessages}
+              isError={isError}
+              isLoading={isLoading}
+            />
+          }
+          path="/:contactId/private"
         />
       </Routes>
 

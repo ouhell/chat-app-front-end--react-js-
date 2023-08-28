@@ -35,8 +35,7 @@ const Contact = ({ contactInfo }: ContactProps) => {
       })
       .catch((err) => {
         console.log("fetch messages error" + contactInfo._id, err);
-      })
-      .finally(() => {});
+      });
   }, []);
 
   const getLastMessage = () => {
@@ -63,7 +62,7 @@ const Contact = ({ contactInfo }: ContactProps) => {
 
   return (
     <NavLink
-      to={"/chats/" + contactInfo._id + "/" + contactInfo.user._id}
+      to={"/chats/" + contactInfo._id + "/" + contactInfo.user._id + "/private"}
       className={({ isActive }) =>
         c.ContactLink + (isActive ? ` ${c.active}` : "")
       }
