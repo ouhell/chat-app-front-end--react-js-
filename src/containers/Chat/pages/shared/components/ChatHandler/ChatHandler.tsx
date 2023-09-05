@@ -13,6 +13,7 @@ import Scroller from "./components/Scroller/Scroller";
 import { deleteMessageApi } from "../../../../../../client/ApiClient";
 import { useAppSelector } from "../../../../../../store/ReduxHooks";
 import { useParams } from "react-router-dom";
+import React from "react";
 
 const renderMessages = (
   data: Message[],
@@ -108,7 +109,9 @@ const ChatHandler = ({
   const isFirstRender = useRef(true);
   const prevData = useRef(data);
   const scrollerTimeout = useRef<ReturnType<typeof setTimeout>>();
-
+  const lastCapturedMessage = React.useRef<Message | undefined>(
+    data[data.length - 1]
+  );
   useEffect(() => {
     console.log("conv id", conversationId);
     if (!chatContainer.current || prevData.current.length > data.length) return;
@@ -116,10 +119,11 @@ const ChatHandler = ({
     const scrollHeight = chatContainer.current.scrollHeight;
     const clientHeight = chatContainer.current.clientHeight;
     const unscrolledHeigth = scrollHeight - scrollDistance - clientHeight; // heigth hidden in the bottom
+    const lastMessage = data[data.length - 1];
+    if (lastMessage?._id === lastCapturedMessage.current?._id) return;
+    lastCapturedMessage.current = lastMessage;
 
     if (unscrolledHeigth > 250) {
-      const lastMessage = data[data.length - 1];
-
       if (
         !isFirstRender.current && // so it scroll when switching conversations
         prevData.current.length !== data.length && // so it scroll when data isLoaded
@@ -128,7 +132,6 @@ const ChatHandler = ({
       )
         return toggleScroller();
     }
-
     scrollChat();
   }, [data]);
 
@@ -136,7 +139,7 @@ const ChatHandler = ({
     const upLoadHandler = () => {
       if (!chatContainer.current) return;
       const scrollableDiv = chatContainer.current;
-      let scrollTop = scrollableDiv.scrollTop;
+      const scrollTop = scrollableDiv.scrollTop;
       // let scrollHeight = scrollableDiv.scrollHeight;
       // let clientHeight = scrollableDiv.clientHeight;
 
