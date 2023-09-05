@@ -29,9 +29,8 @@ const Conversation = () => {
     const isAdditionalMessages = conversation
       ? conversation.messages.length
       : false;
-    if (!isAdditionalMessages) {
-      setIsLoading(true);
-    }
+
+    setIsLoading(true);
 
     console.log("foootch");
 

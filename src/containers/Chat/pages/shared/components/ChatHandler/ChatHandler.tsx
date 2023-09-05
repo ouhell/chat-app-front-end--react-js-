@@ -23,7 +23,7 @@ const renderMessages = (
   deleteMessage: (messageId: Message) => void,
   userId: string
 ) => {
-  if (isLoading)
+  if (isLoading && !data.length)
     return (
       <div className={classes.NoLoad}>
         <BasicSpinner size="large" spinning={true} />
@@ -112,6 +112,7 @@ const ChatHandler = ({
   const lastCapturedMessage = React.useRef<Message | undefined>(
     data[data.length - 1]
   );
+  useEffect(scrollChat, []);
   useEffect(() => {
     console.log("conv id", conversationId);
     if (!chatContainer.current || prevData.current.length > data.length) return;
@@ -203,6 +204,11 @@ const ChatHandler = ({
 
   return (
     <div className={classes.ChatHandler} ref={chatContainer}>
+      {isLoading && (
+        <div className={classes.UpperLoader}>
+          <BasicSpinner spinning size="small" />
+        </div>
+      )}
       <div className={classes.MessageContainer}>
         <AnimatePresence
           presenceAffectsLayout={true}
