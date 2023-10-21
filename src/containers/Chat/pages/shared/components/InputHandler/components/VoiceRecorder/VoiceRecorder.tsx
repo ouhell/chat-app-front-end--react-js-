@@ -43,19 +43,6 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
   const userData = useAppSelector((state) => state.auth.userData);
 
   const dispatch = useDispatch();
-  /* 
-  useEffect(() => {
-    navigator.permissions
-      .query({
-        name: "microphone",
-      })
-      .then((permissionStatus) => {
-        if (permissionStatus.state === "granted") getRecordPermision();
-      })
-      .catch((err) => {
-        console.log("permission error :", err);
-      });
-  }, []); */
 
   useEffect(() => {
     if (!audioConfig.current.mediaRecorder) return;
@@ -67,8 +54,8 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
   function getRecordPermision() {
     setIsGettingPermission(true);
     try {
-      navigator.mediaDevices
-        .getUserMedia({
+      navigator?.mediaDevices
+        ?.getUserMedia({
           audio: true,
           video: false,
         })
@@ -108,9 +95,9 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
 
           //start recording
           recordTimeout.current = window.setTimeout(() => {
-            console.log("timout");
+            console.log("timout :: 30sec");
             endRecordingAudio();
-          }, 5000);
+          }, 30000);
           audioConfig.current.mediaRecorder.start();
           shouldDraw.current = true;
           setisRecording(true);
@@ -146,8 +133,8 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
       audioConfig.current.dataArray
     );
 
-    var rms = 0;
-    for (var i = 0; i < audioConfig.current.dataArray.length; i++) {
+    let rms = 0;
+    for (let i = 0; i < audioConfig.current.dataArray.length; i++) {
       rms += Math.abs(audioConfig.current.dataArray[i]);
     }
     rms /= audioConfig.current.dataArray.length;
@@ -175,7 +162,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
     const generatedId = Math.random() * 10 + "y";
     const data = new FormData();
 
-    let testAudio = new Audio(url);
+    const testAudio = new Audio(url);
     testAudio.currentTime = 1e101;
     testAudio.volume = 0;
     testAudio.onended = () => {
@@ -249,9 +236,10 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
     getRecordPermision();
   }
   function endRecordingAudio() {
-    if (!isRocordReady || !isRecording) return;
+    // if (!isRocordReady || !isRecording) return;
 
     audioConfig.current.mediaRecorder?.stop();
+    clearTimeout(recordTimeout.current);
 
     shouldDraw.current = false;
     if (micHolder.current)

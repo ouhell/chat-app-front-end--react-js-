@@ -21,6 +21,8 @@ import {
   updateProfilePicture,
 } from "../../../../client/ApiClient";
 import { useAppSelector } from "../../../../store/ReduxHooks";
+import { MenuSvg } from "../../../../shared/assets/svg/SvgProvider";
+import { ComponentActions } from "../../../../store/slices/ComponentSlice";
 
 type Validation = {
   isValid: boolean;
@@ -223,7 +225,7 @@ const Profile = () => {
   }, []);
 
   const isFormValid = function () {
-    for (let feild in updateFormData.feilds) {
+    for (const feild in updateFormData.feilds) {
       if (!updateFormData.feilds[feild].isValid) {
         return false;
       }
@@ -233,7 +235,7 @@ const Profile = () => {
   };
 
   function validateAll() {
-    for (let feild in updateFormData.feilds) {
+    for (const feild in updateFormData.feilds) {
       if (!updateFormData.feilds[feild].isValid) {
         updateFormData.feilds[feild].validation(
           updateFormData.feilds[feild].value
@@ -307,7 +309,7 @@ const Profile = () => {
             const newFormData = { ...prevFormData };
             const newFeilds = { ...newFormData.feilds };
 
-            for (let key in newFeilds) {
+            for (const key in newFeilds) {
               if (!res.data[key]) continue;
               const selectedFeild = { ...newFeilds[key] };
               selectedFeild.isTouched = false;
@@ -360,7 +362,7 @@ const Profile = () => {
     }
     setIsUpdatingInfo(true);
     const updateData: { [key: string]: string } = {};
-    for (let feild in updateFormData.feilds) {
+    for (const feild in updateFormData.feilds) {
       updateData[feild] = updateFormData.feilds[feild].value;
     }
     updateProfileData(userData?.access_token ?? "undefined", updateData)
@@ -407,6 +409,12 @@ const Profile = () => {
   return (
     <motion.div {...pageAnimation} className={c.Profile} layout>
       <header className={c.Header}>My Profile</header>
+      <MenuSvg
+        className={c.Menu}
+        onClick={() => {
+          dispatch(ComponentActions.openNav());
+        }}
+      />
 
       <div className={c.ProfilPicHolder}>
         {isLoading ? (

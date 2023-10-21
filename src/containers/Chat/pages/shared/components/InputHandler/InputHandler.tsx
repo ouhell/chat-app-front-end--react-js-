@@ -4,16 +4,17 @@ import {
   SendArrowSvg,
   AttatchmentSvg,
 } from "../../../../../../shared/assets/svg/SvgProvider";
-import { useState } from "react";
+import { ElementRef, ReactHTMLElement, useState } from "react";
 
 import { useDispatch } from "react-redux";
 import { useRef } from "react";
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import { Popover } from "antd";
-import EmojiPicker from "emoji-picker-react";
+import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 import VoiceRecorder from "./components/VoiceRecorder/VoiceRecorder";
 import { sendImage, sendTextMessage } from "../../../../../../client/ApiClient";
 import { useAppSelector } from "../../../../../../store/ReduxHooks";
+import React from "react";
 
 const InputHandler = ({
   sendAllowed,
@@ -202,8 +203,7 @@ const InputHandler = ({
               previewConfig={{
                 showPreview: false,
               }}
-              // @ts-ignore
-              emojiStyle="facebook"
+              emojiStyle={EmojiStyle.FACEBOOK}
               onEmojiClick={(emoji) => {
                 setMessage((prevMassage) => {
                   return prevMassage + emoji.emoji;
@@ -224,7 +224,7 @@ const InputHandler = ({
             textInput.current?.focus();
           }}
         >
-          <SendArrowSvg />
+          <SendArrowSvg className={classes.sender} />
         </div>
       </div>
     </div>

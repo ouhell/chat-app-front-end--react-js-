@@ -71,5 +71,11 @@
         translate: 0 2%;
       }
     }
+
+    &:focus-within {
+      svg:not(.sender) {
+        display: none;
+      }
+    }
   }
 }

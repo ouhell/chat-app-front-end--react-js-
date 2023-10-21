@@ -87,7 +87,7 @@ function NavBar() {
     <motion.div
       className={classes.NavBar}
       initial={{
-        x: "-100%",
+        x: -50,
         opacity: 0,
       }}
       animate={
@@ -98,9 +98,8 @@ function NavBar() {
               x: 0,
               opacity: 1,
               transition: {
-                type: "spring",
-                stiffness: 900,
-                damping: 55,
+                duration: 0.3,
+                ease: "easeIn",
               },
             }
           : isMobileSize
@@ -111,9 +110,8 @@ function NavBar() {
               opacity: 0,
               transition: {
                 opacity: { duration: 0.1 },
-                type: "spring",
-                stiffness: 300,
-                damping: 30,
+                duration: 0.6,
+                ease: "easeIn",
               },
             }
           : {
@@ -122,9 +120,8 @@ function NavBar() {
               x: 0,
               opacity: 1,
               transition: {
-                type: "spring",
-                stiffness: 500,
-                damping: 30,
+                duration: 0.6,
+                ease: "easeIn",
               },
             }
       }

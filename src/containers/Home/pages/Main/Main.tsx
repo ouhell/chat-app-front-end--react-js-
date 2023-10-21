@@ -28,11 +28,11 @@ const Main = () => {
           <motion.div
             className={c.Title}
             initial={{
-              y: "-50%",
+              y: -40,
               opacity: 0.5,
             }}
             animate={{
-              y: "-50%",
+              y: -40,
               opacity: 0.5,
               transition: {
                 duration: 0,
@@ -55,11 +55,11 @@ const Main = () => {
           <motion.div
             className={c.Content}
             initial={{
-              x: "30%",
+              x: 40,
               opacity: 0,
             }}
             animate={{
-              x: "30%",
+              x: 40,
               opacity: 0,
               transition: {
                 duration: 0,
@@ -84,11 +84,11 @@ const Main = () => {
           </motion.div>
           <motion.div
             initial={{
-              x: "-30%",
+              x: -30,
               opacity: 0,
             }}
             animate={{
-              x: "-30%",
+              x: -30,
               opacity: 0,
               transition: {
                 duration: 0,
@@ -98,8 +98,8 @@ const Main = () => {
               x: 0,
               opacity: 1,
               transition: {
-                type: "spring",
-                damping: 20,
+                duration: 1.4,
+                ease: "easeInOut",
                 delay: 0.5,
               },
             }}
