@@ -4,7 +4,7 @@ import { MessagesPayload } from "./responseTypes/messageResponses";
 const isdev = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
 
 export const HostName = isdev
-  ? "http://localhost:4000"
+  ? "http://192.168.1.4:4000"
   : window.location.origin;
 
 console.log("Hostname", HostName);
@@ -19,7 +19,7 @@ export const getConversation = (
 ) => {
   const urlParams = new URLSearchParams();
   if (params)
-    for (let key in params) {
+    for (const key in params) {
       urlParams.append(key, params[key] as string);
     }
 

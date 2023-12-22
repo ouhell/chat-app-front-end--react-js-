@@ -84,8 +84,7 @@ const ChatSlice = createSlice({
         set.add(msg._id);
         return true;
       });
-      console.log("new data", messages.data);
-      console.log("new messages: ", newMessages);
+
       state.conversations[conversation._id] = {
         conversation: conversation,
         messages: newMessages,
@@ -139,7 +138,7 @@ const ChatSlice = createSlice({
     },
     setContacts: (state, action: PayloadAction<Contact[]>) => {
       const contactList = action.payload;
-      let newContacts: ChatState["contacts"] = {};
+      const newContacts: ChatState["contacts"] = {};
 
       contactList.forEach((contact) => {
         newContacts[contact._id] = contact;
@@ -186,7 +185,6 @@ const ChatSlice = createSlice({
       }>
     ) => {
       const { bannedUser, conversationId } = action.payload;
-      console.log("blocking slice", action.payload);
       if (!state.conversations[conversationId]) return;
       state.conversations[conversationId].conversation.blocked.push(bannedUser);
     },
@@ -198,7 +196,6 @@ const ChatSlice = createSlice({
       }>
     ) => {
       const { bannedUser, conversationId } = action.payload;
-      console.log("blocking slice", action.payload);
       if (!state.conversations[conversationId]) return;
       state.conversations[conversationId].conversation.blocked =
         state.conversations[conversationId].conversation.blocked.filter(

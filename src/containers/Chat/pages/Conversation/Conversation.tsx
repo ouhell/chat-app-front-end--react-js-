@@ -6,7 +6,7 @@ import { ChatActions } from "../../../../store/slices/ChatSlice";
 import { motion } from "framer-motion";
 import InputHandler from "../shared/components/InputHandler/InputHandler";
 import PrivateConversation from "./components/PrivateConversation/PrivateConversation";
-import PublicConversation from "./components/GroupConversation/GroupConversation";
+import PublicConversation from "./components/PublicConversation/PublicConversation";
 import C from "./Conversation.module.scss";
 import { pageAnimation } from "../shared/animation/animationHandler";
 import { useAppSelector } from "../../../../store/ReduxHooks";
@@ -32,10 +32,7 @@ const Conversation = () => {
 
     setIsLoading(true);
 
-    console.log("foootch");
-
     setIsError(false);
-    console.log("fetching from : ", conversation);
     getConversation(conversationId, userData?.access_token ?? "undefined", {
       skip: conversation?.messages.length ?? 0,
     })

@@ -59,11 +59,12 @@ const ChatController = () => {
     dispatch(
       ChatActions.on({
         event: "receive message",
-        callback: (message) => {
+        callback: (mess) => {
+          const message = mess as Message;
           dispatch(
             ChatActions.addMessage({
               conversation_id: message.conversation,
-              newMessage: message,
+              newMessage: message as Message,
             })
           );
         },
@@ -73,7 +74,8 @@ const ChatController = () => {
     dispatch(
       ChatActions.on({
         event: "remove message",
-        callback: (message) => {
+        callback: (mess) => {
+          const message = mess as Message;
           const messageId = message.trueId ? message.trueId : message._id;
           dispatch(
             ChatActions.deleteMessage({
@@ -88,6 +90,7 @@ const ChatController = () => {
     dispatch(
       ChatActions.on({
         event: "added Conversation",
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         callback: () => {},
       })
     );

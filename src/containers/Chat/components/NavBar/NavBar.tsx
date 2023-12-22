@@ -15,6 +15,7 @@ import { ComponentActions } from "../../../../store/slices/ComponentSlice.js";
 import { NotifActions } from "../../../../store/slices/NotificationSlice.js";
 import { ChatActions } from "../../../../store/slices/ChatSlice.js";
 import useResize from "../../../../helpers/hooks/useResize.jsx";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { navigationHide } from "../../../../helpers/scss/variables.module.scss";
 import { motion } from "framer-motion";

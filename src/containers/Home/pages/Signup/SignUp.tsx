@@ -43,7 +43,7 @@ type InputConfig = {
 
 type Field = {
   value: string;
-  validation: (value: string) => any;
+  validation: (value: string) => unknown;
   isValid: boolean;
   errorMessage: string;
   isTouched: boolean;
@@ -104,7 +104,7 @@ const SignUp = () => {
                 validation.errorMessage = "username already exists!";
               }
             })
-            .catch((_) => {
+            .catch(() => {
               validation.isValid = false;
               validation.errorMessage = "connection error";
             })
@@ -188,7 +188,7 @@ const SignUp = () => {
                 validation.errorMessage = "email already exists!";
               }
             })
-            .catch((_) => {
+            .catch(() => {
               validation.isValid = false;
               validation.errorMessage = "connection error";
             })
@@ -322,7 +322,7 @@ const SignUp = () => {
     // }
 
     apiSignup(userData)
-      .then((_) => {
+      .then(() => {
         navigate("/signin");
       })
       .catch((err) => {
@@ -334,7 +334,7 @@ const SignUp = () => {
   }
 
   function isFormValid() {
-    for (let feild in signupFormData.feilds) {
+    for (const feild in signupFormData.feilds) {
       if (!signupFormData.feilds[feild].isValid) {
         return false;
       }
@@ -344,7 +344,7 @@ const SignUp = () => {
   }
 
   function validateAll() {
-    for (let feild in signupFormData.feilds) {
+    for (const feild in signupFormData.feilds) {
       if (!signupFormData.feilds[feild].isValid) {
         signupFormData.feilds[feild].validation(
           signupFormData.feilds[feild].value

@@ -256,8 +256,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
         if (isRecording) endRecordingAudio();
         else startRecordingAudio();
       }}
-      // @ts-ignore
-      isrecording={isRecording ? "true" : "false"}
+      is-recording={isRecording ? "true" : "false"}
     >
       <span /* style={recordIconStyle} */ ref={micHolder}>
         <MicSvg />

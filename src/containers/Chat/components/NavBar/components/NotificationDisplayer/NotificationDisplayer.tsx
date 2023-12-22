@@ -12,7 +12,7 @@ import { getContactRequests } from "../../../../../../client/ApiClient";
 import { useAppSelector } from "../../../../../../store/ReduxHooks";
 
 const NotificationDisplayer = () => {
-  let { loaded, data: requests } = useAppSelector(
+  const { loaded, data: requests } = useAppSelector(
     (state) => state.chat.requests
   );
 
@@ -94,7 +94,9 @@ const NotificationDisplayer = () => {
                 <ContactRequest
                   key={requestData._id}
                   requestData={requestData}
-                  removeRequest={() => {}}
+                  removeRequest={() => {
+                    console.log("remove");
+                  }}
                 />
               );
             })}

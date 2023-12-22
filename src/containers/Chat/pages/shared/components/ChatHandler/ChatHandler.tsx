@@ -91,6 +91,11 @@ export type ChatHandlerProps = {
   isError: boolean;
   fetchMessages: () => void;
 };
+
+type scrollElementTracker = {
+  scrollTop: number;
+  height: number;
+};
 const ChatHandler = ({
   data,
   isLoading,
@@ -112,15 +117,54 @@ const ChatHandler = ({
   const lastCapturedMessage = React.useRef<Message | undefined>(
     data[data.length - 1]
   );
-  useEffect(scrollChat, []);
+  const firstCapturedMessage = React.useRef<Message | undefined>(data[0]);
+  const scrollTacker = React.useRef<scrollElementTracker>({
+    height: 0,
+    scrollTop: 0,
+  });
+
   useEffect(() => {
-    console.log("conv id", conversationId);
+    console.log("scrolling this shit lmao");
+
+    const firstMessage = data[0];
+    const isSmaller = prevData.current.length > data.length;
+    const sameFirstMessage =
+      firstMessage?._id === firstCapturedMessage.current?._id;
+
+    console.log("bools ", isSmaller, sameFirstMessage);
+    if (sameFirstMessage || isSmaller) return;
+    firstCapturedMessage.current = firstMessage;
+    console.log("second phase");
+    if (chatContainer.current) {
+      console.log("actually scrolled ::::::::");
+      const additionalHeight =
+        chatContainer.current?.scrollHeight - scrollTacker.current.height;
+      chatContainer.current.scrollTop =
+        scrollTacker.current.scrollTop + additionalHeight;
+    }
+  }, [data]);
+
+  useEffect(() => {
+    scrollTacker.current = {
+      height: chatContainer.current?.scrollHeight ?? 0,
+      scrollTop: chatContainer.current?.scrollTop ?? 0,
+    };
+    chatContainer.current?.addEventListener("scroll", (e) => {
+      scrollTacker.current = {
+        height: chatContainer.current?.scrollHeight ?? 0,
+        scrollTop: chatContainer.current?.scrollTop ?? 0,
+      };
+    });
+    scrollChat();
+  }, []);
+  useEffect(() => {
     if (!chatContainer.current || prevData.current.length > data.length) return;
     const scrollDistance = chatContainer.current.scrollTop;
     const scrollHeight = chatContainer.current.scrollHeight;
     const clientHeight = chatContainer.current.clientHeight;
     const unscrolledHeigth = scrollHeight - scrollDistance - clientHeight; // heigth hidden in the bottom
     const lastMessage = data[data.length - 1];
+
     if (lastMessage?._id === lastCapturedMessage.current?._id) return;
     lastCapturedMessage.current = lastMessage;
 
@@ -162,7 +206,7 @@ const ChatHandler = ({
   useEffect(() => {
     prevData.current = data;
     isFirstRender.current = false;
-  }, []);
+  }, [data]);
 
   function toggleScroller() {
     clearTimeout(scrollerTimeout.current);
