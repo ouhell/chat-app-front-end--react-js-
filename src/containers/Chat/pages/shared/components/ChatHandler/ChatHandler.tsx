@@ -149,7 +149,7 @@ const ChatHandler = ({
       height: chatContainer.current?.scrollHeight ?? 0,
       scrollTop: chatContainer.current?.scrollTop ?? 0,
     };
-    chatContainer.current?.addEventListener("scroll", (e) => {
+    chatContainer.current?.addEventListener("scroll", () => {
       scrollTacker.current = {
         height: chatContainer.current?.scrollHeight ?? 0,
         scrollTop: chatContainer.current?.scrollTop ?? 0,

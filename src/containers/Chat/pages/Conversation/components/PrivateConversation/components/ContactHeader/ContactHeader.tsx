@@ -46,8 +46,8 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
     },
   ];
 
-  const [_isLoading, setIsLoading] = useState(false);
-  const [_isError, setisError] = useState(false);
+  const [, setIsLoading] = useState(false);
+  const [, setisError] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -75,7 +75,7 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
 
   const removeContact = () => {
     deleteContact(userData?.access_token ?? "undefined", contactId)
-      .then((_res) => {
+      .then(() => {
         dispatch(ChatActions.removeContact({ contactId: conversationId }));
         dispatch(ChatActions.removeConversation({ conversationId }));
       })
@@ -83,7 +83,7 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
   };
   const blackListContact = () => {
     blackListUser(userData?.access_token ?? "undefined", contactId)
-      .then((_res) => {
+      .then(() => {
         dispatch(ChatActions.removeContact({ contactId: conversationId }));
         dispatch(ChatActions.removeConversation({ conversationId }));
       })
@@ -92,7 +92,7 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
 
   const blockUser = () => {
     blockContact(userData?.access_token ?? "undefined", contactId)
-      .then((res) => {
+      .then(() => {
         dispatch(
           ChatActions.emit({
             event: "block",

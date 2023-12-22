@@ -4,7 +4,7 @@ import {
   SendArrowSvg,
   AttatchmentSvg,
 } from "../../../../../../shared/assets/svg/SvgProvider";
-import { ElementRef, ReactHTMLElement, useState } from "react";
+import { useState } from "react";
 
 import { useDispatch } from "react-redux";
 import { useRef } from "react";
@@ -14,7 +14,6 @@ import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 import VoiceRecorder from "./components/VoiceRecorder/VoiceRecorder";
 import { sendImage, sendTextMessage } from "../../../../../../client/ApiClient";
 import { useAppSelector } from "../../../../../../store/ReduxHooks";
-import React from "react";
 
 const InputHandler = ({
   sendAllowed,
@@ -127,7 +126,7 @@ const InputHandler = ({
           })
         );
       })
-      .catch((_) => {
+      .catch(() => {
         dispatch(
           ChatActions.deleteMessage({
             conversation_id: conversationId,

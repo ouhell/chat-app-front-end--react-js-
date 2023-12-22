@@ -31,7 +31,7 @@ const initialAudioConfig: AudioConfig = {
 
 const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
   const [isGettingPermission, setIsGettingPermission] = useState(false);
-  const [isRocordReady, setIsRecordReady] = useState(false);
+  const [, setIsRecordReady] = useState(false);
   const [isRecording, setisRecording] = useState(false);
 
   const audioChunks = useRef<Blob[]>([]);
