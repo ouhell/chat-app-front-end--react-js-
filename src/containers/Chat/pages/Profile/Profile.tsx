@@ -21,7 +21,10 @@ import {
   updateProfilePicture,
 } from "../../../../client/ApiClient";
 import { useAppSelector } from "../../../../store/ReduxHooks";
-import { MenuSvg } from "../../../../shared/assets/svg/SvgProvider";
+import {
+  MenuSvg,
+  PicturePlus,
+} from "../../../../shared/assets/svg/SvgProvider";
 import { ComponentActions } from "../../../../store/slices/ComponentSlice";
 
 type Validation = {
@@ -426,6 +429,7 @@ const Profile = () => {
               width: "fit-content",
               borderRadius: "100%",
               backgroundColor: "var(--primary-blank)",
+              position: "relative",
             }}
           >
             <input
@@ -462,6 +466,14 @@ const Profile = () => {
                 {userData?.username[0] ?? "U"}
               </Avatar>
             </Spin>
+            <div
+              className={c.ProfilPicHoverer}
+              onClick={() => {
+                fileUploader.current?.click();
+              }}
+            >
+              <PicturePlus />
+            </div>
           </div>
         ) : null}
       </div>

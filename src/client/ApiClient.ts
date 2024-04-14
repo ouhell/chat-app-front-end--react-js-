@@ -4,8 +4,10 @@ import { MessagesPayload } from "./responseTypes/messageResponses";
 const isdev = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
 
 export const HostName = isdev
-  ? "http://192.168.1.4:4000"
+  ? "http://192.168.1.5:4000"
   : window.location.origin;
+
+console.log("host :::", HostName);
 
 console.log("Hostname", HostName);
 
@@ -221,6 +223,12 @@ export const apiLogin = (signinData: {
   return axios.post("api/auth/login", {
     identifier: signinData.identifier.trim(),
     password: signinData.password.trim(),
+  });
+};
+
+export const oauthLogin = (id_token = "<none>") => {
+  return axios.post("/api/auth/login/oauth/google", {
+    id_token: id_token,
   });
 };
 export const apiSignup = (userData: {

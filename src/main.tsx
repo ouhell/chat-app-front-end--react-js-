@@ -12,6 +12,7 @@ import "@fontsource/roboto/900.css";
 import "./index.css";
 import axios, { AxiosError } from "axios";
 import store from "./store/ReduxStore";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 //redux configuration
 // axios configuration
@@ -28,9 +29,11 @@ console.log("main js ");
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <Router>
     <Provider store={store}>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
+      <GoogleOAuthProvider clientId="731231285423-q3j4eiurg4gisql8m74imnmjj09uusb1.apps.googleusercontent.com">
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      </GoogleOAuthProvider>
     </Provider>
   </Router>
 );
