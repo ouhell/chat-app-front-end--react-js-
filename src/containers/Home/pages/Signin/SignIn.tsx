@@ -173,7 +173,11 @@ const Signin = () => {
             placeItems: "center",
           }}
         >
-          ------------or------------
+          <div className={classes.Divider}>
+            <div className={classes.DividerLine}></div>
+            <div className={classes.DiviverContent}>or</div>
+            <div className={classes.DividerLine}></div>
+          </div>
         </div>
         <div
           style={{

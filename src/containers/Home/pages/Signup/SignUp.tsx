@@ -15,7 +15,12 @@ import {
   apiCheckEmailExists,
   apiCheckUsernameExists,
   apiSignup,
+  oauthLogin,
 } from "../../../../client/ApiClient";
+import { GoogleLogin } from "@react-oauth/google";
+import { useAppDispatch } from "../../../../store/ReduxHooks";
+import { AuthActions } from "../../../../store/slices/AuthSlice";
+import { NotifActions } from "../../../../store/slices/NotificationSlice";
 
 const variants = {
   visible: {
@@ -300,6 +305,35 @@ const SignUp = () => {
   });
   const [isSigningUp, setIsSigningUp] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const oauthSignIn = (id_token?: string) => {
+    if (isSigningUp) return;
+    setIsSigningUp(true);
+    oauthLogin(id_token)
+      .then((res) => {
+        dispatch(AuthActions.login(res.data));
+      })
+      .catch((err) => {
+        if (
+          err &&
+          err.response &&
+          err.response.data &&
+          err.response.data.servedError
+        ) {
+          dispatch(
+            NotifActions.notify({
+              type: "error",
+              message: err.response.data.message,
+            })
+          );
+        }
+        console.log("signin error", err);
+      })
+      .finally(() => {
+        setIsSigningUp(false);
+      });
+  };
 
   function registerNewAccount() {
     if (isSigningUp) return;
@@ -322,8 +356,8 @@ const SignUp = () => {
     // }
 
     apiSignup(userData)
-      .then(() => {
-        navigate("/signin");
+      .then((res) => {
+        dispatch(AuthActions.login(res.data));
       })
       .catch((err) => {
         console.log("signup error ", err);
@@ -510,6 +544,37 @@ const SignUp = () => {
           Sign Up
         </Button>
 
+        <div
+          style={{
+            display: "grid",
+            placeItems: "center",
+          }}
+        >
+          <div className={classes.Divider}>
+            <div className={classes.DividerLine}></div>
+            <div className={classes.DiviverContent}>or</div>
+            <div className={classes.DividerLine}></div>
+          </div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: " center",
+          }}
+        >
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              console.log(credentialResponse);
+              oauthSignIn(credentialResponse.credential);
+            }}
+            onError={() => {
+              console.log("Login Failed");
+            }}
+            auto_select={false}
+            shape="circle"
+          />
+        </div>
         <footer className={classes.Suggestion}>
           <span className={classes.SuggestionText}>
             Already have an account?{" "}

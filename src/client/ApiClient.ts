@@ -4,7 +4,7 @@ import { MessagesPayload } from "./responseTypes/messageResponses";
 const isdev = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
 
 export const HostName = isdev
-  ? "http://192.168.1.5:4000"
+  ? "http://192.168.1.5:8080"
   : window.location.origin;
 
 console.log("host :::", HostName);
