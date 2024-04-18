@@ -65,7 +65,7 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
     setIsAcceptLoading(true);
 
     addContact(userData?.access_token ?? "undefined", requestData._id)
-      .then((res) => {
+      .then(() => {
         dispatch(ChatActions.removeRequest(requestData._id));
         dispatch(
           ChatActions.emit({
