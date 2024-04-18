@@ -7,6 +7,7 @@ import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import {
   addContact,
   deleteContactRequest,
+  getContacts,
 } from "../../../../../../../../client/ApiClient";
 import { useAppSelector } from "../../../../../../../../store/ReduxHooks";
 type ContactRequest = {
@@ -19,6 +20,12 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
   const userData = useAppSelector((state) => state.auth.userData);
 
   const dispatch = useDispatch();
+
+  const fetchContacts = () => {
+    getContacts(userData?.access_token ?? "undefined").then((res) => {
+      dispatch(ChatActions.setContacts(res.data));
+    });
+  };
 
   const cancelRequest = () => {
     if (isCancelLoading || isAcceptLoading) return;
@@ -72,11 +79,13 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
             data: requestData,
           })
         );
-        dispatch(
-          ChatActions.addContact({
-            newContact: res.data,
-          })
-        );
+        // dispatch(
+        //   ChatActions.addContact({
+        //     newContact: res.data,
+        //   })
+        // );
+
+        fetchContacts();
       })
       .catch((err) => {
         console.log("accept req err", err);

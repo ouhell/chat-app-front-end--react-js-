@@ -10,6 +10,7 @@ import { NotifActions } from "../../../../store/slices/NotificationSlice";
 import { motion } from "framer-motion";
 import { apiLogin, oauthLogin } from "../../../../client/ApiClient";
 import { GoogleLogin } from "@react-oauth/google";
+import axios, { AxiosError } from "axios";
 
 const variants = {
   visible: {
@@ -190,6 +191,20 @@ const Signin = () => {
             onSuccess={(credentialResponse) => {
               console.log(credentialResponse);
               oauthSignIn(credentialResponse.credential);
+              axios({
+                url: `https://oauth2.googleapis.com/tokeninfo`,
+                params: {
+                  id_token: credentialResponse.credential,
+                },
+                method: "get",
+              })
+                .then((res) => {
+                  console.log("google token info :", res);
+                })
+                .catch((err: AxiosError) => {
+                  console.log("google token error:", err);
+                  console.log("google token error data: ", err.response);
+                });
             }}
             onError={() => {
               console.log("Login Failed");

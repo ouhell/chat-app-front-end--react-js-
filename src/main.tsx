@@ -29,7 +29,7 @@ console.log("main js ");
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <Router>
     <Provider store={store}>
-      <GoogleOAuthProvider clientId="731231285423-q3j4eiurg4gisql8m74imnmjj09uusb1.apps.googleusercontent.com">
+      <GoogleOAuthProvider clientId="594753193287-a2i0beejg3frbdu229sr2p1tcon8qj85.apps.googleusercontent.com">
         <React.StrictMode>
           <App />
         </React.StrictMode>

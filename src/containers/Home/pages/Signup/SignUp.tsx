@@ -8,7 +8,7 @@ import {
   CheckOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useRef } from "react";
 import { motion } from "framer-motion";
 import {
@@ -304,7 +304,7 @@ const SignUp = () => {
     },
   });
   const [isSigningUp, setIsSigningUp] = useState(false);
-  const navigate = useNavigate();
+
   const dispatch = useAppDispatch();
 
   const oauthSignIn = (id_token?: string) => {

@@ -21,6 +21,7 @@ const ChatController = () => {
         ChatActions.on({
           event: "receive request",
           callback: (request) => {
+            console.log("received request ::", request);
             dispatch(ChatActions.addRequest(request));
           },
         })
