@@ -1,68 +1,82 @@
-import { useState, useRef } from "react";
-import ChatsDisplayer from "./components/ChatsDisplayers/ChatsDisplayer.jsx";
+import { useMemo, useRef, useState } from "react";
+import ChatsDisplayer from "./components/ChatsDisplayers/ChatsDisplayer";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import {
   ChatSvg,
   NotificationBellSvg,
   ArrowBackSvg,
-} from "../../../../shared/assets/svg/SvgProvider.js";
+} from "../../../../shared/assets/svg/SvgProvider";
 import classes from "./NavBar.module.scss";
-import NotificationDisplayer from "./components/NotificationDisplayer/NotificationDisplayer.jsx";
+import NotificationDisplayer from "./components/NotificationDisplayer/NotificationDisplayer";
 import { Avatar, Dropdown } from "antd";
-import { AuthActions } from "../../../../store/slices/AuthSlice.js";
-import { ComponentActions } from "../../../../store/slices/ComponentSlice.js";
-import { NotifActions } from "../../../../store/slices/NotificationSlice.js";
-import { ChatActions } from "../../../../store/slices/ChatSlice.js";
-import useResize from "../../../../helpers/hooks/useResize.jsx";
+import { AuthActions } from "../../../../store/slices/AuthSlice";
+import { ComponentActions } from "../../../../store/slices/ComponentSlice";
+import { NotifActions } from "../../../../store/slices/NotificationSlice";
+import { ChatActions } from "../../../../store/slices/ChatSlice";
+import useResize from "../../../../helpers/hooks/useResize";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { navigationHide } from "../../../../helpers/scss/variables.module.scss";
 import { motion } from "framer-motion";
-import { useAppSelector } from "../../../../store/ReduxHooks.js";
+import { useAppDispatch, useAppSelector } from "../../../../store/ReduxHooks";
 const navbarBreakPoint = Number.parseInt(navigationHide);
 
 const DropDownItems = [
   {
     key: "profile",
-    label: <NavLink to="/settings">edit profile</NavLink>,
+    label: <NavLink to="/settings">Edit profile</NavLink>,
   },
 
   {
     key: "logout",
     danger: true,
-    label: "logout",
+    label: "Logout",
   },
 ];
 
-const topNavigationItems = [
-  {
-    title: "chats",
-    path: "/chats",
-    icon: ChatSvg,
-    render: <ChatsDisplayer />,
-  },
-
-  {
-    title: "notifications",
-    path: "/notifications",
-    icon: NotificationBellSvg,
-    render: <NotificationDisplayer />,
-  },
-];
+type NavSection = "chats" | "notifications";
 
 function NavBar() {
-  const [selectedNavigation, setSelectedNavigation] = useState(
-    topNavigationItems[0]
-  );
+  const [selectedNavigation, setSelectedNavigation] =
+    useState<NavSection>("chats");
   const startY = useRef(0);
   const startX = useRef(0);
 
   const isOpen = useAppSelector((state) => state.component.isNavOpen);
   const userData = useAppSelector((state) => state.auth.userData);
-  const dispatch = useDispatch();
+  const requestCount = useAppSelector((state) => state.chat.requests.data.length);
+  const contactCount = useAppSelector(
+    (state) => Object.keys(state.chat.contacts).length
+  );
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { windowWidth } = useResize();
+
+  const topNavigationItems = useMemo(
+    () => [
+      {
+        key: "chats" as NavSection,
+        title: "Chats",
+        helperText: `${contactCount} contact${contactCount === 1 ? "" : "s"}`,
+        icon: ChatSvg,
+        badge: contactCount,
+        render: <ChatsDisplayer />,
+      },
+      {
+        key: "notifications" as NavSection,
+        title: "Notifications",
+        helperText: `${requestCount} request${requestCount === 1 ? "" : "s"}`,
+        icon: NotificationBellSvg,
+        badge: requestCount,
+        render: <NotificationDisplayer />,
+      },
+    ],
+    [contactCount, requestCount]
+  );
+
+  const selectedTab =
+    topNavigationItems.find((item) => item.key === selectedNavigation) ??
+    topNavigationItems[0];
 
   const menuOnClick = ({ key }: { key: string }) => {
     switch (key) {
@@ -85,81 +99,77 @@ function NavBar() {
   const isMobileSize = windowWidth <= navbarBreakPoint;
 
   return (
-    <motion.div
-      className={classes.NavBar}
-      initial={{
-        x: -50,
-        opacity: 0,
-      }}
-      animate={
-        isMobileSize && isOpen
-          ? {
-              position: "fixed",
-              width: "100vw",
-              x: 0,
-              opacity: 1,
-              transition: {
-                duration: 0.3,
-                ease: "easeIn",
-              },
-            }
-          : isMobileSize
-          ? {
-              position: "fixed",
-              width: "100vw",
-              x: "-100%",
-              opacity: 0,
-              transition: {
-                opacity: { duration: 0.1 },
-                duration: 0.6,
-                ease: "easeIn",
-              },
-            }
-          : {
-              position: "relative",
-              width: "25rem",
-              x: 0,
-              opacity: 1,
-              transition: {
-                duration: 0.6,
-                ease: "easeIn",
-              },
-            }
-      }
+    <>
+      {isMobileSize && isOpen ? (
+        <motion.button
+          type="button"
+          aria-label="Close sidebar"
+          className={classes.Backdrop}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => dispatch(ComponentActions.closeNav())}
+        />
+      ) : null}
 
-      /* isopen={isOpen} */
-    >
-      <div className={classes.TopNavigation}>
-        <div
-          className={classes.TopNavigationItem + " " + classes.CloseArrow}
-          style={{
-            /* position: "fixed", */
-            color: "var(--primary-soft)",
-          }}
-          onClick={() => {
-            dispatch(ComponentActions.closeNav());
-          }}
-        >
-          <ArrowBackSvg />
-        </div>
-        {topNavigationItems.map((topNavItem) => {
-          return (
-            <div
-              key={topNavItem.title}
-              className={
-                classes.TopNavigationItem +
-                (selectedNavigation.title === topNavItem.title
-                  ? ` ${classes.active}`
-                  : "")
+      <motion.aside
+        className={classes.NavBar}
+        initial={{
+          x: -50,
+          opacity: 0,
+        }}
+        animate={
+          isMobileSize && isOpen
+            ? {
+                position: "fixed",
+                width: "min(94vw, 24rem)",
+                x: 0,
+                opacity: 1,
+                transition: {
+                  duration: 0.28,
+                  ease: "easeOut",
+                },
               }
-              onClick={() => setSelectedNavigation(topNavItem)}
-              data-title={topNavItem.title}
+            : isMobileSize
+            ? {
+                position: "fixed",
+                width: "min(94vw, 24rem)",
+                x: "-110%",
+                opacity: 0,
+                transition: {
+                  opacity: { duration: 0.1 },
+                  duration: 0.42,
+                  ease: "easeInOut",
+                },
+              }
+            : {
+                position: "relative",
+                width: "22.5rem",
+                x: 0,
+                opacity: 1,
+                transition: {
+                  duration: 0.45,
+                  ease: "easeOut",
+                },
+              }
+        }
+      >
+        <div className={classes.TopHeader}>
+          <div className={classes.BrandSection}>
+            <button
+              type="button"
+              className={classes.CloseArrow}
+              onClick={() => {
+                dispatch(ComponentActions.closeNav());
+              }}
             >
-              {<topNavItem.icon />}
+              <ArrowBackSvg />
+            </button>
+            <div>
+              <div className={classes.BrandLabel}>Workspace</div>
+              <div className={classes.BrandTitle}>Messages</div>
             </div>
-          );
-        })}
-        <div className={classes.topNavItem}>
+          </div>
           <Dropdown
             trigger={["click"]}
             menu={{
@@ -171,30 +181,61 @@ function NavBar() {
               className="util-pointer util-capitalized"
               src={userData?.profile_picture}
             >
-              {userData?.username[0] ?? "U"}
+              {userData?.username?.[0]?.toUpperCase() ?? "U"}
             </Avatar>
           </Dropdown>
         </div>
-      </div>
-      <div
-        className={classes.Content}
-        onTouchStart={(e) => {
-          startX.current = e.touches[0].clientX;
-          startY.current = e.touches[0].clientY;
-        }}
-        onTouchEnd={(e) => {
-          const endX = e.changedTouches[0].clientX;
-          const endY = e.changedTouches[0].clientY;
-          const diffX = endX - startX.current;
-          const diffY = endY - startY.current;
-          if (Math.abs(diffX) > Math.abs(diffY) && diffX < -40) {
-            dispatch(ComponentActions.closeNav());
-          }
-        }}
-      >
-        {selectedNavigation.render}
-      </div>
-    </motion.div>
+
+        <div className={classes.TopNavigation}>
+          {topNavigationItems.map((topNavItem) => {
+            const isSelected = selectedNavigation === topNavItem.key;
+            return (
+              <button
+                key={topNavItem.key}
+                type="button"
+                className={`${classes.TopNavigationItem} ${
+                  isSelected ? classes.active : ""
+                }`}
+                onClick={() => setSelectedNavigation(topNavItem.key)}
+                data-title={topNavItem.title}
+              >
+                <span className={classes.IconHolder}>
+                  <topNavItem.icon />
+                </span>
+                <span className={classes.NavLabel}>{topNavItem.title}</span>
+                {topNavItem.badge > 0 ? (
+                  <span className={classes.Badge}>{topNavItem.badge}</span>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className={classes.SectionHeader}>
+          <h2 className={classes.SectionTitle}>{selectedTab.title}</h2>
+          <span className={classes.SectionMeta}>{selectedTab.helperText}</span>
+        </div>
+
+        <div
+          className={classes.Content}
+          onTouchStart={(e) => {
+            startX.current = e.touches[0].clientX;
+            startY.current = e.touches[0].clientY;
+          }}
+          onTouchEnd={(e) => {
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const diffX = endX - startX.current;
+            const diffY = endY - startY.current;
+            if (Math.abs(diffX) > Math.abs(diffY) && diffX < -40) {
+              dispatch(ComponentActions.closeNav());
+            }
+          }}
+        >
+          {selectedTab.render}
+        </div>
+      </motion.aside>
+    </>
   );
 }
 

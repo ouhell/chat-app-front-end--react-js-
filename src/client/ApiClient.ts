@@ -4,7 +4,7 @@ import { MessagesPayload } from "./responseTypes/messageResponses";
 const isdev = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
 
 export const HostName = isdev
-  ? "http://192.168.1.5:8080"
+  ? "http://localhost:8080"
   : window.location.origin;
 
 console.log("host :::", HostName);
@@ -17,7 +17,7 @@ export const getConversation = (
   params?: {
     skip: number;
     [key: string]: string | number;
-  }
+  },
 ) => {
   const urlParams = new URLSearchParams();
   if (params)
@@ -31,14 +31,14 @@ export const getConversation = (
       headers: {
         authorization: "Bearer " + accessToken,
       },
-    }
+    },
   );
 };
 
 export const sendTextMessage = (
   message: string,
   conversationId: string,
-  accessToken: string
+  accessToken: string,
 ) => {
   return axios.post(
     "api/messages/" + conversationId,
@@ -49,14 +49,14 @@ export const sendTextMessage = (
       headers: {
         authorization: "Bearer " + accessToken,
       },
-    }
+    },
   );
 };
 
 export const sendImage = (
   formData: FormData,
   conversationId: string,
-  accessToken: string
+  accessToken: string,
 ) => {
   return axios.post(`api/messages/${conversationId}/image`, formData, {
     headers: {
@@ -67,7 +67,7 @@ export const sendImage = (
 export const sendVoiceMessage = (
   formData: FormData,
   conversationId: string,
-  accessToken: string
+  accessToken: string,
 ) => {
   return axios.post(`api/messages/${conversationId}/voice`, formData, {
     headers: {
@@ -144,7 +144,7 @@ export const getContactRequests = (accessToken: string) => {
 };
 export const addContactRequest = (
   accessToken: string,
-  destinatorId: string
+  destinatorId: string,
 ) => {
   return axios.post("/api/users/requests/" + destinatorId, null, {
     headers: {
@@ -154,7 +154,7 @@ export const addContactRequest = (
 };
 export const deleteContactRequest = (
   accessToken: string,
-  requestId: string
+  requestId: string,
 ) => {
   return axios.delete("api/users/requests/" + requestId, {
     headers: {
@@ -165,7 +165,7 @@ export const deleteContactRequest = (
 
 export const getContactCandidates = (
   accessToken: string,
-  searchtext: string
+  searchtext: string,
 ) => {
   return axios.get(
     "/api/users/candidates/contacts?search=" + searchtext.trim(),
@@ -173,7 +173,7 @@ export const getContactCandidates = (
       headers: {
         authorization: "Bearer " + accessToken,
       },
-    }
+    },
   );
 };
 
@@ -186,7 +186,7 @@ export const getProfileData = (accessToken: string) => {
 };
 export const updateProfileData = (
   accessToken: string,
-  updateData: { [key: string]: string }
+  updateData: { [key: string]: string },
 ) => {
   return axios.patch("api/users/profile", updateData, {
     headers: {
@@ -207,7 +207,7 @@ export const updateProfilePicture = (accessToken: string, image: File) => {
 
 export const getContactProfileData = (
   accessToken: string,
-  conversationId: string
+  conversationId: string,
 ) => {
   return axios.get(`/api/users/profile/${conversationId}/contact`, {
     headers: {

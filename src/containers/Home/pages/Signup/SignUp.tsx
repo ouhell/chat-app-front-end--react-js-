@@ -10,7 +10,7 @@ import {
 } from "@ant-design/icons";
 import { NavLink } from "react-router-dom";
 import { useRef } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   apiCheckEmailExists,
   apiCheckUsernameExists,
@@ -22,15 +22,58 @@ import { useAppDispatch } from "../../../../store/ReduxHooks";
 import { AuthActions } from "../../../../store/slices/AuthSlice";
 import { NotifActions } from "../../../../store/slices/NotificationSlice";
 
-const variants = {
+const shellVariants = {
+  hidden: { opacity: 0, y: 24 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      staggerChildren: 0.1,
+      type: "spring",
+      damping: 20,
+      stiffness: 210,
+      staggerChildren: 0.08,
+      delayChildren: 0.06,
     },
   },
-  hidden: { opacity: 0, y: 15 },
+};
+
+const panelVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+};
+
+const formVariants = {
+  hidden: { opacity: 0, x: 16 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.45, ease: "easeOut" },
+  },
+};
+
+const formListVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.07,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const fieldVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+};
+
+const errorVariants = {
+  hidden: { opacity: 0, height: 0, y: -4 },
+  visible: { opacity: 1, height: "auto", y: 0 },
+  exit: { opacity: 0, height: 0, y: -4 },
 };
 
 type Validation = {
@@ -455,135 +498,159 @@ const SignUp = () => {
 
   return (
     <motion.section
-      initial={{
-        scale: 1.1,
-        opacity: 0,
-      }}
-      animate={{
-        scale: 1,
-        opacity: 1,
-      }}
-      exit={{
-        scale: 1.1,
-        opacity: 0,
-      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       className={classes.Signin}
     >
-      <div className={classes.SigninBox}>
-        <header className={classes.Header}>Sign Up</header>
-
-        <motion.div
-          className={classes.InputBox}
-          variants={variants}
-          initial="hidden"
-          animate="visible"
-        >
-          {Object.keys(signupFormData.feilds).map((key) => {
-            const feild = signupFormData.feilds[key];
-            const config = feild.input_config;
-
-            const props = {
-              onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                changeValue(key, e.target.value);
-              },
-              value: feild.value,
-              maxLength: config.maxLength,
-              placeholder: config.placeHolder,
-              className: classes.Input,
-              status:
-                !feild.isValid && feild.isTouched && !feild.isLoading
-                  ? "error"
-                  : ("normal" as "error" | ""),
-              prefix: config.prefix,
-              suffix: feild.isValid ? (
-                <CheckOutlined
-                  style={{
-                    color: "green",
-                  }}
-                />
-              ) : feild.isLoading ? (
-                <LoadingOutlined
-                  style={{
-                    color: "var(--primary-soft)",
-                  }}
-                />
-              ) : null,
-              visibilityToggle: false,
-            };
-            let InputType = Input;
-
-            const isPasswordInput = config.type === "password";
-
-            if (isPasswordInput) {
-              InputType = Input.Password as typeof Input;
-
-              props.visibilityToggle = !!config.visibilityToggle;
-            }
-
-            return (
-              <motion.div
-                className={classes.InputHolder}
-                variants={variants}
-                key={key}
-              >
-                {feild.errorMessage ? (
-                  <div className={classes.InputError}>{feild.errorMessage}</div>
-                ) : null}
-                <InputType {...props} type={config.type} />
-              </motion.div>
-            );
-          })}
-        </motion.div>
-
-        <Button
-          className={classes.Button}
-          type="primary"
-          loading={isSigningUp}
-          onClick={registerNewAccount}
-        >
-          Sign Up
-        </Button>
-
-        <div
-          style={{
-            display: "grid",
-            placeItems: "center",
-          }}
-        >
-          <div className={classes.Divider}>
-            <div className={classes.DividerLine}></div>
-            <div className={classes.DiviverContent}>or</div>
-            <div className={classes.DividerLine}></div>
+      <motion.div
+        className={classes.AuthShell}
+        variants={shellVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.aside className={classes.VisualPanel} variants={panelVariants}>
+          <div className={classes.VisualEyebrow}>New here?</div>
+          <h2 className={classes.VisualTitle}>Create your chat identity.</h2>
+          <p className={classes.VisualContent}>
+            Build your profile once and start conversations instantly across
+            channels and devices.
+          </p>
+          <div className={classes.VisualPills}>
+            <span>Fast setup</span>
+            <span>Private by default</span>
+            <span>Team-ready</span>
           </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: " center",
-          }}
-        >
-          <GoogleLogin
-            onSuccess={(credentialResponse) => {
-              console.log(credentialResponse);
-              oauthSignIn(credentialResponse.credential);
-            }}
-            onError={() => {
-              console.log("Login Failed");
-            }}
-            auto_select={false}
-            shape="circle"
-          />
-        </div>
-        <footer className={classes.Suggestion}>
-          <span className={classes.SuggestionText}>
-            Already have an account?{" "}
-          </span>
-          <NavLink className={classes.SuggestionLink} to="/signin">
-            login
-          </NavLink>
-        </footer>
-      </div>
+        </motion.aside>
+
+        <motion.div className={classes.SigninBox} variants={formVariants}>
+          <header className={classes.Header}>Create account</header>
+          <div className={classes.SubHeader}>
+            It takes less than one minute.
+          </div>
+
+          <motion.div
+            className={classes.InputBox}
+            initial="hidden"
+            animate="visible"
+            variants={formListVariants}
+          >
+            {Object.keys(signupFormData.feilds).map((key) => {
+              const feild = signupFormData.feilds[key];
+              const config = feild.input_config;
+
+              const baseProps = {
+                onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                  changeValue(key, e.target.value);
+                },
+                value: feild.value,
+                maxLength: config.maxLength,
+                placeholder: config.placeHolder,
+                className: classes.Input,
+                status:
+                  !feild.isValid && feild.isTouched && !feild.isLoading
+                    ? ("error" as const)
+                    : undefined,
+                prefix: config.prefix,
+                suffix: feild.isValid ? (
+                  <CheckOutlined className={classes.ValidIcon} />
+                ) : feild.isLoading ? (
+                  <LoadingOutlined className={classes.LoadingIcon} />
+                ) : null,
+              };
+
+              const isPasswordInput = config.type === "password";
+
+              return (
+                <motion.div
+                  className={classes.InputHolder}
+                  variants={fieldVariants}
+                  key={key}
+                >
+                  <AnimatePresence initial={false}>
+                    {feild.errorMessage ? (
+                      <motion.div
+                        className={classes.InputError}
+                        variants={errorVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                      >
+                        {feild.errorMessage}
+                      </motion.div>
+                    ) : null}
+                  </AnimatePresence>
+
+                  {isPasswordInput ? (
+                    <Input.Password
+                      {...baseProps}
+                      type={config.type}
+                      visibilityToggle={!!config.visibilityToggle}
+                      autoComplete="new-password"
+                    />
+                  ) : (
+                    <Input
+                      {...baseProps}
+                      type={config.type}
+                      autoComplete={
+                        key === "email"
+                          ? "email"
+                          : key === "username"
+                            ? "username"
+                            : key === "personal_name"
+                              ? "name"
+                              : "off"
+                      }
+                    />
+                  )}
+                </motion.div>
+              );
+            })}
+          </motion.div>
+
+          <motion.div variants={fieldVariants} className={classes.ButtonHolder}>
+            <Button
+              className={classes.Button}
+              type="primary"
+              loading={isSigningUp}
+              onClick={registerNewAccount}
+            >
+              Create account
+            </Button>
+          </motion.div>
+
+          <motion.div variants={fieldVariants} className={classes.DividerWrap}>
+            <div className={classes.Divider}>
+              <div className={classes.DividerLine}></div>
+              <div className={classes.DiviverContent}>or continue with</div>
+              <div className={classes.DividerLine}></div>
+            </div>
+          </motion.div>
+
+          <motion.div variants={fieldVariants} className={classes.GoogleHolder}>
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                console.log(credentialResponse);
+                oauthSignIn(credentialResponse.credential);
+              }}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+              auto_select={false}
+              shape="circle"
+            />
+          </motion.div>
+
+          <motion.footer variants={fieldVariants} className={classes.Suggestion}>
+            <span className={classes.SuggestionText}>
+              Already have an account?{" "}
+            </span>
+            <NavLink className={classes.SuggestionLink} to="/signin">
+              Sign in
+            </NavLink>
+          </motion.footer>
+        </motion.div>
+      </motion.div>
     </motion.section>
   );
 };
