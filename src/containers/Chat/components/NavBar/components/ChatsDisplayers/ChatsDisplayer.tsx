@@ -6,7 +6,9 @@ import ContactDisplayer from "./components/ContactDisplayer/ContactDisplayer";
 import { PluxCircleSvg } from "../../../../../../shared/assets/svg/SvgProvider";
 import ContactAdder from "./components/ContactAdder/ContactAdder";
 import PublicConversationDisplayer from "./components/PublicConversationDisplayer/PublicConversationDisplayer";
-import { useAppSelector } from "../../../../../../store/ReduxHooks";
+import { useQuery } from "@tanstack/react-query";
+import { getContacts, getPublicConversations } from "../../../../../../client/ApiClient";
+import { queryKeys } from "../../../../../../client/queryKeys";
 
 const chatTypes = [
   {
@@ -30,10 +32,22 @@ const ChatsDisplayer = () => {
   const [selectedChatType, setSelectedChatType] = useState(chatTypes[0]);
   const [showContactAdder, setShowContactAdder] = useState(false);
 
-  const contactCount = useAppSelector(
-    (state) => Object.keys(state.chat.contacts).length
-  );
-  const publicCount = useAppSelector((state) => state.chat.publicConvos.length);
+  const contactsQuery = useQuery({
+    queryKey: queryKeys.contacts,
+    queryFn: async () => {
+      const res = await getContacts();
+      return res.data as Contact[];
+    },
+  });
+  const publicConversationQuery = useQuery({
+    queryKey: queryKeys.publicConversations,
+    queryFn: async () => {
+      const res = await getPublicConversations();
+      return res.data as Conversation[];
+    },
+  });
+  const contactCount = contactsQuery.data?.length ?? 0;
+  const publicCount = publicConversationQuery.data?.length ?? 0;
 
   const chatTypeMeta = useMemo(
     () => ({

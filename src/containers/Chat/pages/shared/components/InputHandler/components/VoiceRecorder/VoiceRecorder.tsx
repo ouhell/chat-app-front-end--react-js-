@@ -1,13 +1,18 @@
 import c from "./VoiceRecorder.module.scss";
 import { MicSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import { useState, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../../../../../../../store/ReduxHooks";
 
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import { NotifActions } from "../../../../../../../../store/slices/NotificationSlice";
 
 import { sendVoiceMessage } from "../../../../../../../../client/ApiClient";
-import { useAppSelector } from "../../../../../../../../store/ReduxHooks";
+import { queryClient } from "../../../../../../../../client/queryClient";
+import {
+  appendMessageToConversation,
+  removeMessageFromConversation,
+  replaceMessageInConversation,
+} from "../../../../../../../../client/queryHelpers";
 
 const initialRecordIconStyle = "none";
 
@@ -42,7 +47,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
 
   const userData = useAppSelector((state) => state.auth.userData);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   function getRecordPermision() {
     setIsGettingPermission(true);
@@ -178,21 +183,18 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
             }),
           );
           newMessage.content = url;
-
-          dispatch(
-            ChatActions.replaceMessage({
-              conversation_id: conversationId,
-              id: generatedId,
-              newMessage: newMessage,
-            }),
+          replaceMessageInConversation(
+            queryClient,
+            conversationId,
+            generatedId,
+            newMessage,
           );
         })
         .catch(() => {
-          dispatch(
-            ChatActions.deleteMessage({
-              conversation_id: conversationId,
-              id: generatedId,
-            }),
+          removeMessageFromConversation(
+            queryClient,
+            conversationId,
+            generatedId,
           );
         });
       const tempMessage: Message = {
@@ -207,11 +209,10 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
         message: "",
         edited_date: undefined,
       };
-      dispatch(
-        ChatActions.addMessage({
-          conversation_id: conversationId,
-          newMessage: tempMessage,
-        }),
+      appendMessageToConversation(
+        queryClient,
+        conversationId,
+        tempMessage,
       );
       testAudio.pause();
       testAudio.src = "";

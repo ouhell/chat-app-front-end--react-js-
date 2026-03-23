@@ -1,47 +1,21 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { ChatActions } from "../../../../store/slices/ChatSlice";
-import {
-  apiRefresh,
-  getContactRequests,
-  getContacts,
-} from "../../../../client/ApiClient";
-import { useAppSelector } from "../../../../store/ReduxHooks";
+import { apiRefresh } from "../../../../client/ApiClient";
+import { useAppDispatch, useAppSelector } from "../../../../store/ReduxHooks";
 import { AuthActions } from "../../../../store/slices/AuthSlice";
 import { AxiosError, HttpStatusCode } from "axios";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "../../../../client/queryKeys";
+import {
+  appendMessageToConversation,
+  removeMessageFromConversation,
+  setConversationBlockedUser,
+} from "../../../../client/queryHelpers";
 const ChatController = () => {
   const userData = useAppSelector((state) => state.auth.userData);
 
-  const dispatch = useDispatch();
-
-  const fetchContacts = () => {
-    getContacts().then((res) => {
-      dispatch(ChatActions.setContacts(res.data));
-    });
-  };
-
-  const fetchNotifications = () => {
-    getContactRequests().then((res) => {
-      dispatch(ChatActions.setRequests(res.data));
-      dispatch(
-        ChatActions.on({
-          event: "receive request",
-          callback: (request) => {
-            console.log("received request ::", request);
-            dispatch(ChatActions.addRequest(request));
-          },
-        }),
-      );
-      dispatch(
-        ChatActions.on({
-          event: "canceled request",
-          callback: (requestId) => {
-            dispatch(ChatActions.removeRequest(requestId));
-          },
-        }),
-      );
-    });
-  };
+  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!userData) return;
@@ -66,17 +40,18 @@ const ChatController = () => {
     return () => {
       clearInterval(refresher);
     };
-  }, [userData]);
+  }, [dispatch, userData]);
 
   useEffect(() => {
-    fetchNotifications();
-
     dispatch(
       ChatActions.on({
         event: "accepted request",
         callback: (request: Request) => {
-          dispatch(ChatActions.removeRequest(request._id));
-          fetchContacts();
+          queryClient.setQueryData<Request[]>(queryKeys.requests, (oldData) => {
+            if (!oldData) return oldData;
+            return oldData.filter((req) => req._id !== request._id);
+          });
+          queryClient.invalidateQueries({ queryKey: queryKeys.contacts });
         },
       }),
     );
@@ -93,11 +68,10 @@ const ChatController = () => {
         event: "receive message",
         callback: (mess) => {
           const message = mess as Message;
-          dispatch(
-            ChatActions.addMessage({
-              conversation_id: message.conversation,
-              newMessage: message as Message,
-            }),
+          appendMessageToConversation(
+            queryClient,
+            message.conversation as unknown as string,
+            message as Message,
           );
         },
       }),
@@ -109,11 +83,10 @@ const ChatController = () => {
         callback: (mess) => {
           const message = mess as Message;
           const messageId = message.trueId ? message.trueId : message._id;
-          dispatch(
-            ChatActions.deleteMessage({
-              conversation_id: message.conversation,
-              id: messageId,
-            }),
+          removeMessageFromConversation(
+            queryClient,
+            message.conversation as unknown as string,
+            messageId,
           );
         },
       }),
@@ -135,14 +108,41 @@ const ChatController = () => {
             convID: conversation_id,
             blockedMF: user_id,
           });
-          ChatActions.setUserBanned({
-            bannedUser: user_id,
-            conversationId: conversation_id,
+          setConversationBlockedUser(
+            queryClient,
+            conversation_id,
+            user_id,
+            true,
+          );
+        },
+      }),
+    );
+
+    dispatch(
+      ChatActions.on({
+        event: "receive request",
+        callback: (request: Request) => {
+          queryClient.setQueryData<Request[]>(queryKeys.requests, (oldData) => {
+            if (!oldData) return [request];
+            if (oldData.some((req) => req._id === request._id)) return oldData;
+            return [...oldData, request];
           });
         },
       }),
     );
-  }, []);
+
+    dispatch(
+      ChatActions.on({
+        event: "canceled request",
+        callback: (requestId: string) => {
+          queryClient.setQueryData<Request[]>(queryKeys.requests, (oldData) => {
+            if (!oldData) return oldData;
+            return oldData.filter((request) => request._id !== requestId);
+          });
+        },
+      }),
+    );
+  }, [dispatch, queryClient, userData?.userId]);
 
   return <></>;
 };

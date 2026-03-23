@@ -175,6 +175,12 @@ export const apiLogin = (signinData: {
   );
 };
 
+export const apiLogout = () => {
+  return axios.post("api/auth/logout", null, {
+    withCredentials: true,
+  });
+};
+
 export const oauthLogin = (id_token = "<none>") => {
   return axios.post<UserData>(
     "/api/auth/login/oauth/google",

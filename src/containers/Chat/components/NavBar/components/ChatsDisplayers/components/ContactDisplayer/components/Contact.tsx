@@ -1,42 +1,32 @@
 import c from "./Contact.module.scss";
 import { NavLink } from "react-router-dom";
 import { Avatar } from "antd";
-import { ChatActions } from "../../../../../../../../../store/slices/ChatSlice";
 import { useDispatch } from "react-redux";
 import { ComponentActions } from "../../../../../../../../../store/slices/ComponentSlice";
-import { useEffect } from "react";
-import { useCallback } from "react";
-
 import { getConversation } from "../../../../../../../../../client/ApiClient";
 import { useAppSelector } from "../../../../../../../../../store/ReduxHooks";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../../../../../../../../client/queryKeys";
+import { flattenConversationMessages } from "../../../../../../../../../client/queryHelpers";
 
 type ContactProps = {
   contactInfo: Contact;
 };
 
 const Contact = ({ contactInfo }: ContactProps) => {
-  const conversation = useAppSelector(
-    (state) => state.chat.conversations[contactInfo._id]
-  );
   const userData = useAppSelector((state) => state.auth.userData);
-
-  const messages = conversation ? conversation.messages : [];
+  const conversationQuery = useInfiniteQuery({
+    queryKey: queryKeys.conversation(contactInfo._id),
+    queryFn: async ({ pageParam = 0 }) => {
+      const res = await getConversation(contactInfo._id, { skip: pageParam });
+      return res.data;
+    },
+    initialPageParam: 0,
+    getNextPageParam: () => undefined,
+  });
+  const messages = flattenConversationMessages(conversationQuery.data);
 
   const dispatch = useDispatch();
-
-  const fetchMessages = useCallback(() => {
-    getConversation(contactInfo._id, userData?.access_token ?? "undefined", {
-      skip: 0,
-    })
-      .then((res) => {
-        dispatch(ChatActions.emit({ event: "chat", data: contactInfo._id }));
-
-        dispatch(ChatActions.setConversation(res.data));
-      })
-      .catch((err) => {
-        console.log("fetch messages error" + contactInfo._id, err);
-      });
-  }, [contactInfo._id, dispatch, userData?.access_token]);
 
   const getLastMessage = () => {
     if (messages.length === 0) return "No messages yet";
@@ -52,13 +42,6 @@ const Contact = ({ contactInfo }: ContactProps) => {
         return sender + "sent attachement";
     }
   };
-
-  useEffect(() => {
-    if (!conversation) fetchMessages();
-    else {
-      dispatch(ChatActions.emit({ event: "chat", data: contactInfo._id }));
-    }
-  }, [contactInfo._id, conversation, dispatch, fetchMessages]);
 
   return (
     <NavLink

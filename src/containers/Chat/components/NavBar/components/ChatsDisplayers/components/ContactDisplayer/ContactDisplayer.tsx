@@ -1,17 +1,14 @@
 import classes from "./ContactDisplayer.module.scss";
 import { SearchSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Empty, Result } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
 
 import BasicSpinner from "../../../../../../../../shared/components/BasicSpinner/BasicSpinner";
 import Contact from "./components/Contact";
-import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import { getContacts } from "../../../../../../../../client/ApiClient";
-import {
-  useAppDispatch,
-  useAppSelector,
-} from "../../../../../../../../store/ReduxHooks";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../../../../../../../client/queryKeys";
 
 const contactContainerAnimation = {
   hidden: {
@@ -45,12 +42,14 @@ const contactAnimations = {
 
 const ContactDisplayer = () => {
   const [seachtext, setSearchtext] = useState("");
-  const contactData = useAppSelector((state) => state.chat.contacts);
-  const contacts = Object.keys(contactData).map((key) => contactData[key]);
-  const [isloading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const userData = useAppSelector((state) => state.auth.userData);
-  const dispatch = useAppDispatch();
+  const contactsQuery = useQuery({
+    queryKey: queryKeys.contacts,
+    queryFn: async () => {
+      const res = await getContacts();
+      return res.data as Contact[];
+    },
+  });
+  const contacts = contactsQuery.data ?? [];
 
   const filterContact = () => {
     return contacts.filter((contact) => {
@@ -61,25 +60,6 @@ const ContactDisplayer = () => {
       );
     });
   };
-
-  const fetchContacts = useCallback(() => {
-    setIsLoading(true);
-    setIsError(false);
-    getContacts()
-      .then((res) => {
-        dispatch(ChatActions.setContacts(res.data));
-      })
-      .catch(() => {
-        setIsError(true);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, [dispatch, userData?.access_token]);
-
-  useEffect(() => {
-    if (contacts.length === 0) fetchContacts();
-  }, [contacts.length, fetchContacts]);
 
   const filteredContacts = filterContact();
 
@@ -99,27 +79,27 @@ const ContactDisplayer = () => {
           ></input>
         </div>
       </div>
-      <BasicSpinner size="default" spinning={isloading} />
+      <BasicSpinner size="default" spinning={contactsQuery.isLoading} />
 
-      {isError ? (
+      {contactsQuery.isError ? (
         <Result
           status={"error"}
           title="Error"
           icon={null}
           subTitle="couldn' t load contacts"
           extra={[
-            <Button className={classes.Button} onClick={fetchContacts}>
+            <Button className={classes.Button} onClick={() => contactsQuery.refetch()}>
               retry
             </Button>,
           ]}
         />
       ) : null}
 
-      {!isloading && !isError && contacts.length === 0 ? (
+      {!contactsQuery.isLoading && !contactsQuery.isError && contacts.length === 0 ? (
         <Empty description="No contact" />
       ) : null}
-      {!isloading &&
-      !isError &&
+      {!contactsQuery.isLoading &&
+      !contactsQuery.isError &&
       contacts.length > 0 &&
       filteredContacts.length === 0 ? (
         <Empty description="No matching contacts" />

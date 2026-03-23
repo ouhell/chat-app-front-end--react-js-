@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useMemo } from "react";
 import { Route, Routes, useParams } from "react-router-dom";
 import { getConversation } from "../../../../client/ApiClient";
 import { ChatActions } from "../../../../store/slices/ChatSlice";
@@ -9,54 +8,53 @@ import PrivateConversation from "./components/PrivateConversation/PrivateConvers
 import PublicConversation from "./components/PublicConversation/PublicConversation";
 import C from "./Conversation.module.scss";
 import { pageAnimation } from "../shared/animation/animationHandler";
-import { useAppSelector } from "../../../../store/ReduxHooks";
 import GroupConversation from "./components/GroupConversation/GroupConversation";
+import { useAppDispatch } from "../../../../store/ReduxHooks";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../../../client/queryKeys";
+import { flattenConversationMessages } from "../../../../client/queryHelpers";
 const Conversation = () => {
   const { conversationId = "undefined" } = useParams();
+  const dispatch = useAppDispatch();
 
-  const userData = useAppSelector((state) => state.auth.userData);
+  const conversationQuery = useInfiniteQuery({
+    queryKey: queryKeys.conversation(conversationId),
+    queryFn: async ({ pageParam = 0 }) => {
+      const res = await getConversation(conversationId, {
+        skip: pageParam,
+      });
+      return res.data;
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.messages.isLastPage) return undefined;
 
-  const conversation = useAppSelector(
-    (state) => state.chat.conversations[conversationId],
+      const loadedCount = allPages.reduce((total, page) => {
+        return total + page.messages.data.length;
+      }, 0);
+
+      return loadedCount;
+    },
+  });
+
+  const messages = useMemo(
+    () => flattenConversationMessages(conversationQuery.data),
+    [conversationQuery.data],
   );
-  const messages = conversation ? conversation.messages : [];
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const dispatch = useDispatch();
 
   const fetchMessages = () => {
-    const isAdditionalMessages = conversation
-      ? conversation.messages.length
-      : false;
-
-    setIsLoading(true);
-
-    setIsError(false);
-    getConversation(
-      conversationId,
-
-      {
-        skip: conversation?.messages.length ?? 0,
-      },
-    )
-      .then((res) => {
-        dispatch(ChatActions.emit({ event: "chat", data: conversationId }));
-
-        dispatch(ChatActions.setConversation(res.data));
-      })
-      .catch((err) => {
-        console.log("fetching messages error", err);
-        if (!isAdditionalMessages) setIsError(true);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    if (conversationQuery.isError || !conversationQuery.data) {
+      return conversationQuery.refetch();
+    }
+    if (conversationQuery.hasNextPage && !conversationQuery.isFetchingNextPage) {
+      return conversationQuery.fetchNextPage();
+    }
+    return Promise.resolve();
   };
 
   useEffect(() => {
-    if (!conversation) fetchMessages();
-  }, [conversationId]);
+    dispatch(ChatActions.emit({ event: "chat", data: conversationId }));
+  }, [conversationId, dispatch]);
 
   return (
     <motion.div {...pageAnimation} className={C.Conversation}>
@@ -66,8 +64,11 @@ const Conversation = () => {
             <PublicConversation
               data={messages}
               fetchMessages={fetchMessages}
-              isError={isError}
-              isLoading={isLoading}
+              isError={conversationQuery.isError}
+              isLoading={
+                conversationQuery.isLoading || conversationQuery.isFetchingNextPage
+              }
+              hasMore={!!conversationQuery.hasNextPage}
             />
           }
           path="/"
@@ -77,8 +78,11 @@ const Conversation = () => {
             <GroupConversation
               data={messages}
               fetchMessages={fetchMessages}
-              isError={isError}
-              isLoading={isLoading}
+              isError={conversationQuery.isError}
+              isLoading={
+                conversationQuery.isLoading || conversationQuery.isFetchingNextPage
+              }
+              hasMore={!!conversationQuery.hasNextPage}
             />
           }
           path="/group"
@@ -88,8 +92,12 @@ const Conversation = () => {
             <PrivateConversation
               data={messages}
               fetchMessages={fetchMessages}
-              isError={isError}
-              isLoading={isLoading}
+              isError={conversationQuery.isError}
+              isLoading={
+                conversationQuery.isLoading || conversationQuery.isFetchingNextPage
+              }
+              hasMore={!!conversationQuery.hasNextPage}
+              conversation={conversationQuery.data?.pages?.[0]?.conversation}
             />
           }
           path="/:contactId/private"
@@ -97,7 +105,7 @@ const Conversation = () => {
       </Routes>
 
       <InputHandler
-        sendAllowed={!isError && !isLoading}
+        sendAllowed={!conversationQuery.isError}
         conversationId={conversationId}
       />
     </motion.div>

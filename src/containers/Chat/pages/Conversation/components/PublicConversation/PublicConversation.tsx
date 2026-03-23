@@ -7,12 +7,14 @@ type PublicConversationProps = {
   isError: boolean;
   data: Message[];
   fetchMessages: () => void;
+  hasMore: boolean;
 };
 const PublicConversation = ({
   isLoading,
   isError,
   data,
   fetchMessages,
+  hasMore,
 }: PublicConversationProps) => {
   return (
     <motion.div
@@ -28,6 +30,7 @@ const PublicConversation = ({
         isLoading={isLoading}
         isError={isError}
         fetchMessages={fetchMessages}
+        hasMore={hasMore}
       />
     </motion.div>
   );
