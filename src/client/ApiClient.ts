@@ -153,6 +153,12 @@ export const getContactProfileData = (conversationId: string) => {
   });
 };
 
+export const apiRefresh = () => {
+  return axios.post<UserData>("api/auth/refresh", null, {
+    withCredentials: true,
+  });
+};
+
 export const apiLogin = (signinData: {
   identifier: string;
   password: string;

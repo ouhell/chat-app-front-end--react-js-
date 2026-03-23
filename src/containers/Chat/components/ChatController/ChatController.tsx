@@ -1,8 +1,14 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { ChatActions } from "../../../../store/slices/ChatSlice";
-import { getContactRequests, getContacts } from "../../../../client/ApiClient";
+import {
+  apiRefresh,
+  getContactRequests,
+  getContacts,
+} from "../../../../client/ApiClient";
 import { useAppSelector } from "../../../../store/ReduxHooks";
+import { AuthActions } from "../../../../store/slices/AuthSlice";
+import { AxiosError, HttpStatusCode } from "axios";
 const ChatController = () => {
   const userData = useAppSelector((state) => state.auth.userData);
 
@@ -36,6 +42,31 @@ const ChatController = () => {
       );
     });
   };
+
+  useEffect(() => {
+    if (!userData) return;
+
+    const refresher = setInterval(
+      () => {
+        console.log("refreshing");
+        apiRefresh()
+          .then((res) => {
+            console.log("refreshed");
+            dispatch(AuthActions.login(res.data));
+          })
+          .catch((err: AxiosError) => {
+            console.log(err);
+            if (err.status == HttpStatusCode.Forbidden)
+              dispatch(AuthActions.logout());
+          });
+      },
+      5 * 60 * 1000,
+    ); // every 5 min
+
+    return () => {
+      clearInterval(refresher);
+    };
+  }, [userData]);
 
   useEffect(() => {
     fetchNotifications();
