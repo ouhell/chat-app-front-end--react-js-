@@ -303,7 +303,7 @@ const Profile = () => {
       if (isLoading) return;
       setIsLoading(true);
       setIsError(false);
-      getProfileData(userData?.access_token.value ?? "undefined")
+      getProfileData()
         .then((res) => {
           setProfilePicture(res.data.profile_picture);
 
@@ -367,7 +367,7 @@ const Profile = () => {
     for (const feild in updateFormData.feilds) {
       updateData[feild] = updateFormData.feilds[feild].value;
     }
-    updateProfileData(userData?.access_token.value ?? "undefined", updateData)
+    updateProfileData(updateData)
       .then((_res) => {
         currentProfile.current = updateData;
 
@@ -392,7 +392,7 @@ const Profile = () => {
       if (isUpdatingPic || !image) return;
       setIsUpdatingPic(true);
 
-      updateProfilePicture(userData?.access_token.value ?? "undefined", image)
+      updateProfilePicture(image)
         .then((res) => {
           setProfilePicture(res.data.newUrl);
           dispatch(AuthActions.setProfilePicture(res.data.newUrl));

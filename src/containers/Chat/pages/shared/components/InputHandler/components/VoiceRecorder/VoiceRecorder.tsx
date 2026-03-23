@@ -168,11 +168,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
       data.append("voice", blob);
       // data.append("duration", testAudio.duration);
 
-      sendVoiceMessage(
-        data,
-        conversationId,
-        userData?.access_token.value ?? "undefined",
-      )
+      sendVoiceMessage(data, conversationId)
         .then((res) => {
           const newMessage = { ...res.data, sender: senderInfo };
           dispatch(

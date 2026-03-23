@@ -21,7 +21,7 @@ type MessageProps = {
 
 const ImageMessage = (
   { message, userId, deleteMessage }: MessageProps,
-  ref: any
+  ref: any,
 ) => {
   const menuOnClick = ({ key }: { key: string }) => {
     switch (key) {

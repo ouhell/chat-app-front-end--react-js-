@@ -27,7 +27,7 @@ const NotificationDisplayer = () => {
     if (isLoading) return;
     setIsLoading(true);
 
-    getContactRequests(userData?.access_token.value ?? "undefined")
+    getContactRequests()
       .then((res) => {
         dispatch(ChatActions.setRequests(res.data));
         dispatch(
