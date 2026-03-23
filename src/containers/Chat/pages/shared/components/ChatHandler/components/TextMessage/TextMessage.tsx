@@ -27,7 +27,7 @@ type MessageProps = {
 
 const TextMessage = (
   { message, userId, deleteMessage }: MessageProps,
-  ref: any
+  ref: any,
 ) => {
   const sentDate = new Date(message.sent_date);
 

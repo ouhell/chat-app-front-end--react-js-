@@ -171,7 +171,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
       sendVoiceMessage(
         data,
         conversationId,
-        userData?.access_token ?? "undefined",
+        userData?.access_token.value ?? "undefined",
       )
         .then((res) => {
           const newMessage = { ...res.data, sender: senderInfo };

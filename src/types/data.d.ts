@@ -1,11 +1,11 @@
 interface Conversation {
   _id: string;
   identifier: string;
-  users: Array<Types.ObjectId>;
-  blocked: Array<Types.ObjectId>;
-  blackList: Array<Types.ObjectId>;
+  users: Array<string>;
+  blocked: Array<string>;
+  blackList: Array<string>;
   lockedInvite: boolean;
-  admins: Array<Types.ObjectId>;
+  admins: Array<string>;
   creation_date: string;
   name: string;
 }
