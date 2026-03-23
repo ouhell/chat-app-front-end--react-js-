@@ -1,37 +1,78 @@
 .NotificationDisplayer {
   height: 100%;
-  // padding: 0.5rem 0;
-  overflow-x: auto;
   display: flex;
   flex-direction: column;
-
-  //scroll bar style
-  scrollbar-width: none;
-  scrollbar-color: #888 #f1f1f1;
+  gap: 0.9rem;
+  padding: 0.15rem 0.2rem 0.85rem;
+  overflow: hidden;
   -webkit-tap-highlight-color: transparent;
-  /* width */
+}
+
+.TopHeader {
+  padding: 0.15rem 0.25rem;
+}
+
+.TitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.Title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary-black);
+}
+
+.SubTitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--primary-soft);
+}
+
+.FilterRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0.1rem;
+}
+
+.FilterButton,
+.ActiveFilter {
+  height: 2rem;
+  border-radius: 999px !important;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.FilterButton {
+  border-color: var(--primary-blank-lighter);
+  background: #fff;
+  color: var(--primary-soft);
+}
+
+.ActiveFilter {
+  border-color: transparent;
+}
+
+.NotificationFeed {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.2rem 0.05rem 0.5rem;
+
+  scrollbar-width: none;
   &::-webkit-scrollbar {
     width: 0;
     height: 0;
   }
+}
 
-  .Spinner {
-    i {
-      background-color: var(--primary-soft);
-    }
-  }
-
-  .Collapse {
-    border-radius: 0;
-
-    div {
-      border-radius: 0 !important;
-    }
-  }
-  .RequestList {
-    height: 100%;
-
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+.RetryButton {
+  border-radius: 999px;
 }

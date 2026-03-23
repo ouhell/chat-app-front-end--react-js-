@@ -1,20 +1,25 @@
 import c from "./ContactRequest.module.scss";
 import { Avatar, Button } from "antd";
-import { useState } from "react";
+import { ClockCircleOutlined } from "@ant-design/icons";
+import { useMemo, useState } from "react";
 
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import {
   addContact,
   deleteContactRequest,
 } from "../../../../../../../../client/ApiClient";
-import { useAppDispatch, useAppSelector } from "../../../../../../../../store/ReduxHooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "../../../../../../../../store/ReduxHooks";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../../../../../../../../client/queryKeys";
-type ContactRequest = {
+
+type ContactRequestProps = {
   requestData: Request;
-  removeRequest: (id: string) => any;
 };
-const ContactRequest = ({ requestData }: ContactRequest) => {
+
+const ContactRequest = ({ requestData }: ContactRequestProps) => {
   const [isCancelLoading, setIsCancelLoading] = useState(false);
   const [isAcceptLoading, setIsAcceptLoading] = useState(false);
   const userData = useAppSelector((state) => state.auth.userData);
@@ -58,21 +63,12 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
         );
       })
       .catch((err) => {
-        if (err.response) {
-          if (err.response.data) {
-            if (err.response.data.servedError) {
-              if (err.response.data.code === 404) {
-                queryClient.setQueryData<Request[]>(
-                  queryKeys.requests,
-                  (oldData) => {
-                    if (!oldData) return oldData;
-                    return oldData.filter((req) => req._id !== requestData._id);
-                  },
-                );
-                return;
-              }
-            }
-          }
+        if (err.response?.data?.servedError && err.response.data.code === 404) {
+          queryClient.setQueryData<Request[]>(queryKeys.requests, (oldData) => {
+            if (!oldData) return oldData;
+            return oldData.filter((req) => req._id !== requestData._id);
+          });
+          return;
         }
 
         setIsCancelLoading(false);
@@ -111,20 +107,47 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
     ? requestData.destinator
     : requestData.requester;
 
+  const dateLabel = useMemo(() => {
+    const reqDate = new Date(requestData.date);
+    if (Number.isNaN(reqDate.getTime())) return "recently";
+
+    return new Intl.DateTimeFormat("en", {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(reqDate);
+  }, [requestData.date]);
+
   return (
-    <div className={c.Request} key={requestData._id}>
-      <Avatar src={opponent.profile_picture}>{opponent.username[0]}</Avatar>
-      <div className={c.IdentityHolder}>
-        <div className={c.Username}>{opponent.username}</div>
-        <div className={c.Personalname}>{opponent.personal_name}</div>
+    <article className={c.Request}>
+      <div className={c.UpperRow}>
+        <Avatar className={c.Avatar} src={opponent.profile_picture} size={46}>
+          {opponent.username[0]}
+        </Avatar>
+        <div className={c.IdentityHolder}>
+          <div className={c.Username}>{opponent.username}</div>
+          <div className={c.Personalname}>{opponent.personal_name}</div>
+        </div>
+        <div className={c.TimeStamp}>
+          <ClockCircleOutlined />
+          <span>{dateLabel}</span>
+        </div>
       </div>
+
+      <div className={c.NotificationText}>
+        {userIsSender
+          ? `You sent ${opponent.username} a contact request.`
+          : `${opponent.username} wants to add you as a contact.`}
+      </div>
+
       <div className={c.ActionHolder}>
-        {!userIsSender && !isCancelLoading ? (
+        {!userIsSender ? (
           <Button
             disabled={isCancelLoading}
             type="default"
             className={c.AcceptButton}
-            onClick={() => acceptRequest()}
+            onClick={acceptRequest}
             loading={isAcceptLoading}
           >
             Accept
@@ -133,15 +156,13 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
         <Button
           className={c.CancelButton}
           disabled={isAcceptLoading}
-          danger
-          type="dashed"
-          onClick={() => cancelRequest()}
+          onClick={cancelRequest}
           loading={isCancelLoading}
         >
-          {userIsSender ? "Cancel" : "Refuse"}
+          {userIsSender ? "Cancel request" : "Decline"}
         </Button>
       </div>
-    </div>
+    </article>
   );
 };
 
