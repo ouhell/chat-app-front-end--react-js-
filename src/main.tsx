@@ -13,6 +13,8 @@ import "./index.css";
 import axios, { AxiosError } from "axios";
 import store from "./store/ReduxStore";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./client/queryClient";
 
 //redux configuration
 // axios configuration
@@ -29,11 +31,13 @@ console.log("main js ");
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <Router>
     <Provider store={store}>
-      <GoogleOAuthProvider clientId="594753193287-a2i0beejg3frbdu229sr2p1tcon8qj85.apps.googleusercontent.com">
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>
-      </GoogleOAuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <GoogleOAuthProvider clientId="594753193287-a2i0beejg3frbdu229sr2p1tcon8qj85.apps.googleusercontent.com">
+          <React.StrictMode>
+            <App />
+          </React.StrictMode>
+        </GoogleOAuthProvider>
+      </QueryClientProvider>
     </Provider>
   </Router>
 );

@@ -1,13 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-type Token = {
-  value: string;
-  expiresAt: number;
-};
-
 export type UserData = {
-  access_token: Token;
-  refresh_token: Token;
   userRole: string;
   username: string;
   userId: string;

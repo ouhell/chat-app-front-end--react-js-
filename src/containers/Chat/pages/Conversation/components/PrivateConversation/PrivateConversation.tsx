@@ -2,7 +2,6 @@ import classes from "./PrivateCoversation.module.scss";
 import ChatHandler from "../../../shared/components/ChatHandler/ChatHandler";
 import ContactHeader from "./components/ContactHeader/ContactHeader";
 import { motion } from "framer-motion";
-import { useAppSelector } from "../../../../../../store/ReduxHooks";
 import { useParams } from "react-router-dom";
 
 type PrivateConversationProps = {
@@ -10,6 +9,8 @@ type PrivateConversationProps = {
   isError: boolean;
   data: Message[];
   fetchMessages: () => void;
+  hasMore: boolean;
+  conversation?: Conversation;
 };
 
 function PrivateConversation({
@@ -17,12 +18,10 @@ function PrivateConversation({
   isError,
   data,
   fetchMessages,
+  hasMore,
+  conversation,
 }: PrivateConversationProps) {
-  const { conversationId, contactId } = useParams();
-  const conversation = useAppSelector(
-    (state) =>
-      state.chat.conversations[conversationId ?? "undefined"]?.conversation
-  );
+  const { contactId } = useParams();
   const isBlocked = !!conversation?.blocked.find((user) => user === contactId);
   return (
     <motion.div
@@ -38,6 +37,7 @@ function PrivateConversation({
         isError={isError}
         data={data}
         fetchMessages={fetchMessages}
+        hasMore={hasMore}
       />
     </motion.div>
   );

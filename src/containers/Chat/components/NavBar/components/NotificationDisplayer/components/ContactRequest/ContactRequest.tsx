@@ -2,14 +2,14 @@ import c from "./ContactRequest.module.scss";
 import { Avatar, Button } from "antd";
 import { useState } from "react";
 
-import { useDispatch } from "react-redux";
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import {
   addContact,
   deleteContactRequest,
-  getContacts,
 } from "../../../../../../../../client/ApiClient";
-import { useAppSelector } from "../../../../../../../../store/ReduxHooks";
+import { useAppDispatch, useAppSelector } from "../../../../../../../../store/ReduxHooks";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "../../../../../../../../client/queryKeys";
 type ContactRequest = {
   requestData: Request;
   removeRequest: (id: string) => any;
@@ -19,22 +19,36 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
   const [isAcceptLoading, setIsAcceptLoading] = useState(false);
   const userData = useAppSelector((state) => state.auth.userData);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
 
-  const fetchContacts = () => {
-    getContacts().then((res) => {
-      dispatch(ChatActions.setContacts(res.data));
-    });
-  };
+  const cancelRequestMutation = useMutation({
+    mutationFn: () => deleteContactRequest(requestData._id),
+  });
+
+  const acceptRequestMutation = useMutation({
+    mutationFn: () => addContact(requestData._id),
+    onSuccess: () => {
+      queryClient.setQueryData<Request[]>(queryKeys.requests, (oldData) => {
+        if (!oldData) return oldData;
+        return oldData.filter((req) => req._id !== requestData._id);
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts });
+    },
+  });
 
   const cancelRequest = () => {
     if (isCancelLoading || isAcceptLoading) return;
 
     setIsCancelLoading(true);
 
-    deleteContactRequest(requestData._id)
-      .then((_) => {
-        dispatch(ChatActions.removeRequest(requestData._id));
+    cancelRequestMutation
+      .mutateAsync()
+      .then(() => {
+        queryClient.setQueryData<Request[]>(queryKeys.requests, (oldData) => {
+          if (!oldData) return oldData;
+          return oldData.filter((req) => req._id !== requestData._id);
+        });
 
         dispatch(
           ChatActions.emit({
@@ -48,7 +62,13 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
           if (err.response.data) {
             if (err.response.data.servedError) {
               if (err.response.data.code === 404) {
-                dispatch(ChatActions.removeRequest(requestData._id));
+                queryClient.setQueryData<Request[]>(
+                  queryKeys.requests,
+                  (oldData) => {
+                    if (!oldData) return oldData;
+                    return oldData.filter((req) => req._id !== requestData._id);
+                  },
+                );
                 return;
               }
             }
@@ -64,9 +84,9 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
 
     setIsAcceptLoading(true);
 
-    addContact(requestData._id)
+    acceptRequestMutation
+      .mutateAsync()
       .then(() => {
-        dispatch(ChatActions.removeRequest(requestData._id));
         dispatch(
           ChatActions.emit({
             event: "cancel request",
@@ -79,13 +99,6 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
             data: requestData,
           }),
         );
-        // dispatch(
-        //   ChatActions.addContact({
-        //     newContact: res.data,
-        //   })
-        // );
-
-        fetchContacts();
       })
       .catch((err) => {
         console.log("accept req err", err);

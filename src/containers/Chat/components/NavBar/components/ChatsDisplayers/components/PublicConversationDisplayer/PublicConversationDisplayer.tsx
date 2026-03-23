@@ -1,30 +1,25 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Result, Button, Empty } from "antd";
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { getPublicConversations } from "../../../../../../../../client/ApiClient";
 import { SearchSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
 import BasicSpinner from "../../../../../../../../shared/components/BasicSpinner/BasicSpinner";
-import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import Conversation from "./Conversation/Conversation";
 import c from "./PublicConversationDisplayer.module.scss";
-import {
-  useAppDispatch,
-  useAppSelector,
-} from "../../../../../../../../store/ReduxHooks";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../../../../../../../client/queryKeys";
 
 const PublicConversationDisplayer = () => {
   const [searchtext, setSearchtext] = useState("");
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const publicConversations = useAppSelector(
-    (state) => state.chat.publicConvos,
-  );
-
-  const userData = useAppSelector((state) => state.auth.userData);
-
-  const dispatch = useAppDispatch();
+  const publicConversationQuery = useQuery({
+    queryKey: queryKeys.publicConversations,
+    queryFn: async () => {
+      const res = await getPublicConversations();
+      return res.data as Conversation[];
+    },
+  });
+  const publicConversations = publicConversationQuery.data ?? [];
 
   const [animationParent] = useAutoAnimate();
 
@@ -33,26 +28,6 @@ const PublicConversationDisplayer = () => {
       conv.name.includes(searchtext.toLowerCase().trim()),
     );
   }
-
-  const fetchPublicConversation = useCallback(() => {
-    setIsLoading(true);
-    setIsError(false);
-    getPublicConversations()
-      .then((res) => {
-        dispatch(ChatActions.setPublicConvos(res.data));
-      })
-      .catch((err) => {
-        console.log("fetching public conversations error", err);
-        setIsError(true);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, [dispatch, userData?.access_token]);
-
-  useEffect(() => {
-    if (publicConversations.length === 0) fetchPublicConversation();
-  }, [fetchPublicConversation, publicConversations.length]);
 
   const filteredConversations = applySearch();
 
@@ -72,8 +47,8 @@ const PublicConversationDisplayer = () => {
           ></input>
         </div>
       </div>
-      <BasicSpinner size="default" spinning={isLoading} />
-      {isError ? (
+      <BasicSpinner size="default" spinning={publicConversationQuery.isLoading} />
+      {publicConversationQuery.isError ? (
         <Result
           status={"error"}
           title="Error"
@@ -82,7 +57,7 @@ const PublicConversationDisplayer = () => {
           extra={[
             <Button
               className={c.Button}
-              onClick={fetchPublicConversation}
+              onClick={() => publicConversationQuery.refetch()}
               key={"public conv refetch"}
             >
               retry
@@ -90,11 +65,13 @@ const PublicConversationDisplayer = () => {
           ]}
         />
       ) : null}
-      {!isLoading && !isError && publicConversations.length === 0 ? (
+      {!publicConversationQuery.isLoading &&
+      !publicConversationQuery.isError &&
+      publicConversations.length === 0 ? (
         <Empty description="No public chats available" />
       ) : null}
-      {!isLoading &&
-      !isError &&
+      {!publicConversationQuery.isLoading &&
+      !publicConversationQuery.isError &&
       publicConversations.length > 0 &&
       filteredConversations.length === 0 ? (
         <Empty description="No matching public chats" />

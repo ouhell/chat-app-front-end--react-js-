@@ -7,12 +7,14 @@ type GroupConversationProps = {
   isError: boolean;
   data: Message[];
   fetchMessages: () => void;
+  hasMore: boolean;
 };
 const GroupConversation = ({
   isLoading,
   isError,
   data,
   fetchMessages,
+  hasMore,
 }: GroupConversationProps) => {
   return (
     <motion.div
@@ -28,6 +30,7 @@ const GroupConversation = ({
         isLoading={isLoading}
         isError={isError}
         fetchMessages={fetchMessages}
+        hasMore={hasMore}
       />
     </motion.div>
   );

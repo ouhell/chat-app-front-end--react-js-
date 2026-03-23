@@ -4,16 +4,17 @@ import TextMessage from "./components/TextMessage/TextMessage";
 import BasicSpinner from "../../../../../../shared/components/BasicSpinner/BasicSpinner";
 import ImageMessage from "./components/ImageMessage/ImageMessage";
 import VoiceTextMessage from "./components/VoiceTextMessage/VoiceTextMessage";
-import { useDispatch } from "react-redux";
 
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import { AnimatePresence } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import Scroller from "./components/Scroller/Scroller";
 import { deleteMessageApi } from "../../../../../../client/ApiClient";
-import { useAppSelector } from "../../../../../../store/ReduxHooks";
+import { useAppDispatch, useAppSelector } from "../../../../../../store/ReduxHooks";
 import { useParams } from "react-router-dom";
 import React from "react";
+import { removeMessageFromConversation } from "../../../../../../client/queryHelpers";
+import { queryClient } from "../../../../../../client/queryClient";
 
 const renderMessages = (
   data: Message[],
@@ -90,6 +91,7 @@ export type ChatHandlerProps = {
   isLoading: boolean;
   isError: boolean;
   fetchMessages: () => void;
+  hasMore: boolean;
 };
 
 type scrollElementTracker = {
@@ -102,13 +104,11 @@ const ChatHandler = ({
   isError,
 
   fetchMessages,
+  hasMore,
 }: ChatHandlerProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [showScroller, setShowScroller] = useState(false);
-  const { conversationId } = useParams();
-  const conversationProps = useAppSelector(
-    (state) => state.chat.conversations[conversationId ?? "undefined"]?.props,
-  );
+  const { conversationId = "undefined" } = useParams();
   const userData = useAppSelector((state) => state.auth.userData);
   const chatContainer = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
@@ -189,9 +189,8 @@ const ChatHandler = ({
       // let clientHeight = scrollableDiv.clientHeight;
 
       if (
-        scrollTop <= 0 && conversationProps
-          ? !conversationProps.loadedLast
-          : false
+        scrollTop <= 0 &&
+        hasMore
       ) {
         fetchMessages();
       }
@@ -200,7 +199,7 @@ const ChatHandler = ({
     return () => {
       chatContainer.current?.removeEventListener("scroll", upLoadHandler);
     };
-  }, [chatContainer.current, conversationProps]);
+  }, [chatContainer.current, hasMore, fetchMessages]);
   // console.log("props dd", conversationProps);
 
   useEffect(() => {
@@ -235,11 +234,10 @@ const ChatHandler = ({
         }),
       );
 
-      dispatch(
-        ChatActions.deleteMessage({
-          conversation_id: message.conversation,
-          id: message._id,
-        }),
+      removeMessageFromConversation(
+        queryClient,
+        conversationId,
+        message._id,
       );
     });
   }

@@ -1,7 +1,6 @@
 import { Avatar, Dropdown, Skeleton } from "antd";
 
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
 import {
@@ -19,123 +18,120 @@ import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import { ComponentActions } from "../../../../../../../../store/slices/ComponentSlice";
 import { NotifActions } from "../../../../../../../../store/slices/NotificationSlice";
 import c from "./ContactHeader.module.scss";
-import { useAppSelector } from "../../../../../../../../store/ReduxHooks";
+import { useAppDispatch } from "../../../../../../../../store/ReduxHooks";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "../../../../../../../../client/queryKeys";
+import { setConversationBlockedUser } from "../../../../../../../../client/queryHelpers";
 
 const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
   const { conversationId = "undefined", contactId = "undefined" } = useParams();
+  const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
+  const contactDataQuery = useQuery({
+    queryKey: queryKeys.contactProfile(conversationId),
+    queryFn: async () => {
+      const res = await getContactProfileData(conversationId);
+      return res.data as Contact;
+    },
+  });
+  const contactData = contactDataQuery.data;
 
-  const contactData = useAppSelector(
-    (state) => state.chat.contacts[conversationId],
+  const removeContactMutation = useMutation({
+    mutationFn: () => deleteContact(contactId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts });
+      queryClient.removeQueries({
+        queryKey: queryKeys.conversation(conversationId),
+      });
+    },
+  });
+
+  const blacklistMutation = useMutation({
+    mutationFn: () => blackListUser(contactId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts });
+      queryClient.removeQueries({
+        queryKey: queryKeys.conversation(conversationId),
+      });
+    },
+  });
+
+  const blockMutation = useMutation({
+    mutationFn: () => blockContact(contactId),
+    onSuccess: () => {
+      dispatch(
+        ChatActions.emit({
+          event: "block",
+          data: {
+            conversationId: conversationId,
+            blockedUser: contactId,
+          },
+        }),
+      );
+      setConversationBlockedUser(queryClient, conversationId, contactId, true);
+      dispatch(
+        NotifActions.notify({
+          type: "success",
+          message: "user blocked",
+        }),
+      );
+    },
+  });
+
+  const unblockMutation = useMutation({
+    mutationFn: () => unblockContact(contactId),
+    onSuccess: () => {
+      dispatch(
+        NotifActions.notify({
+          type: "success",
+          message: "user unblocked",
+        }),
+      );
+      setConversationBlockedUser(queryClient, conversationId, contactId, false);
+    },
+  });
+
+  const DropDownItems = useMemo(
+    () => [
+      {
+        key: isBlocked ? "unblock" : "block",
+        label: isBlocked ? "unblock user" : "block user",
+      },
+
+      {
+        key: "remove",
+        danger: true,
+        label: "remove contact",
+      },
+      {
+        key: "blackList",
+        danger: true,
+        label: "blacklist user",
+      },
+    ],
+    [isBlocked],
   );
 
-  const DropDownItems = [
-    {
-      key: isBlocked ? "unblock" : "block",
-      label: isBlocked ? "unblock user" : "block user",
-    },
-
-    {
-      key: "remove",
-      danger: true,
-      label: "remove contact",
-    },
-    {
-      key: "blackList",
-      danger: true,
-      label: "blacklist user",
-    },
-  ];
-
-  const [, setIsLoading] = useState(false);
-  const [, setisError] = useState(false);
-
-  const dispatch = useDispatch();
-
-  const userData = useAppSelector((state) => state.auth.userData);
-
-  const fetchContactData = () => {
-    setIsLoading(true);
-    setisError(false);
-    getContactProfileData(conversationId)
-      .then((res) => {
-        dispatch(
-          ChatActions.addContact({
-            newContact: res.data,
-          }),
-        );
-      })
-      .catch((err) => {
-        console.log("fetching contacts error", err);
-        setisError(true);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
-
   const removeContact = () => {
-    deleteContact(contactId)
-      .then(() => {
-        dispatch(ChatActions.removeContact({ contactId: conversationId }));
-        dispatch(ChatActions.removeConversation({ conversationId }));
-      })
+    removeContactMutation
+      .mutateAsync()
       .catch((err) => console.log("remove contact err :", err));
   };
   const blackListContact = () => {
-    blackListUser(contactId)
-      .then(() => {
-        dispatch(ChatActions.removeContact({ contactId: conversationId }));
-        dispatch(ChatActions.removeConversation({ conversationId }));
-      })
+    blacklistMutation
+      .mutateAsync()
       .catch((err) => console.log("remove contact err :", err));
   };
 
   const blockUser = () => {
-    blockContact(contactId)
-      .then(() => {
-        dispatch(
-          ChatActions.emit({
-            event: "block",
-            data: {
-              conversationId: conversationId,
-              blockedUser: contactId,
-            },
-          }),
-        );
-        dispatch(
-          ChatActions.setUserBanned({
-            bannedUser: contactId,
-            conversationId: conversationId,
-          }),
-        );
-        dispatch(
-          NotifActions.notify({
-            type: "success",
-            message: "user blocked",
-          }),
-        );
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    blockMutation.mutateAsync().catch((err) => {
+      console.log(err);
+    });
   };
 
   const unblockUser = () => {
-    unblockContact(contactId)
-      .then(() => {
-        dispatch(
-          NotifActions.notify({
-            type: "success",
-            message: "user unblocked",
-          }),
-        );
-        dispatch(
-          ChatActions.setUserUnbanned({
-            bannedUser: contactId,
-            conversationId: conversationId,
-          }),
-        );
-      })
+    unblockMutation
+      .mutateAsync()
       .catch((err) => {
         console.log(err);
       });
@@ -158,11 +154,7 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
     }
   };
 
-  useEffect(() => {
-    if (!contactData) fetchContactData();
-  }, [conversationId]);
-
-  const isReady = contactData ? true : false;
+  const isReady = !!contactData;
 
   return (
     <div className={c.ContactHeader}>

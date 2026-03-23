@@ -21,7 +21,7 @@ interface User {
 interface Message {
   _id: string;
   sender: typeof Types.ObjectId;
-  conversation: typeof Types.ObjectId;
+  conversation: string;
   sent_date: Date;
   edited_date: Date | undefined;
   message: string;

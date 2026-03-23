@@ -10,6 +10,12 @@ import { Popover } from "antd";
 import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 import VoiceRecorder from "./components/VoiceRecorder/VoiceRecorder";
 import { sendImage, sendTextMessage } from "../../../../../../client/ApiClient";
+import { queryClient } from "../../../../../../client/queryClient";
+import {
+  appendMessageToConversation,
+  removeMessageFromConversation,
+  replaceMessageInConversation,
+} from "../../../../../../client/queryHelpers";
 import {
   useAppDispatch,
   useAppSelector,
@@ -53,21 +59,19 @@ const InputHandler = ({
             data: newMessage,
           }),
         );
-        dispatch(
-          ChatActions.replaceMessage({
-            conversation_id: conversationId,
-            id: generatedId,
-            newMessage: newMessage,
-          }),
+        replaceMessageInConversation(
+          queryClient,
+          conversationId,
+          generatedId,
+          newMessage,
         );
       })
       .catch((err) => {
         console.log("send message error", err);
-        dispatch(
-          ChatActions.deleteMessage({
-            conversation_id: conversationId,
-            id: generatedId,
-          }),
+        removeMessageFromConversation(
+          queryClient,
+          conversationId,
+          generatedId,
         );
       });
 
@@ -84,11 +88,10 @@ const InputHandler = ({
       hidden: false,
     };
 
-    dispatch(
-      ChatActions.addMessage({
-        conversation_id: conversationId,
-        newMessage: tempMessage,
-      }),
+    appendMessageToConversation(
+      queryClient,
+      conversationId,
+      tempMessage,
     );
 
     setMessage("");
@@ -116,20 +119,18 @@ const InputHandler = ({
             data: newMessage,
           }),
         );
-        dispatch(
-          ChatActions.replaceMessage({
-            conversation_id: conversationId,
-            id: generatedId,
-            newMessage: newMessage,
-          }),
+        replaceMessageInConversation(
+          queryClient,
+          conversationId,
+          generatedId,
+          newMessage,
         );
       })
       .catch(() => {
-        dispatch(
-          ChatActions.deleteMessage({
-            conversation_id: conversationId,
-            id: generatedId,
-          }),
+        removeMessageFromConversation(
+          queryClient,
+          conversationId,
+          generatedId,
         );
       });
 
@@ -146,11 +147,10 @@ const InputHandler = ({
       message: "",
     };
 
-    dispatch(
-      ChatActions.addMessage({
-        conversation_id: conversationId,
-        newMessage: message,
-      }),
+    appendMessageToConversation(
+      queryClient,
+      conversationId,
+      message,
     );
   };
 

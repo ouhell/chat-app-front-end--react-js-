@@ -153,6 +153,12 @@ export const getContactProfileData = (conversationId: string) => {
   });
 };
 
+export const apiRefresh = () => {
+  return axios.post<UserData>("api/auth/refresh", null, {
+    withCredentials: true,
+  });
+};
+
 export const apiLogin = (signinData: {
   identifier: string;
   password: string;
@@ -167,6 +173,12 @@ export const apiLogin = (signinData: {
       withCredentials: true,
     },
   );
+};
+
+export const apiLogout = () => {
+  return axios.post("api/auth/logout", null, {
+    withCredentials: true,
+  });
 };
 
 export const oauthLogin = (id_token = "<none>") => {

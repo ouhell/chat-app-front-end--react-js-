@@ -8,7 +8,6 @@ import {
 import { ReactNode, useEffect, useRef, useState } from "react";
 import c from "./Profile.module.scss";
 import { useCallback } from "react";
-import { useDispatch } from "react-redux";
 import { AuthActions } from "../../../../store/slices/AuthSlice";
 import { motion } from "framer-motion";
 import { pageAnimation } from "../shared/animation/animationHandler";
@@ -20,12 +19,14 @@ import {
   updateProfileData,
   updateProfilePicture,
 } from "../../../../client/ApiClient";
-import { useAppSelector } from "../../../../store/ReduxHooks";
 import {
   MenuSvg,
   PicturePlus,
 } from "../../../../shared/assets/svg/SvgProvider";
 import { ComponentActions } from "../../../../store/slices/ComponentSlice";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "../../../../client/queryKeys";
+import { useAppDispatch, useAppSelector } from "../../../../store/ReduxHooks";
 
 type Validation = {
   isValid: boolean;
@@ -60,7 +61,8 @@ const Profile = () => {
   const userData = useAppSelector((state) => state.auth.userData);
   const emailCounter = useRef(0);
   const currentProfile = useRef<{ [key: string]: string }>({});
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
 
   const [updateFormData, setUpdateFormData] = useState<FormData>({
     feilds: {
@@ -216,16 +218,17 @@ const Profile = () => {
     },
   });
 
-  const [profilePicture, setProfilePicture] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<string | undefined>();
   const [isUpdatingInfo, setIsUpdatingInfo] = useState(false);
   const [isUpdatingPic, setIsUpdatingPic] = useState(false);
   const fileUploader = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    fetchProfileData();
-  }, []);
+  const profileQuery = useQuery({
+    queryKey: queryKeys.profile,
+    queryFn: async () => {
+      const res = await getProfileData();
+      return res.data as { [key: string]: string };
+    },
+  });
 
   const isFormValid = function () {
     for (const feild in updateFormData.feilds) {
@@ -298,45 +301,57 @@ const Profile = () => {
     });
   }, []);
 
-  const fetchProfileData = useCallback(
-    function () {
-      if (isLoading) return;
-      setIsLoading(true);
-      setIsError(false);
-      getProfileData()
-        .then((res) => {
-          setProfilePicture(res.data.profile_picture);
+  useEffect(() => {
+    if (!profileQuery.data) return;
+    const profileData = profileQuery.data;
+    setProfilePicture(profileData.profile_picture);
 
-          setUpdateFormData((prevFormData) => {
-            const newFormData = { ...prevFormData };
-            const newFeilds = { ...newFormData.feilds };
+    setUpdateFormData((prevFormData) => {
+      const newFormData = { ...prevFormData };
+      const newFeilds = { ...newFormData.feilds };
 
-            for (const key in newFeilds) {
-              if (!res.data[key]) continue;
-              const selectedFeild = { ...newFeilds[key] };
-              selectedFeild.isTouched = false;
-              selectedFeild.isValid = false;
-              selectedFeild.isLoading = false;
-              selectedFeild.value = res.data[key];
-              newFeilds[key] = selectedFeild;
-            }
+      for (const key in newFeilds) {
+        if (!profileData[key]) continue;
+        const selectedFeild = { ...newFeilds[key] };
+        selectedFeild.isTouched = false;
+        selectedFeild.isValid = false;
+        selectedFeild.isLoading = false;
+        selectedFeild.value = profileData[key];
+        newFeilds[key] = selectedFeild;
+      }
 
-            // resetFeildsParent(newFeilds);
-            newFormData.feilds = newFeilds;
-            return newFormData;
-          });
+      newFormData.feilds = newFeilds;
+      return newFormData;
+    });
 
-          currentProfile.current = res.data;
-        })
-        .catch((_err) => {
-          setIsError(true);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+    currentProfile.current = profileData;
+  }, [profileQuery.data]);
+
+  const updateProfileMutation = useMutation({
+    mutationFn: (data: { [key: string]: string }) => updateProfileData(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.profile });
     },
-    [isLoading, isError],
-  );
+  });
+
+  const updatePictureMutation = useMutation({
+    mutationFn: (file: File) => updateProfilePicture(file),
+    onSuccess: (res) => {
+      const newUrl = res.data.newUrl;
+      setProfilePicture(newUrl);
+      dispatch(AuthActions.setProfilePicture(newUrl));
+      queryClient.setQueryData<{ [key: string]: string }>(
+        queryKeys.profile,
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            profile_picture: newUrl,
+          };
+        },
+      );
+    },
+  });
 
   const changeValue = useCallback(function (key: string, newValue: string) {
     setUpdateFormData((prevFormData) => {
@@ -367,7 +382,8 @@ const Profile = () => {
     for (const feild in updateFormData.feilds) {
       updateData[feild] = updateFormData.feilds[feild].value;
     }
-    updateProfileData(updateData)
+    updateProfileMutation
+      .mutateAsync(updateData)
       .then((_res) => {
         currentProfile.current = updateData;
 
@@ -392,11 +408,8 @@ const Profile = () => {
       if (isUpdatingPic || !image) return;
       setIsUpdatingPic(true);
 
-      updateProfilePicture(image)
-        .then((res) => {
-          setProfilePicture(res.data.newUrl);
-          dispatch(AuthActions.setProfilePicture(res.data.newUrl));
-        })
+      updatePictureMutation
+        .mutateAsync(image)
         .catch((err) => {
           console.log(err);
         })
@@ -407,6 +420,8 @@ const Profile = () => {
     [isUpdatingPic],
   );
 
+  const isLoading = profileQuery.isLoading;
+  const isError = profileQuery.isError;
   const displayReady = !isLoading && !isError;
   return (
     <motion.div {...pageAnimation} className={c.Profile} layout>

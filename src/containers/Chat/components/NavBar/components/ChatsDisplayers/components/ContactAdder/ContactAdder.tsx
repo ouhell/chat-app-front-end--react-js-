@@ -1,9 +1,7 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Input, Modal, Button } from "antd";
 
-import { useEffect } from "react";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
 import {
   addContactRequest,
   deleteContactRequest,
@@ -12,15 +10,14 @@ import {
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import Candidate from "./components/Candidate/Candidate";
 import c from "./ContactAdder.module.scss";
-import { useAppSelector } from "../../../../../../../../store/ReduxHooks";
+import { useAppDispatch } from "../../../../../../../../store/ReduxHooks";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "../../../../../../../../client/queryKeys";
 type ContactAdderProps = {
   open: boolean;
   onCancel: (...args: any[]) => any;
 };
 const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const userData = useAppSelector((state) => state.auth.userData);
-  const [data, setData] = useState<User[]>([]);
   const [searchtext, setSearchtext] = useState("");
   const [candidateState, setCandidateState] = useState<{
     [key: string]: {
@@ -31,7 +28,24 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
     };
   }>({});
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
+  const candidateQuery = useQuery({
+    queryKey: queryKeys.contactCandidates(searchtext),
+    queryFn: async () => {
+      const res = await getContactCandidates(searchtext);
+      return res.data as User[];
+    },
+    enabled: false,
+  });
+  const sendRequestMutation = useMutation({
+    mutationFn: (id: string) => addContactRequest(id),
+  });
+
+  const cancelRequestMutation = useMutation({
+    mutationFn: (requestId: string) => deleteContactRequest(requestId),
+  });
+  const data = candidateQuery.data ?? [];
 
   const [candidateHolder] = useAutoAnimate();
 
@@ -40,19 +54,7 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
   }, [open]);
 
   const fetchCandidates = () => {
-    if (isLoading) return;
-    setIsLoading(true);
-
-    getContactCandidates(searchtext)
-      .then((res) => {
-        setData(res.data);
-      })
-      .catch((err) => {
-        console.log("candidate error : ", err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    candidateQuery.refetch();
   };
 
   const sendRequest = (id: string) => {
@@ -64,7 +66,8 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
       return newState;
     });
 
-    addContactRequest(id)
+    sendRequestMutation
+      .mutateAsync(id)
       .then((res) => {
         setCandidateState((prevState) => {
           const newState = { ...prevState };
@@ -75,7 +78,10 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
           };
           return newState;
         });
-        dispatch(ChatActions.addRequest(res.data));
+        queryClient.setQueryData<Request[]>(queryKeys.requests, (oldData) => {
+          if (!oldData) return [res.data];
+          return [...oldData, res.data];
+        });
         dispatch(
           ChatActions.emit({
             event: "send request",
@@ -93,19 +99,6 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
           return newState;
         });
       });
-
-    /*  setCandidateState((prevState) => {
-      const newState = { ...candidateState };
-      newState[id] = "loading";
-      return newState;
-    });
-    setTimeout(() => {
-      setCandidateState((prevState) => {
-        const newState = { ...candidateState };
-        newState[id] = "sent";
-        return newState;
-      });
-    }, 3000); */
   };
   const cancelRequest = (id: string) => {
     if (!candidateState[id]) return;
@@ -123,9 +116,13 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
       return newState;
     });
 
-    deleteContactRequest(candidateState[id].request ?? "")
+    cancelRequestMutation
+      .mutateAsync(candidateState[id].request ?? "")
       .then((res) => {
-        dispatch(ChatActions.removeRequest(candidateState[id].request));
+        queryClient.setQueryData<Request[]>(queryKeys.requests, (oldData) => {
+          if (!oldData) return oldData;
+          return oldData.filter((req) => req._id !== candidateState[id].request);
+        });
 
         dispatch(
           ChatActions.emit({
@@ -145,22 +142,17 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
       })
       .catch((err) => {
         console.log("cancel request error", err);
-        if (err.response) {
-          if (err.response.data) {
-            if (err.response.data.servedError) {
-              if (err.response.data.code === 404) {
-                setCandidateState((prevState) => {
-                  const newState = { ...prevState };
-                  newState[id] = {
-                    request: null,
-                    sent: false,
-                    isCancelLoading: false,
-                  };
-                  return newState;
-                });
-              }
-            }
-          }
+        if (err.response?.data?.servedError && err.response.data.code === 404) {
+          setCandidateState((prevState) => {
+            const newState = { ...prevState };
+            newState[id] = {
+              request: null,
+              sent: false,
+              isCancelLoading: false,
+            };
+            return newState;
+          });
+          return;
         }
         setCandidateState((prevState) => {
           const newState = { ...prevState };
@@ -185,8 +177,6 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
       ]}
       afterClose={() => {
         setCandidateState({});
-        setData([]);
-        setIsLoading(false);
         setSearchtext("");
       }}
     >
@@ -201,7 +191,7 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
         <Input.Search
           placeholder="search username / personal name"
           className={c.SearchBar}
-          loading={isLoading}
+          loading={candidateQuery.isFetching}
           value={searchtext}
           onChange={(e) => {
             if (e.target.value.length > 40) return;

@@ -2,66 +2,26 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Collapse, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
-import { useState } from "react";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import ContactRequest from "./components/ContactRequest/ContactRequest";
 import c from "./NotificationDisplayer.module.scss";
 import { getContactRequests } from "../../../../../../client/ApiClient";
-import { useAppSelector } from "../../../../../../store/ReduxHooks";
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../../../../../client/queryKeys";
 
 const NotificationDisplayer = () => {
-  const { loaded, data: requests } = useAppSelector(
-    (state) => state.chat.requests,
-  );
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const userData = useAppSelector((state) => state.auth.userData);
-  const dispatch = useDispatch();
-
   const [requestHolder] = useAutoAnimate();
-
-  const fetchNotifications = () => {
-    if (isLoading) return;
-    setIsLoading(true);
-
-    getContactRequests()
-      .then((res) => {
-        dispatch(ChatActions.setRequests(res.data));
-        dispatch(
-          ChatActions.on({
-            event: "receive request",
-            callback: (request) => {
-              dispatch(ChatActions.addRequest(request));
-            },
-          }),
-        );
-        dispatch(
-          ChatActions.on({
-            event: "canceled request",
-            callback: (requestId) => {
-              dispatch(ChatActions.removeRequest(requestId));
-            },
-          }),
-        );
-      })
-      .catch((err) => {
-        console.log("fetch request error :", err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    if (!loaded) fetchNotifications();
-  }, []);
+  const requestsQuery = useQuery({
+    queryKey: queryKeys.requests,
+    queryFn: async () => {
+      const res = await getContactRequests();
+      return res.data as Request[];
+    },
+  });
+  const requests = requestsQuery.data ?? [];
 
   const { Panel } = Collapse;
 
-  const requestNumber = !isLoading ? ` (${requests.length})` : "";
+  const requestNumber = !requestsQuery.isLoading ? ` (${requests.length})` : "";
   return (
     <div className={c.NotificationDisplayer}>
       <Collapse
@@ -84,7 +44,7 @@ const NotificationDisplayer = () => {
                   }}
                 />
               }
-              spinning={isLoading}
+              spinning={requestsQuery.isLoading}
             />
           }
         >

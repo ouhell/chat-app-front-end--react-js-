@@ -19,6 +19,14 @@ import useResize from "../../../../helpers/hooks/useResize";
 import { navigationHide } from "../../../../helpers/scss/variables.module.scss";
 import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "../../../../store/ReduxHooks";
+import { useQuery } from "@tanstack/react-query";
+import {
+  apiLogout,
+  getContactRequests,
+  getContacts,
+} from "../../../../client/ApiClient";
+import { queryKeys } from "../../../../client/queryKeys";
+import { queryClient } from "../../../../client/queryClient";
 const navbarBreakPoint = Number.parseInt(navigationHide);
 
 const DropDownItems = [
@@ -44,10 +52,22 @@ function NavBar() {
 
   const isOpen = useAppSelector((state) => state.component.isNavOpen);
   const userData = useAppSelector((state) => state.auth.userData);
-  const requestCount = useAppSelector((state) => state.chat.requests.data.length);
-  const contactCount = useAppSelector(
-    (state) => Object.keys(state.chat.contacts).length
-  );
+  const contactsQuery = useQuery({
+    queryKey: queryKeys.contacts,
+    queryFn: async () => {
+      const res = await getContacts();
+      return res.data as Contact[];
+    },
+  });
+  const requestsQuery = useQuery({
+    queryKey: queryKeys.requests,
+    queryFn: async () => {
+      const res = await getContactRequests();
+      return res.data as Request[];
+    },
+  });
+  const requestCount = requestsQuery.data?.length ?? 0;
+  const contactCount = contactsQuery.data?.length ?? 0;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { windowWidth } = useResize();
@@ -71,7 +91,7 @@ function NavBar() {
         render: <NotificationDisplayer />,
       },
     ],
-    [contactCount, requestCount]
+    [contactCount, requestCount],
   );
 
   const selectedTab =
@@ -81,12 +101,16 @@ function NavBar() {
   const menuOnClick = ({ key }: { key: string }) => {
     switch (key) {
       case "logout":
-        dispatch(ChatActions.resetState());
-        dispatch(NotifActions.resetState());
-        dispatch(ComponentActions.resetState());
-        dispatch(AuthActions.resetState());
-        dispatch(AuthActions.logout());
-        navigate("/");
+        apiLogout().then(() => {
+          dispatch(ChatActions.resetState());
+          dispatch(NotifActions.resetState());
+          dispatch(ComponentActions.resetState());
+          dispatch(AuthActions.resetState());
+          dispatch(AuthActions.logout());
+          queryClient.clear();
+          navigate("/");
+        });
+
         break;
       case "profile":
         dispatch(ComponentActions.closeNav());
@@ -131,27 +155,27 @@ function NavBar() {
                 },
               }
             : isMobileSize
-            ? {
-                position: "fixed",
-                width: "min(94vw, 24rem)",
-                x: "-110%",
-                opacity: 0,
-                transition: {
-                  opacity: { duration: 0.1 },
-                  duration: 0.42,
-                  ease: "easeInOut",
-                },
-              }
-            : {
-                position: "relative",
-                width: "22.5rem",
-                x: 0,
-                opacity: 1,
-                transition: {
-                  duration: 0.45,
-                  ease: "easeOut",
-                },
-              }
+              ? {
+                  position: "fixed",
+                  width: "min(94vw, 24rem)",
+                  x: "-110%",
+                  opacity: 0,
+                  transition: {
+                    opacity: { duration: 0.1 },
+                    duration: 0.42,
+                    ease: "easeInOut",
+                  },
+                }
+              : {
+                  position: "relative",
+                  width: "22.5rem",
+                  x: 0,
+                  opacity: 1,
+                  transition: {
+                    duration: 0.45,
+                    ease: "easeOut",
+                  },
+                }
         }
       >
         <div className={classes.TopHeader}>
