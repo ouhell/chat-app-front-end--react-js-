@@ -3,28 +3,35 @@
   text-decoration: none;
 
   .Contact {
-    background-color: var(--primary-light);
-    border-radius: 0.5rem;
-    box-shadow: 0 0 0.8rem #cccc;
+    background: rgb(255 255 255 / 94%);
+    border: 1px solid rgb(48 51 65 / 10%);
+    border-radius: 0.75rem;
     cursor: pointer;
-    padding: 0.7rem;
-    transition: transform 0.2s ease;
+    padding: 0.62rem;
     display: flex;
-    gap: 1rem;
-    transition: color 0.1s ease, background-color 0.1s ease;
+    align-items: center;
+    gap: 0.7rem;
+    transition:
+      transform 0.15s ease,
+      color 0.15s ease,
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+
     .InfoHolder {
-      max-width: 70%;
+      max-width: 80%;
 
       .UsernameHolder {
-        font-size: 1.1rem;
-        font-weight: bold;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--primary-topography);
       }
 
       .LastMessageHolder {
         max-width: 100%;
-        font-size: 0.8rem;
+        margin-top: 0.08rem;
+        font-size: 0.76rem;
         font-weight: 500;
-        color: var(--primary-blank-deeper);
+        color: var(--primary-grey);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -32,14 +39,29 @@
     }
 
     &:hover {
-      transform: translate(0.1rem, -0.1rem);
+      transform: translateY(-1px);
+      border-color: rgb(183 80 253 / 34%);
+      background: rgb(183 80 253 / 8%);
     }
   }
 
   &.active {
     .Contact {
-      background-color: var(--primary-dark);
-      color: var(--primary-light);
+      border-color: rgb(183 80 253 / 40%);
+      background: linear-gradient(
+        to right,
+        rgb(183 80 253 / 14%),
+        rgb(100 219 222 / 12%)
+      );
+
+      .InfoHolder {
+        .UsernameHolder {
+          color: var(--primary-hard);
+        }
+        .LastMessageHolder {
+          color: var(--primary-topography);
+        }
+      }
     }
   }
 }

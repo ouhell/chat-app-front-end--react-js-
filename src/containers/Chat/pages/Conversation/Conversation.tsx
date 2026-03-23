@@ -17,7 +17,7 @@ const Conversation = () => {
   const userData = useAppSelector((state) => state.auth.userData);
 
   const conversation = useAppSelector(
-    (state) => state.chat.conversations[conversationId]
+    (state) => state.chat.conversations[conversationId],
   );
   const messages = conversation ? conversation.messages : [];
 
@@ -33,9 +33,13 @@ const Conversation = () => {
     setIsLoading(true);
 
     setIsError(false);
-    getConversation(conversationId, userData?.access_token ?? "undefined", {
-      skip: conversation?.messages.length ?? 0,
-    })
+    getConversation(
+      conversationId,
+      userData?.access_token.value ?? "undefined",
+      {
+        skip: conversation?.messages.length ?? 0,
+      },
+    )
       .then((res) => {
         dispatch(ChatActions.emit({ event: "chat", data: conversationId }));
 

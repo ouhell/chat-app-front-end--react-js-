@@ -1,6 +1,6 @@
 import c from "./VoiceRecorder.module.scss";
 import { MicSvg } from "../../../../../../../../shared/assets/svg/SvgProvider";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
 
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
@@ -44,13 +44,6 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (!audioConfig.current.mediaRecorder) return;
-    audioConfig.current.mediaRecorder.onstop = () => {
-      sendVoiceRecord();
-    };
-  }, [conversationId]);
-
   function getRecordPermision() {
     setIsGettingPermission(true);
     try {
@@ -66,19 +59,19 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
             audioConfig.current.audioContext.createAnalyser();
           audioConfig.current.audioSource =
             audioConfig.current.audioContext.createMediaStreamSource(
-              mediaStream
+              mediaStream,
             );
 
           audioConfig.current.audioSource.connect(
-            audioConfig.current.audioAnalyser
+            audioConfig.current.audioAnalyser,
           );
           audioConfig.current.audioAnalyser.fftSize = 1024;
 
           audioConfig.current.dataArray = new Float32Array(
-            audioConfig.current.audioAnalyser.frequencyBinCount
+            audioConfig.current.audioAnalyser.frequencyBinCount,
           );
           audioConfig.current.audioAnalyser.getFloatTimeDomainData(
-            audioConfig.current.dataArray
+            audioConfig.current.dataArray,
           );
 
           // recorder config
@@ -112,7 +105,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
         NotifActions.notify({
           type: "error",
           message: "couldnt connect to microphone",
-        })
+        }),
       );
     }
   }
@@ -130,7 +123,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
     if (!shouldDraw.current) return;
 
     audioConfig.current.audioAnalyser?.getFloatTimeDomainData(
-      audioConfig.current.dataArray
+      audioConfig.current.dataArray,
     );
 
     let rms = 0;
@@ -178,7 +171,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
       sendVoiceMessage(
         data,
         conversationId,
-        userData?.access_token ?? "undefined"
+        userData?.access_token ?? "undefined",
       )
         .then((res) => {
           const newMessage = { ...res.data, sender: senderInfo };
@@ -186,7 +179,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
             ChatActions.emit({
               event: "send message",
               data: newMessage,
-            })
+            }),
           );
           newMessage.content = url;
 
@@ -195,15 +188,15 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
               conversation_id: conversationId,
               id: generatedId,
               newMessage: newMessage,
-            })
+            }),
           );
         })
-        .catch((_err) => {
+        .catch(() => {
           dispatch(
             ChatActions.deleteMessage({
               conversation_id: conversationId,
               id: generatedId,
-            })
+            }),
           );
         });
       const tempMessage: Message = {
@@ -222,7 +215,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
         ChatActions.addMessage({
           conversation_id: conversationId,
           newMessage: tempMessage,
-        })
+        }),
       );
       testAudio.pause();
       testAudio.src = "";
@@ -250,18 +243,22 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
   }
 
   return (
-    <div
+    <button
+      type="button"
       className={c.VoiceRecorder}
       onClick={() => {
         if (isRecording) endRecordingAudio();
         else startRecordingAudio();
       }}
-      is-recording={isRecording ? "true" : "false"}
+      data-recording={isRecording ? "true" : "false"}
+      aria-label={
+        isRecording ? "Stop voice recording" : "Start voice recording"
+      }
     >
       <span /* style={recordIconStyle} */ ref={micHolder}>
         <MicSvg />
       </span>
-    </div>
+    </button>
   );
 };
 

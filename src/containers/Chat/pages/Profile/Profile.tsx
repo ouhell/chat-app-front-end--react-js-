@@ -241,7 +241,7 @@ const Profile = () => {
     for (const feild in updateFormData.feilds) {
       if (!updateFormData.feilds[feild].isValid) {
         updateFormData.feilds[feild].validation(
-          updateFormData.feilds[feild].value
+          updateFormData.feilds[feild].value,
         );
       }
     }
@@ -280,7 +280,7 @@ const Profile = () => {
 
   const setValidation = useCallback(function (
     key: string,
-    validation: Validation
+    validation: Validation,
   ) {
     setUpdateFormData((prevFormData) => {
       const newFormData = { ...prevFormData };
@@ -296,8 +296,7 @@ const Profile = () => {
       newFormData.feilds = newFeilds;
       return newFormData;
     });
-  },
-  []);
+  }, []);
 
   const fetchProfileData = useCallback(
     function () {
@@ -336,7 +335,7 @@ const Profile = () => {
           setIsLoading(false);
         });
     },
-    [isLoading, isError]
+    [isLoading, isError],
   );
 
   const changeValue = useCallback(function (key: string, newValue: string) {
@@ -368,7 +367,7 @@ const Profile = () => {
     for (const feild in updateFormData.feilds) {
       updateData[feild] = updateFormData.feilds[feild].value;
     }
-    updateProfileData(userData?.access_token ?? "undefined", updateData)
+    updateProfileData(userData?.access_token.value ?? "undefined", updateData)
       .then((_res) => {
         currentProfile.current = updateData;
 
@@ -376,7 +375,7 @@ const Profile = () => {
           NotifActions.notify({
             type: "success",
             message: "Profile info updated!",
-          })
+          }),
         );
         dispatch(AuthActions.setUsername(updateData.username));
       })
@@ -405,7 +404,7 @@ const Profile = () => {
           setIsUpdatingPic(false);
         });
     },
-    [isUpdatingPic]
+    [isUpdatingPic],
   );
 
   const displayReady = !isLoading && !isError;

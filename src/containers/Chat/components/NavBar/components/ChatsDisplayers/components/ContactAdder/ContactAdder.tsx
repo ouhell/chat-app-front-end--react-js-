@@ -43,7 +43,10 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
     if (isLoading) return;
     setIsLoading(true);
 
-    getContactCandidates(userData?.access_token ?? "undefined", searchtext)
+    getContactCandidates(
+      userData?.access_token.value ?? "undefined",
+      searchtext,
+    )
       .then((res) => {
         setData(res.data);
       })
@@ -64,7 +67,7 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
       return newState;
     });
 
-    addContactRequest(userData?.access_token ?? "undefined", id)
+    addContactRequest(userData?.access_token.value ?? "undefined", id)
       .then((res) => {
         setCandidateState((prevState) => {
           const newState = { ...prevState };
@@ -80,7 +83,7 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
           ChatActions.emit({
             event: "send request",
             data: res.data,
-          })
+          }),
         );
       })
       .catch((err) => {
@@ -124,8 +127,8 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
     });
 
     deleteContactRequest(
-      userData?.access_token ?? "undefined",
-      candidateState[id].request ?? ""
+      userData?.access_token.value ?? "undefined",
+      candidateState[id].request ?? "",
     )
       .then((res) => {
         dispatch(ChatActions.removeRequest(candidateState[id].request));
@@ -134,7 +137,7 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
           ChatActions.emit({
             event: "cancel request",
             data: res.data,
-          })
+          }),
         );
         setCandidateState((prevState) => {
           const newState = { ...prevState };

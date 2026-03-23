@@ -1,27 +1,27 @@
-import { useState } from "react";
+import { Empty } from "antd";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import classes from "./ChatDisplayer.module.scss";
 import ContactDisplayer from "./components/ContactDisplayer/ContactDisplayer";
 import { PluxCircleSvg } from "../../../../../../shared/assets/svg/SvgProvider";
 import ContactAdder from "./components/ContactAdder/ContactAdder";
-import { useDispatch } from "react-redux";
-import { NotifActions } from "../../../../../../store/slices/NotificationSlice";
 import PublicConversationDisplayer from "./components/PublicConversationDisplayer/PublicConversationDisplayer";
+import { useAppSelector } from "../../../../../../store/ReduxHooks";
 
 const chatTypes = [
   {
+    key: "private",
     title: "private",
-    path: "/chats/private",
     render: <ContactDisplayer />,
   },
   {
+    key: "groups",
     title: "groups",
-    path: "/chats/groups",
     render: null,
   },
   {
+    key: "public",
     title: "public",
-    path: "/chats/public",
     render: <PublicConversationDisplayer />,
   },
 ];
@@ -29,45 +29,54 @@ const chatTypes = [
 const ChatsDisplayer = () => {
   const [selectedChatType, setSelectedChatType] = useState(chatTypes[0]);
   const [showContactAdder, setShowContactAdder] = useState(false);
-  const dispatch = useDispatch();
+
+  const contactCount = useAppSelector(
+    (state) => Object.keys(state.chat.contacts).length
+  );
+  const publicCount = useAppSelector((state) => state.chat.publicConvos.length);
+
+  const chatTypeMeta = useMemo(
+    () => ({
+      private: contactCount,
+      groups: 0,
+      public: publicCount,
+    }),
+    [contactCount, publicCount]
+  );
+
   return (
     <div className={classes.ChatDisplayer}>
+      <ContactAdder
+        open={showContactAdder}
+        onCancel={() => {
+          setShowContactAdder(false);
+        }}
+      ></ContactAdder>
+
       <header className={classes.Header}>
-        <ContactAdder
-          open={showContactAdder}
-          onCancel={() => {
-            setShowContactAdder(false);
-          }}
-        ></ContactAdder>
-        <div
-          className={classes.HeaderText}
-          onClick={() => {
-            dispatch(
-              NotifActions.notify({
-                type: "success",
-                message: "OK",
-              })
-            );
-          }}
-        >
-          {" "}
-          Chats
+        <div>
+          <h3 className={classes.HeaderText}>Chats</h3>
+          <p className={classes.HeaderSubText}>Recent conversations</p>
         </div>
-        <div
+        <button
+          type="button"
           className={classes.AddButton}
+          aria-label="Add contact"
           onClick={() => {
             setShowContactAdder(true);
           }}
         >
           {<PluxCircleSvg />}
-        </div>
+        </button>
       </header>
 
       <div className={classes.ChatTypes}>
         {chatTypes.map((type) => {
           const isSelected = selectedChatType.title === type.title;
+          const count = chatTypeMeta[type.key as keyof typeof chatTypeMeta];
           return (
-            <div
+            <button
+              type="button"
               key={type.title}
               className={
                 classes.ChatType + (isSelected ? ` ${classes.active}` : "")
@@ -76,7 +85,8 @@ const ChatsDisplayer = () => {
                 setSelectedChatType(type);
               }}
             >
-              {type.title}
+              <span>{type.title}</span>
+              <span className={classes.TypeCount}>{count}</span>
               {isSelected ? (
                 <motion.div // underline on active
                   className={classes.underline}
@@ -86,11 +96,19 @@ const ChatsDisplayer = () => {
                   }}
                 ></motion.div>
               ) : null}
-            </div>
+            </button>
           );
         })}
       </div>
-      <div className={classes.Content}>{selectedChatType.render}</div>
+      <div className={classes.Content}>
+        {selectedChatType.key === "groups" ? (
+          <div className={classes.EmptyState}>
+            <Empty description="Groups are coming soon" />
+          </div>
+        ) : (
+          selectedChatType.render
+        )}
+      </div>
     </div>
   );
 };

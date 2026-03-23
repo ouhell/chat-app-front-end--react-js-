@@ -40,7 +40,7 @@ const Candidate = ({
       <div className={c.ActionHolder}>
         {!isCancelLoading ? (
           <Button
-            type={isSent ? "ghost" : "default"}
+            type={isSent ? "text" : "default"}
             className={isSent ? c.SentButton : c.ActionButton}
             onClick={() => {
               if (isSent) return;

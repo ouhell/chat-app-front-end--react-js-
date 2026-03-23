@@ -9,32 +9,34 @@ const ChatController = () => {
   const dispatch = useDispatch();
 
   const fetchContacts = () => {
-    getContacts(userData?.access_token ?? "undefined").then((res) => {
+    getContacts(userData?.access_token.value ?? "undefined").then((res) => {
       dispatch(ChatActions.setContacts(res.data));
     });
   };
 
   const fetchNotifications = () => {
-    getContactRequests(userData?.access_token ?? "undefined").then((res) => {
-      dispatch(ChatActions.setRequests(res.data));
-      dispatch(
-        ChatActions.on({
-          event: "receive request",
-          callback: (request) => {
-            console.log("received request ::", request);
-            dispatch(ChatActions.addRequest(request));
-          },
-        })
-      );
-      dispatch(
-        ChatActions.on({
-          event: "canceled request",
-          callback: (requestId) => {
-            dispatch(ChatActions.removeRequest(requestId));
-          },
-        })
-      );
-    });
+    getContactRequests(userData?.access_token.value ?? "undefined").then(
+      (res) => {
+        dispatch(ChatActions.setRequests(res.data));
+        dispatch(
+          ChatActions.on({
+            event: "receive request",
+            callback: (request) => {
+              console.log("received request ::", request);
+              dispatch(ChatActions.addRequest(request));
+            },
+          }),
+        );
+        dispatch(
+          ChatActions.on({
+            event: "canceled request",
+            callback: (requestId) => {
+              dispatch(ChatActions.removeRequest(requestId));
+            },
+          }),
+        );
+      },
+    );
   };
 
   useEffect(() => {
@@ -47,14 +49,14 @@ const ChatController = () => {
           dispatch(ChatActions.removeRequest(request._id));
           fetchContacts();
         },
-      })
+      }),
     );
 
     dispatch(
       ChatActions.emit({
         event: "self connect",
         data: userData?.userId,
-      })
+      }),
     );
 
     dispatch(
@@ -66,10 +68,10 @@ const ChatController = () => {
             ChatActions.addMessage({
               conversation_id: message.conversation,
               newMessage: message as Message,
-            })
+            }),
           );
         },
-      })
+      }),
     );
 
     dispatch(
@@ -82,10 +84,10 @@ const ChatController = () => {
             ChatActions.deleteMessage({
               conversation_id: message.conversation,
               id: messageId,
-            })
+            }),
           );
         },
-      })
+      }),
     );
 
     dispatch(
@@ -93,7 +95,7 @@ const ChatController = () => {
         event: "added Conversation",
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         callback: () => {},
-      })
+      }),
     );
 
     dispatch(
@@ -109,7 +111,7 @@ const ChatController = () => {
             conversationId: conversation_id,
           });
         },
-      })
+      }),
     );
   }, []);
 

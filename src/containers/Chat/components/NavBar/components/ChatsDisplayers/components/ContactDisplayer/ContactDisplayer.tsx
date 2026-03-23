@@ -5,11 +5,13 @@ import { Button, Empty, Result } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
 
 import BasicSpinner from "../../../../../../../../shared/components/BasicSpinner/BasicSpinner";
-import { useDispatch } from "react-redux";
 import Contact from "./components/Contact";
 import { ChatActions } from "../../../../../../../../store/slices/ChatSlice";
 import { getContacts } from "../../../../../../../../client/ApiClient";
-import { useAppSelector } from "../../../../../../../../store/ReduxHooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "../../../../../../../../store/ReduxHooks";
 
 const contactContainerAnimation = {
   hidden: {
@@ -48,7 +50,7 @@ const ContactDisplayer = () => {
   const [isloading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const userData = useAppSelector((state) => state.auth.userData);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const filterContact = () => {
     return contacts.filter((contact) => {
@@ -63,7 +65,7 @@ const ContactDisplayer = () => {
   const fetchContacts = useCallback(() => {
     setIsLoading(true);
     setIsError(false);
-    getContacts(userData?.access_token ?? "undefined")
+    getContacts(userData?.access_token.value ?? "undefined")
       .then((res) => {
         dispatch(ChatActions.setContacts(res.data));
       })
@@ -73,11 +75,13 @@ const ContactDisplayer = () => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, []);
+  }, [dispatch, userData?.access_token]);
 
   useEffect(() => {
     if (contacts.length === 0) fetchContacts();
-  }, []);
+  }, [contacts.length, fetchContacts]);
+
+  const filteredContacts = filterContact();
 
   return (
     <div className={classes.ContactDisplayer}>
@@ -85,6 +89,7 @@ const ContactDisplayer = () => {
         <div className={classes.SearchBarHolder}>
           <SearchSvg />
           <input
+            placeholder="Search by username or name"
             onChange={(e) => {
               if (e.target.value.length > 25) return;
               setSearchtext(e.target.value);
@@ -113,6 +118,12 @@ const ContactDisplayer = () => {
       {!isloading && !isError && contacts.length === 0 ? (
         <Empty description="No contact" />
       ) : null}
+      {!isloading &&
+      !isError &&
+      contacts.length > 0 &&
+      filteredContacts.length === 0 ? (
+        <Empty description="No matching contacts" />
+      ) : null}
 
       <motion.div
         className={classes.ContactList}
@@ -123,7 +134,7 @@ const ContactDisplayer = () => {
         /*   ref={parent} */
       >
         <AnimatePresence mode="popLayout">
-          {filterContact().map((contact) => {
+          {filteredContacts.map((contact) => {
             return (
               <motion.div
                 variants={contactAnimations}

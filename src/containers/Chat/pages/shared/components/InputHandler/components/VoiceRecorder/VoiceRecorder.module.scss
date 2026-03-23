@@ -1,23 +1,44 @@
 .VoiceRecorder {
+  border: none;
   background: transparent;
-  display: grid;
+  color: var(--primary-grey);
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  border-radius: 999px;
+  display: inline-grid;
   place-items: center;
   overflow: visible;
+  cursor: pointer;
+  transition:
+    transform 0.14s ease,
+    background-color 0.14s ease,
+    color 0.14s ease;
+
+  &:hover {
+    background: rgb(183 80 253 / 12%);
+    color: var(--primary-hard);
+    transform: translateY(-1px);
+  }
 
   span {
     border-radius: 100%;
-
-    transform: scale(1.05);
+    transform: scale(1.03);
     display: grid;
     place-items: center;
 
     svg {
       position: relative;
+      width: 1.2rem;
     }
   }
-  &:is([is-recording="true"]) {
+
+  &:is([data-recording="true"]) {
+    background: rgb(230 67 67 / 12%);
+    color: #d83b4c;
+
     svg {
-      color: red;
+      color: #d83b4c;
     }
   }
 }

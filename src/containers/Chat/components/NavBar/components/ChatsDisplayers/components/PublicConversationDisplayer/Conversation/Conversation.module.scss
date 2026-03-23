@@ -1,44 +1,45 @@
 .ConversationLink {
+  display: block;
   text-decoration: none;
 
   .Conversation {
-    height: 3.5rem;
-    background-color: var(--primary-light);
-    box-shadow: 0 0 0.7rem var(--primary-blank);
-    padding: 1rem;
-    position: relative;
-    overflow: hidden;
+    min-height: 3rem;
+    background: rgb(255 255 255 / 94%);
+    border: 1px solid rgb(48 51 65 / 10%);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    z-index: 1;
-    font-size: 1.2rem;
-    font-weight: bold;
+    font-size: 0.92rem;
+    font-weight: 700;
     text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
     text-transform: capitalize;
-    color: var(--primary-hard);
-    transition: color 0.2s ease;
-    &:after {
-      content: "";
-      background-color: var(--primary-hard);
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 95%;
-      z-index: -1;
-      transition: right 0.3s ease, background-color 0.2s ease;
+    color: var(--primary-topography);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.15s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      border-color: rgb(183 80 253 / 34%);
+      background: rgb(183 80 253 / 8%);
     }
   }
+
   &.active {
     .Conversation {
-      color: white;
-
-      &:after {
-        background-color: var(--primary-soft);
-
-        right: 0;
-      }
+      color: var(--primary-hard);
+      border-color: rgb(183 80 253 / 40%);
+      background: linear-gradient(
+        to right,
+        rgb(183 80 253 / 14%),
+        rgb(100 219 222 / 12%)
+      );
     }
   }
 }

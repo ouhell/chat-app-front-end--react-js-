@@ -21,7 +21,7 @@ const renderMessages = (
   isError: boolean,
   fetchMessages: () => void,
   deleteMessage: (messageId: Message) => void,
-  userId: string
+  userId: string,
 ) => {
   if (isLoading && !data.length)
     return (
@@ -107,7 +107,7 @@ const ChatHandler = ({
   const [showScroller, setShowScroller] = useState(false);
   const { conversationId } = useParams();
   const conversationProps = useAppSelector(
-    (state) => state.chat.conversations[conversationId ?? "undefined"]?.props
+    (state) => state.chat.conversations[conversationId ?? "undefined"]?.props,
   );
   const userData = useAppSelector((state) => state.auth.userData);
   const chatContainer = useRef<HTMLDivElement>(null);
@@ -115,7 +115,7 @@ const ChatHandler = ({
   const prevData = useRef(data);
   const scrollerTimeout = useRef<ReturnType<typeof setTimeout>>();
   const lastCapturedMessage = React.useRef<Message | undefined>(
-    data[data.length - 1]
+    data[data.length - 1],
   );
   const firstCapturedMessage = React.useRef<Message | undefined>(data[0]);
   const scrollTacker = React.useRef<scrollElementTracker>({
@@ -226,24 +226,25 @@ const ChatHandler = ({
   function deleteMessage(message: Message) {
     let messageId = message._id;
     if (message.trueId) messageId = message.trueId;
-    deleteMessageApi(userData?.access_token ?? "undefined", messageId).then(
-      () => {
-        console.log("deleted :", messageId);
-        dispatch(
-          ChatActions.emit({
-            event: "delete message",
-            data: message,
-          })
-        );
+    deleteMessageApi(
+      userData?.access_token.value ?? "undefined",
+      messageId,
+    ).then(() => {
+      console.log("deleted :", messageId);
+      dispatch(
+        ChatActions.emit({
+          event: "delete message",
+          data: message,
+        }),
+      );
 
-        dispatch(
-          ChatActions.deleteMessage({
-            conversation_id: message.conversation,
-            id: message._id,
-          })
-        );
-      }
-    );
+      dispatch(
+        ChatActions.deleteMessage({
+          conversation_id: message.conversation,
+          id: message._id,
+        }),
+      );
+    });
   }
 
   return (
@@ -265,7 +266,7 @@ const ChatHandler = ({
             isError,
             fetchMessages,
             deleteMessage,
-            userData?.userId ?? "undefined"
+            userData?.userId ?? "undefined",
           )}
         </AnimatePresence>
       </div>

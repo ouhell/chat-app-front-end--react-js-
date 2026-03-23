@@ -1,7 +1,13 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-type UserData = {
-  access_token: string;
+type Token = {
+  value: string;
+  expiresAt: number;
+};
+
+export type UserData = {
+  access_token: Token;
+  refresh_token: Token;
   userRole: string;
   username: string;
   userId: string;
@@ -32,7 +38,7 @@ const AuthenticationSlice = createSlice({
   initialState: structuredClone(initialState),
 
   reducers: {
-    login: function (state, action) {
+    login: function (state, action: PayloadAction<UserData>) {
       localStorage.setItem("userData", JSON.stringify(action.payload));
       state.userData = action.payload;
     },
@@ -40,10 +46,10 @@ const AuthenticationSlice = createSlice({
       localStorage.removeItem("userData");
       state.userData = null;
     },
-    setProfilePicture: (state, action) => {
+    setProfilePicture: (state, action: PayloadAction<string>) => {
       localStorage.setItem(
         "userData",
-        JSON.stringify({ ...state.userData, profile_picture: action.payload })
+        JSON.stringify({ ...state.userData, profile_picture: action.payload }),
       );
 
       const newUserData = { ...state.userData } as UserData;
@@ -53,7 +59,7 @@ const AuthenticationSlice = createSlice({
     setUsername: function (state, action: PayloadAction<string>) {
       localStorage.setItem(
         "userData",
-        JSON.stringify({ ...state.userData, username: action.payload })
+        JSON.stringify({ ...state.userData, username: action.payload }),
       );
       const newUserData = { ...state.userData } as UserData;
       newUserData.username = action.payload;
@@ -61,6 +67,7 @@ const AuthenticationSlice = createSlice({
     },
     resetState: (state) => {
       state = structuredClone(initiate());
+
       return state;
     },
   },

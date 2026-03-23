@@ -36,10 +36,10 @@ const Contact = ({ contactInfo }: ContactProps) => {
       .catch((err) => {
         console.log("fetch messages error" + contactInfo._id, err);
       });
-  }, []);
+  }, [contactInfo._id, dispatch, userData?.access_token]);
 
   const getLastMessage = () => {
-    if (messages.length === 0) return "";
+    if (messages.length === 0) return "No messages yet";
 
     const lastMessage = messages[messages.length - 1];
     const sender = lastMessage.sender._id === userData?.userId ? "you : " : "";
@@ -58,7 +58,7 @@ const Contact = ({ contactInfo }: ContactProps) => {
     else {
       dispatch(ChatActions.emit({ event: "chat", data: contactInfo._id }));
     }
-  }, []);
+  }, [contactInfo._id, conversation, dispatch, fetchMessages]);
 
   return (
     <NavLink
@@ -73,12 +73,13 @@ const Contact = ({ contactInfo }: ContactProps) => {
       <div className={c.Contact}>
         <Avatar
           src={contactInfo.user.profile_picture}
-          size={40}
+          size={42}
           style={{
-            fontSize: "1rem",
+            fontSize: "0.95rem",
+            fontWeight: 700,
           }}
         >
-          {contactInfo.user.username[0]}
+          {contactInfo.user.username[0]?.toUpperCase()}
         </Avatar>
         <div className={c.InfoHolder}>
           <div className={c.UsernameHolder}>{contactInfo.user.username}</div>

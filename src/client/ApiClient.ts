@@ -1,5 +1,6 @@
 import axios from "axios";
 import { MessagesPayload } from "./responseTypes/messageResponses";
+import type { UserData } from "../store/slices/AuthSlice";
 
 const isdev = !process.env.NODE_ENV || process.env.NODE_ENV === "development";
 
@@ -227,7 +228,7 @@ export const apiLogin = (signinData: {
 };
 
 export const oauthLogin = (id_token = "<none>") => {
-  return axios.post("/api/auth/login/oauth/google", {
+  return axios.post<UserData>("/api/auth/login/oauth/google", {
     id_token: id_token,
   });
 };

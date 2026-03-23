@@ -13,7 +13,7 @@ import { useAppSelector } from "../../../../../../store/ReduxHooks";
 
 const NotificationDisplayer = () => {
   const { loaded, data: requests } = useAppSelector(
-    (state) => state.chat.requests
+    (state) => state.chat.requests,
   );
 
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +27,7 @@ const NotificationDisplayer = () => {
     if (isLoading) return;
     setIsLoading(true);
 
-    getContactRequests(userData?.access_token ?? "undefined")
+    getContactRequests(userData?.access_token.value ?? "undefined")
       .then((res) => {
         dispatch(ChatActions.setRequests(res.data));
         dispatch(
@@ -36,7 +36,7 @@ const NotificationDisplayer = () => {
             callback: (request) => {
               dispatch(ChatActions.addRequest(request));
             },
-          })
+          }),
         );
         dispatch(
           ChatActions.on({
@@ -44,7 +44,7 @@ const NotificationDisplayer = () => {
             callback: (requestId) => {
               dispatch(ChatActions.removeRequest(requestId));
             },
-          })
+          }),
         );
       })
       .catch((err) => {

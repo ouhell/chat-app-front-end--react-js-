@@ -1,50 +1,108 @@
 .ChatDisplayer {
   --nav-chat-side-pad: 0.8rem;
-  // padding: 0 var(--nav-chat-side-pad);
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+
   .Header {
     display: flex;
     justify-content: space-between;
-    padding: 1.4rem var(--nav-chat-side-pad);
+    align-items: center;
+    padding: 1rem var(--nav-chat-side-pad) 0.9rem;
+    border-bottom: 1px solid rgb(48 51 65 / 9%);
+
     .HeaderText {
-      font-size: 1.6rem;
-      font-weight: 900;
-      letter-spacing: 0.05rem;
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 750;
+      letter-spacing: 0.02rem;
+      color: var(--primary-topography);
     }
+
+    .HeaderSubText {
+      margin: 0.15rem 0 0;
+      font-size: 0.8rem;
+      color: var(--primary-grey);
+    }
+
     .AddButton {
+      border: none;
+      outline: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 999px;
       cursor: pointer;
       color: var(--primary-soft);
-      transition: scale 0.15s ease;
+      background: rgb(183 80 253 / 11%);
+      transition:
+        scale 0.15s ease,
+        background-color 0.15s ease,
+        color 0.15s ease;
+
       svg {
-        width: 1.8rem;
+        width: 1.3rem;
       }
 
       &:hover {
         scale: 1.1;
+        background: rgb(183 80 253 / 19%);
+        color: var(--primary-hard);
       }
     }
   }
 
   .ChatTypes {
-    display: flex;
-    gap: 1rem;
-    padding: 0.2rem var(--nav-chat-side-pad) 1rem var(--nav-chat-side-pad);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.35rem;
+    margin: 0.7rem var(--nav-chat-side-pad) 0.6rem;
+    padding: 0.3rem;
+    border-radius: 0.8rem;
+    background: rgb(255 255 255 / 76%);
+    border: 1px solid rgb(48 51 65 / 9%);
+
     .ChatType {
-      font-weight: 500;
-      color: var(--primary-blank);
+      border: none;
+      background: transparent;
+      border-radius: 0.58rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      min-height: 2.1rem;
+      font-weight: 600;
+      font-size: 0.78rem;
+      color: var(--primary-grey);
       cursor: pointer;
-      transition: transform 0.1s ease;
+      transition:
+        transform 0.1s ease,
+        color 0.15s ease,
+        background-color 0.15s ease;
       user-select: none;
+
+      .TypeCount {
+        display: inline-flex;
+        min-width: 1rem;
+        justify-content: center;
+        border-radius: 999px;
+        background: rgb(48 51 65 / 12%);
+        color: inherit;
+        font-size: 0.66rem;
+        font-weight: 700;
+        padding: 0.02rem 0.22rem;
+      }
 
       .underline {
         position: absolute;
-        left: 0;
-        right: 0;
-        top: 120%;
-        height: 0.3rem;
+        left: 18%;
+        right: 18%;
+        bottom: 0.2rem;
+        height: 0.12rem;
+        border-radius: 999px;
         background: linear-gradient(
           to right,
           var(--primary-hard),
@@ -52,12 +110,19 @@
         );
       }
       &:not(.active):hover {
-        transform: scale(1.04);
+        transform: translateY(-1px);
+        color: var(--primary-topography);
+        background: rgb(100 219 222 / 10%);
       }
       &.active {
-        color: inherit;
+        color: var(--primary-hard);
         font-weight: 700;
         position: relative;
+        background: rgb(183 80 253 / 12%);
+
+        .TypeCount {
+          background: rgb(183 80 253 / 22%);
+        }
       }
     }
   }
@@ -67,5 +132,35 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-height: 0;
+  }
+
+  .EmptyState {
+    height: 100%;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    --nav-chat-side-pad: 0.65rem;
+
+    .Header {
+      padding-top: 0.85rem;
+      .HeaderText {
+        font-size: 1.05rem;
+      }
+      .HeaderSubText {
+        font-size: 0.76rem;
+      }
+    }
+
+    .ChatTypes {
+      gap: 0.2rem;
+      .ChatType {
+        min-height: 1.95rem;
+        font-size: 0.72rem;
+      }
+    }
   }
 }

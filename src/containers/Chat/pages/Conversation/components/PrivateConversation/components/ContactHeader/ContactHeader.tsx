@@ -25,7 +25,7 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
   const { conversationId = "undefined", contactId = "undefined" } = useParams();
 
   const contactData = useAppSelector(
-    (state) => state.chat.contacts[conversationId]
+    (state) => state.chat.contacts[conversationId],
   );
 
   const DropDownItems = [
@@ -56,12 +56,15 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
   const fetchContactData = () => {
     setIsLoading(true);
     setisError(false);
-    getContactProfileData(userData?.access_token ?? "undefined", conversationId)
+    getContactProfileData(
+      userData?.access_token.value ?? "undefined",
+      conversationId,
+    )
       .then((res) => {
         dispatch(
           ChatActions.addContact({
             newContact: res.data,
-          })
+          }),
         );
       })
       .catch((err) => {
@@ -74,7 +77,7 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
   };
 
   const removeContact = () => {
-    deleteContact(userData?.access_token ?? "undefined", contactId)
+    deleteContact(userData?.access_token.value ?? "undefined", contactId)
       .then(() => {
         dispatch(ChatActions.removeContact({ contactId: conversationId }));
         dispatch(ChatActions.removeConversation({ conversationId }));
@@ -82,7 +85,7 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
       .catch((err) => console.log("remove contact err :", err));
   };
   const blackListContact = () => {
-    blackListUser(userData?.access_token ?? "undefined", contactId)
+    blackListUser(userData?.access_token.value ?? "undefined", contactId)
       .then(() => {
         dispatch(ChatActions.removeContact({ contactId: conversationId }));
         dispatch(ChatActions.removeConversation({ conversationId }));
@@ -91,7 +94,7 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
   };
 
   const blockUser = () => {
-    blockContact(userData?.access_token ?? "undefined", contactId)
+    blockContact(userData?.access_token.value ?? "undefined", contactId)
       .then(() => {
         dispatch(
           ChatActions.emit({
@@ -100,19 +103,19 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
               conversationId: conversationId,
               blockedUser: contactId,
             },
-          })
+          }),
         );
         dispatch(
           ChatActions.setUserBanned({
             bannedUser: contactId,
             conversationId: conversationId,
-          })
+          }),
         );
         dispatch(
           NotifActions.notify({
             type: "success",
             message: "user blocked",
-          })
+          }),
         );
       })
       .catch((err) => {
@@ -121,19 +124,19 @@ const ContactHeader = ({ isBlocked }: { isBlocked: boolean }) => {
   };
 
   const unblockUser = () => {
-    unblockContact(userData?.access_token ?? "undefined", contactId)
+    unblockContact(userData?.access_token.value ?? "undefined", contactId)
       .then(() => {
         dispatch(
           NotifActions.notify({
             type: "success",
             message: "user unblocked",
-          })
+          }),
         );
         dispatch(
           ChatActions.setUserUnbanned({
             bannedUser: contactId,
             conversationId: conversationId,
-          })
+          }),
         );
       })
       .catch((err) => {

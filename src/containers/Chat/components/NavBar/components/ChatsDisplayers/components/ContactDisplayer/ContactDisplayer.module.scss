@@ -3,27 +3,34 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
   .SearchBarContainer {
-    padding: 0.8rem var(--nav-chat-side-pad);
+    padding: 0.45rem var(--nav-chat-side-pad) 0.7rem;
+
     .SearchBarHolder {
       display: flex;
       align-items: center;
       width: 100%;
-      color: var(--primary-blank);
-      border-radius: 2rem;
-      height: 2rem;
-      background-color: var(--primary-light);
-      box-shadow: 0 0.1rem 0.5rem #cccc;
-      padding: 0 0.5rem;
-      gap: 0.2rem;
+      color: var(--primary-grey);
+      border: 1px solid rgb(48 51 65 / 12%);
+      border-radius: 0.72rem;
+      height: 2.35rem;
+      background-color: rgb(255 255 255 / 92%);
+      padding: 0 0.62rem;
+      gap: 0.35rem;
+      transition:
+        color 0.2s ease-in-out,
+        box-shadow 0.2s ease-in-out,
+        border-color 0.2s ease-in-out;
 
-      transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
       svg {
-        width: 1.4rem;
+        width: 1.15rem;
       }
+
       .SearchBar {
         display: block;
-        font-weight: 500;
+        font-size: 0.86rem;
+        font-weight: 550;
         border: none;
         background-color: transparent;
         height: 100%;
@@ -39,7 +46,8 @@
       &:focus-within,
       &:hover {
         color: inherit;
-        box-shadow: 0 0.1rem 0.5rem rgb(155, 149, 149);
+        border-color: var(--primary-soft);
+        box-shadow: 0 0 0 3px rgb(183 80 253 / 15%);
       }
     }
   }
@@ -48,47 +56,10 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 0.5rem var(--nav-chat-side-pad);
-    gap: 0.5rem;
+    padding: 0.2rem var(--nav-chat-side-pad) 0.8rem;
+    gap: 0.45rem;
     overflow-x: hidden;
-    overflow-y: overlay;
-
-    .ContactLink {
-      display: block;
-      text-decoration: none;
-
-      .Contact {
-        background-color: var(--primary-light);
-        border-radius: 0.5rem;
-        box-shadow: 0 0 0.8rem #cccc;
-        cursor: pointer;
-        padding: 0.7rem;
-        transition: transform 0.2s ease;
-        display: flex;
-        gap: 1rem;
-
-        .UsernameHolder {
-          font-size: 1.1rem;
-          font-weight: bold;
-        }
-
-        .PersonalnameHolder {
-          font-size: 0.8rem;
-          color: var(--primary-blank);
-        }
-
-        &:hover {
-          transform: translate(0.1rem, -0.1rem);
-        }
-      }
-
-      &.active {
-        .Contact {
-          background-color: var(--primary-dark);
-          color: var(--primary-light);
-        }
-      }
-    }
+    overflow-y: auto;
 
     /* width */
     &::-webkit-scrollbar {
@@ -117,6 +88,15 @@
     &:hover {
       color: var(--primary-soft);
       border-color: var(--primary-soft);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .SearchBarContainer {
+      padding-top: 0.35rem;
+      .SearchBarHolder {
+        height: 2.2rem;
+      }
     }
   }
 }

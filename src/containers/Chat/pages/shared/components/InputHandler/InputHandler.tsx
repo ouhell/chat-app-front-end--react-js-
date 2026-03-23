@@ -4,16 +4,16 @@ import {
   SendArrowSvg,
   AttatchmentSvg,
 } from "../../../../../../shared/assets/svg/SvgProvider";
-import { useState } from "react";
-
-import { useDispatch } from "react-redux";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { ChatActions } from "../../../../../../store/slices/ChatSlice";
 import { Popover } from "antd";
 import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 import VoiceRecorder from "./components/VoiceRecorder/VoiceRecorder";
 import { sendImage, sendTextMessage } from "../../../../../../client/ApiClient";
-import { useAppSelector } from "../../../../../../store/ReduxHooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "../../../../../../store/ReduxHooks";
 
 const InputHandler = ({
   sendAllowed,
@@ -28,7 +28,8 @@ const InputHandler = ({
   const fileInput = useRef<HTMLInputElement>(null);
   const textInput = useRef<HTMLInputElement>(null);
   const userData = useAppSelector((state) => state.auth.userData);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const canSend = sendAllowed && !!message.trim();
 
   const sendMessage = () => {
     if (!sendAllowed) return;
@@ -46,7 +47,7 @@ const InputHandler = ({
     sendTextMessage(
       readyMessage,
       conversationId,
-      userData?.access_token ?? "undefined"
+      userData?.access_token.value ?? "undefined",
     )
       .then((res) => {
         const newMessage = { ...res.data, sender: senderInfo };
@@ -54,14 +55,14 @@ const InputHandler = ({
           ChatActions.emit({
             event: "send message",
             data: newMessage,
-          })
+          }),
         );
         dispatch(
           ChatActions.replaceMessage({
             conversation_id: conversationId,
             id: generatedId,
             newMessage: newMessage,
-          })
+          }),
         );
       })
       .catch((err) => {
@@ -70,7 +71,7 @@ const InputHandler = ({
           ChatActions.deleteMessage({
             conversation_id: conversationId,
             id: generatedId,
-          })
+          }),
         );
       });
 
@@ -91,12 +92,13 @@ const InputHandler = ({
       ChatActions.addMessage({
         conversation_id: conversationId,
         newMessage: tempMessage,
-      })
+      }),
     );
 
     setMessage("");
   };
   const sendFile = (file: File) => {
+    if (!sendAllowed) return;
     const generatedId = Math.random() * 10 + "t";
 
     const data = new FormData();
@@ -108,7 +110,7 @@ const InputHandler = ({
       profile_picture: userData?.profile_picture,
     };
 
-    sendImage(data, conversationId, userData?.access_token ?? "undefined")
+    sendImage(data, conversationId, userData?.access_token.value ?? "undefined")
       .then((res) => {
         /* chatSocket.emit("send message", res.data); */
         const newMessage = { ...res.data, sender: senderInfo };
@@ -116,14 +118,14 @@ const InputHandler = ({
           ChatActions.emit({
             event: "send message",
             data: newMessage,
-          })
+          }),
         );
         dispatch(
           ChatActions.replaceMessage({
             conversation_id: conversationId,
             id: generatedId,
             newMessage: newMessage,
-          })
+          }),
         );
       })
       .catch(() => {
@@ -131,7 +133,7 @@ const InputHandler = ({
           ChatActions.deleteMessage({
             conversation_id: conversationId,
             id: generatedId,
-          })
+          }),
         );
       });
 
@@ -152,13 +154,17 @@ const InputHandler = ({
       ChatActions.addMessage({
         conversation_id: conversationId,
         newMessage: message,
-      })
+      }),
     );
   };
 
   return (
     <div className={classes.InputHandler}>
-      <div className={classes.InputHolder}>
+      <div
+        className={
+          classes.InputHolder + (!sendAllowed ? ` ${classes.Disabled}` : "")
+        }
+      >
         <input
           type="file"
           ref={fileInput}
@@ -167,23 +173,36 @@ const InputHandler = ({
             display: "none",
           }}
           onChange={(e) => {
-            sendFile(e.target.files?.[0] as File);
+            const file = e.target.files?.[0];
+            if (!file) return;
+            sendFile(file);
+            e.currentTarget.value = "";
           }}
         />
-        <AttatchmentSvg
-          style={{
-            rotate: "45deg",
-          }}
+        <button
+          type="button"
+          className={classes.ActionButton}
+          aria-label="Attach image"
           onClick={() => {
             fileInput.current?.click();
           }}
-        />
+        >
+          <AttatchmentSvg
+            style={{
+              rotate: "45deg",
+            }}
+          />
+        </button>
+
         <input
           ref={textInput}
-          placeholder="Type a message here"
+          placeholder={
+            sendAllowed ? "Write a message..." : "Messaging disabled"
+          }
           autoCorrect="false"
           onKeyDown={(e) => {
             if (e.key !== "Enter") return;
+            e.preventDefault();
             sendMessage();
           }}
           value={message}
@@ -191,6 +210,7 @@ const InputHandler = ({
             // if (e.target.value.length > 200) return;
             setMessage(e.target.value);
           }}
+          disabled={!sendAllowed}
         />
 
         <Popover
@@ -213,11 +233,17 @@ const InputHandler = ({
           }
           trigger={"click"} /* open={isPickerVisible} */
         >
-          <MoodSvg />
+          <button
+            type="button"
+            className={classes.ActionButton}
+            aria-label="Pick emoji"
+          >
+            <MoodSvg />
+          </button>
         </Popover>
         <VoiceRecorder conversationId={conversationId} />
         <div
-          className={classes.Sender}
+          className={classes.Sender + (!canSend ? ` ${classes.Inactive}` : "")}
           onClick={() => {
             sendMessage();
             textInput.current?.focus();

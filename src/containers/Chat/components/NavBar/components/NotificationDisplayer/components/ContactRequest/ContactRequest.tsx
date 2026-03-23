@@ -22,7 +22,7 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
   const dispatch = useDispatch();
 
   const fetchContacts = () => {
-    getContacts(userData?.access_token ?? "undefined").then((res) => {
+    getContacts(userData?.access_token.value ?? "undefined").then((res) => {
       dispatch(ChatActions.setContacts(res.data));
     });
   };
@@ -32,7 +32,10 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
 
     setIsCancelLoading(true);
 
-    deleteContactRequest(userData?.access_token ?? "undefined", requestData._id)
+    deleteContactRequest(
+      userData?.access_token.value ?? "undefined",
+      requestData._id,
+    )
       .then((_) => {
         dispatch(ChatActions.removeRequest(requestData._id));
 
@@ -40,7 +43,7 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
           ChatActions.emit({
             event: "cancel request",
             data: requestData,
-          })
+          }),
         );
       })
       .catch((err) => {
@@ -64,20 +67,20 @@ const ContactRequest = ({ requestData }: ContactRequest) => {
 
     setIsAcceptLoading(true);
 
-    addContact(userData?.access_token ?? "undefined", requestData._id)
+    addContact(userData?.access_token.value ?? "undefined", requestData._id)
       .then(() => {
         dispatch(ChatActions.removeRequest(requestData._id));
         dispatch(
           ChatActions.emit({
             event: "cancel request",
             data: requestData,
-          })
+          }),
         );
         dispatch(
           ChatActions.emit({
             event: "accept request",
             data: requestData,
-          })
+          }),
         );
         // dispatch(
         //   ChatActions.addContact({

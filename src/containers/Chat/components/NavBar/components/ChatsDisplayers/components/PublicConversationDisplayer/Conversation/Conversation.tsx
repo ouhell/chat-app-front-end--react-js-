@@ -2,7 +2,7 @@ import c from "./Conversation.module.scss";
 import { NavLink } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { ComponentActions } from "../../../../../../../../../store/slices/ComponentSlice";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { ChatActions } from "../../../../../../../../../store/slices/ChatSlice";
 import { getConversation } from "../../../../../../../../../client/ApiClient";
 import { useAppSelector } from "../../../../../../../../../store/ReduxHooks";
@@ -10,12 +10,12 @@ import { useAppSelector } from "../../../../../../../../../store/ReduxHooks";
 const Conversation = ({ data }: { data: Conversation }) => {
   const dispatch = useDispatch();
   const conversation = useAppSelector(
-    (state) => state.chat.conversations[data._id]
+    (state) => state.chat.conversations[data._id],
   );
   const userData = useAppSelector((state) => state.auth.userData);
 
-  const fetchMessages = () => {
-    getConversation(data._id, userData?.access_token ?? "undefined")
+  const fetchMessages = useCallback(() => {
+    getConversation(data._id, userData?.access_token.value ?? "undefined")
       .then((res) => {
         dispatch(ChatActions.emit({ event: "chat", data: data._id }));
 
@@ -24,12 +24,12 @@ const Conversation = ({ data }: { data: Conversation }) => {
       .catch((err) => {
         console.log("fetching public messages error", err);
       });
-  };
+  }, [data._id, dispatch, userData?.access_token]);
 
   useEffect(() => {
     if (!conversation) fetchMessages();
     else dispatch(ChatActions.emit({ event: "chat", data: data._id }));
-  }, []);
+  }, [conversation, data._id, dispatch, fetchMessages]);
 
   return (
     <NavLink
