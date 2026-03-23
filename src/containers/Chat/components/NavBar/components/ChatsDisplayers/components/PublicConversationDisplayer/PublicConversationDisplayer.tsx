@@ -37,7 +37,7 @@ const PublicConversationDisplayer = () => {
   const fetchPublicConversation = useCallback(() => {
     setIsLoading(true);
     setIsError(false);
-    getPublicConversations(userData?.access_token.value ?? "undefined")
+    getPublicConversations()
       .then((res) => {
         dispatch(ChatActions.setPublicConvos(res.data));
       })

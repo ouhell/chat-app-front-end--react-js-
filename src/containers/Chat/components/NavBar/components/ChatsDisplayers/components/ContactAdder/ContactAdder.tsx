@@ -43,10 +43,7 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
     if (isLoading) return;
     setIsLoading(true);
 
-    getContactCandidates(
-      userData?.access_token.value ?? "undefined",
-      searchtext,
-    )
+    getContactCandidates(searchtext)
       .then((res) => {
         setData(res.data);
       })
@@ -67,7 +64,7 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
       return newState;
     });
 
-    addContactRequest(userData?.access_token.value ?? "undefined", id)
+    addContactRequest(id)
       .then((res) => {
         setCandidateState((prevState) => {
           const newState = { ...prevState };
@@ -126,10 +123,7 @@ const ContactAdder = ({ open, onCancel }: ContactAdderProps) => {
       return newState;
     });
 
-    deleteContactRequest(
-      userData?.access_token.value ?? "undefined",
-      candidateState[id].request ?? "",
-    )
+    deleteContactRequest(candidateState[id].request ?? "")
       .then((res) => {
         dispatch(ChatActions.removeRequest(candidateState[id].request));
 

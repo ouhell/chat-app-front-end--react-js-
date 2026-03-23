@@ -44,11 +44,7 @@ const InputHandler = ({
       profile_picture: userData?.profile_picture,
     };
 
-    sendTextMessage(
-      readyMessage,
-      conversationId,
-      userData?.access_token.value ?? "undefined",
-    )
+    sendTextMessage(readyMessage, conversationId)
       .then((res) => {
         const newMessage = { ...res.data, sender: senderInfo };
         dispatch(
@@ -110,7 +106,7 @@ const InputHandler = ({
       profile_picture: userData?.profile_picture,
     };
 
-    sendImage(data, conversationId, userData?.access_token.value ?? "undefined")
+    sendImage(data, conversationId)
       .then((res) => {
         /* chatSocket.emit("send message", res.data); */
         const newMessage = { ...res.data, sender: senderInfo };

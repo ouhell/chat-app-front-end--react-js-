@@ -14,7 +14,7 @@ console.log("Hostname", HostName);
 
 export const getConversation = (
   conversationId: string,
-  accessToken: string,
+
   params?: {
     skip: number;
     [key: string]: string | number;
@@ -29,191 +29,127 @@ export const getConversation = (
   return axios.get<MessagesPayload>(
     "api/messages/" + conversationId + "?" + urlParams.toString(),
     {
-      headers: {
-        authorization: "Bearer " + accessToken,
-      },
+      withCredentials: true,
     },
   );
 };
 
-export const sendTextMessage = (
-  message: string,
-  conversationId: string,
-  accessToken: string,
-) => {
+export const sendTextMessage = (message: string, conversationId: string) => {
   return axios.post(
     "api/messages/" + conversationId,
     {
       message,
     },
     {
-      headers: {
-        authorization: "Bearer " + accessToken,
-      },
+      withCredentials: true,
     },
   );
 };
 
-export const sendImage = (
-  formData: FormData,
-  conversationId: string,
-  accessToken: string,
-) => {
+export const sendImage = (formData: FormData, conversationId: string) => {
   return axios.post(`api/messages/${conversationId}/image`, formData, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
 export const sendVoiceMessage = (
   formData: FormData,
   conversationId: string,
-  accessToken: string,
 ) => {
   return axios.post(`api/messages/${conversationId}/voice`, formData, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
-export const deleteMessageApi = (accessToken: string, messageId: string) => {
+export const deleteMessageApi = (messageId: string) => {
   return axios.delete("api/messages/" + messageId, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
 
-export const getPublicConversations = (accessToken: string) => {
+export const getPublicConversations = () => {
   return axios.get("api/users/conversations/public ", {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
 
-export const getContacts = (accessToken: string) => {
+export const getContacts = () => {
   return axios.get("api/users/contacts", {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
-export const addContact = (accessToken: string, requestId: string) => {
+export const addContact = (requestId: string) => {
   return axios.post("api/users/contacts/" + requestId, null, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
-export const deleteContact = (accessToken: string, contactId: string) => {
+export const deleteContact = (contactId: string) => {
   return axios.delete("api/users/contacts/" + contactId, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
 
-export const blackListUser = (accessToken: string, userId: string) => {
+export const blackListUser = (userId: string) => {
   return axios.patch(`/api/users//contacts/${userId}/blacklist`, null, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
-export const blockContact = (accessToken: string, contactId: string) => {
+export const blockContact = (contactId: string) => {
   return axios.patch(`/api/users/contacts/${contactId}/block`, null, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
-export const unblockContact = (accessToken: string, contactId: string) => {
+export const unblockContact = (contactId: string) => {
   return axios.patch(`/api/users/contacts/${contactId}/unblock`, null, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
 
-export const getContactRequests = (accessToken: string) => {
+export const getContactRequests = () => {
   return axios.get("api/users/requests", {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
-export const addContactRequest = (
-  accessToken: string,
-  destinatorId: string,
-) => {
+export const addContactRequest = (destinatorId: string) => {
   return axios.post("/api/users/requests/" + destinatorId, null, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
-export const deleteContactRequest = (
-  accessToken: string,
-  requestId: string,
-) => {
+export const deleteContactRequest = (requestId: string) => {
   return axios.delete("api/users/requests/" + requestId, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
 
-export const getContactCandidates = (
-  accessToken: string,
-  searchtext: string,
-) => {
+export const getContactCandidates = (searchtext: string) => {
   return axios.get(
     "/api/users/candidates/contacts?search=" + searchtext.trim(),
     {
-      headers: {
-        authorization: "Bearer " + accessToken,
-      },
+      withCredentials: true,
     },
   );
 };
 
-export const getProfileData = (accessToken: string) => {
+export const getProfileData = () => {
   return axios.get("api/users/profile", {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
-export const updateProfileData = (
-  accessToken: string,
-  updateData: { [key: string]: string },
-) => {
+export const updateProfileData = (updateData: { [key: string]: string }) => {
   return axios.patch("api/users/profile", updateData, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
-export const updateProfilePicture = (accessToken: string, image: File) => {
+export const updateProfilePicture = (image: File) => {
   const data = new FormData();
   data.append("profile_pic", image);
 
   return axios.put("api/users/profile/picture", data, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
 
-export const getContactProfileData = (
-  accessToken: string,
-  conversationId: string,
-) => {
+export const getContactProfileData = (conversationId: string) => {
   return axios.get(`/api/users/profile/${conversationId}/contact`, {
-    headers: {
-      authorization: "Bearer " + accessToken,
-    },
+    withCredentials: true,
   });
 };
 
@@ -221,16 +157,28 @@ export const apiLogin = (signinData: {
   identifier: string;
   password: string;
 }) => {
-  return axios.post("api/auth/login", {
-    identifier: signinData.identifier.trim(),
-    password: signinData.password.trim(),
-  });
+  return axios.post(
+    "api/auth/login",
+    {
+      identifier: signinData.identifier.trim(),
+      password: signinData.password.trim(),
+    },
+    {
+      withCredentials: true,
+    },
+  );
 };
 
 export const oauthLogin = (id_token = "<none>") => {
-  return axios.post<UserData>("/api/auth/login/oauth/google", {
-    id_token: id_token,
-  });
+  return axios.post<UserData>(
+    "/api/auth/login/oauth/google",
+    {
+      id_token: id_token,
+    },
+    {
+      withCredentials: true,
+    },
+  );
 };
 export const apiSignup = (userData: {
   username: string;
@@ -238,7 +186,9 @@ export const apiSignup = (userData: {
   email: string;
   password: string;
 }) => {
-  return axios.post("api/auth/signup", userData);
+  return axios.post("api/auth/signup", userData, {
+    withCredentials: true,
+  });
 };
 export const apiCheckUsernameExists = (username: string) => {
   return axios.get("/api/auth/check/username/" + username);

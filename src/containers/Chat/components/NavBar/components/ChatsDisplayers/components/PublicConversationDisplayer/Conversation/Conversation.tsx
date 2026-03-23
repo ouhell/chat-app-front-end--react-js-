@@ -15,7 +15,7 @@ const Conversation = ({ data }: { data: Conversation }) => {
   const userData = useAppSelector((state) => state.auth.userData);
 
   const fetchMessages = useCallback(() => {
-    getConversation(data._id, userData?.access_token.value ?? "undefined")
+    getConversation(data._id)
       .then((res) => {
         dispatch(ChatActions.emit({ event: "chat", data: data._id }));
 

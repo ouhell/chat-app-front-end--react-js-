@@ -65,7 +65,7 @@ const ContactDisplayer = () => {
   const fetchContacts = useCallback(() => {
     setIsLoading(true);
     setIsError(false);
-    getContacts(userData?.access_token.value ?? "undefined")
+    getContacts()
       .then((res) => {
         dispatch(ChatActions.setContacts(res.data));
       })

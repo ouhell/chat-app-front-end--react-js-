@@ -226,10 +226,7 @@ const ChatHandler = ({
   function deleteMessage(message: Message) {
     let messageId = message._id;
     if (message.trueId) messageId = message.trueId;
-    deleteMessageApi(
-      userData?.access_token.value ?? "undefined",
-      messageId,
-    ).then(() => {
+    deleteMessageApi(messageId).then(() => {
       console.log("deleted :", messageId);
       dispatch(
         ChatActions.emit({

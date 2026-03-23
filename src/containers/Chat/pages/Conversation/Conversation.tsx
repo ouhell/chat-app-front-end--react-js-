@@ -35,7 +35,7 @@ const Conversation = () => {
     setIsError(false);
     getConversation(
       conversationId,
-      userData?.access_token.value ?? "undefined",
+
       {
         skip: conversation?.messages.length ?? 0,
       },
