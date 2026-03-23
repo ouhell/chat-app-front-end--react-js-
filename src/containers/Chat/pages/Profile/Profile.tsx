@@ -303,7 +303,7 @@ const Profile = () => {
       if (isLoading) return;
       setIsLoading(true);
       setIsError(false);
-      getProfileData(userData?.access_token ?? "undefined")
+      getProfileData(userData?.access_token.value ?? "undefined")
         .then((res) => {
           setProfilePicture(res.data.profile_picture);
 
@@ -392,7 +392,7 @@ const Profile = () => {
       if (isUpdatingPic || !image) return;
       setIsUpdatingPic(true);
 
-      updateProfilePicture(userData?.access_token ?? "undefined", image)
+      updateProfilePicture(userData?.access_token.value ?? "undefined", image)
         .then((res) => {
           setProfilePicture(res.data.newUrl);
           dispatch(AuthActions.setProfilePicture(res.data.newUrl));
