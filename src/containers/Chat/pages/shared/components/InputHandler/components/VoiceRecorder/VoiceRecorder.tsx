@@ -71,7 +71,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
             audioConfig.current.audioAnalyser.frequencyBinCount,
           );
           audioConfig.current.audioAnalyser.getFloatTimeDomainData(
-            audioConfig.current.dataArray,
+            new Float32Array(audioConfig.current.dataArray),
           );
 
           // recorder config
@@ -123,7 +123,7 @@ const VoiceRecorder = ({ conversationId }: { conversationId: string }) => {
     if (!shouldDraw.current) return;
 
     audioConfig.current.audioAnalyser?.getFloatTimeDomainData(
-      audioConfig.current.dataArray,
+      new Float32Array(audioConfig.current.dataArray),
     );
 
     let rms = 0;
