@@ -17,4 +17,32 @@
       display: none;
     }
   }
+
+  .AiButton {
+    border: none;
+    background: transparent;
+    color: var(--primary-soft);
+    cursor: pointer;
+    padding: 0.3rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    margin-left: auto;
+    transition: background 0.15s;
+
+    svg {
+      width: 1.2rem;
+      height: 1.2rem;
+      fill: currentColor;
+    }
+
+    &:hover {
+      background: rgb(183 80 253 / 10%);
+    }
+
+    @media (min-width: 1201px) {
+      display: none;
+    }
+  }
 }

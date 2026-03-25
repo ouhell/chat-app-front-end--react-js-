@@ -9,6 +9,7 @@ import Default from "./pages/Default/Default";
 import ChatController from "./components/ChatController/ChatController";
 import { AnimatePresence } from "framer-motion";
 import Conversation from "./pages/Conversation/Conversation";
+import AiChatBox from "./components/AiChatBox/AiChatBox";
 
 export default function Chat() {
   const startY = useRef(0);
@@ -50,7 +51,9 @@ export default function Chat() {
             </Routes>
           </AnimatePresence>
         </div>
-        <div className={classes.SideContent}></div>
+        <div className={classes.SideContent}>
+          <AiChatBox />
+        </div>
       </section>
     </div>
   );

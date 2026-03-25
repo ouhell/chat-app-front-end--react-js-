@@ -1,0 +1,311 @@
+.AiChatBox {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(
+      400px 200px at 100% 0%,
+      rgb(100 219 222 / 10%),
+      transparent 70%
+    ),
+    hsl(200deg 33% 98%);
+  border-left: 1px solid rgb(48 51 65 / 10%);
+  box-shadow: 0 14px 30px rgb(47 61 80 / 6%);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.Header {
+  min-height: 4rem;
+  padding: 0 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border-bottom: 1px solid rgb(48 51 65 / 10%);
+  box-shadow: 0 0.15rem 0.5rem rgb(219 214 214 / 40%);
+}
+
+.BackButton {
+  border: none;
+  background: transparent;
+  color: var(--primary-soft);
+  cursor: pointer;
+  padding: 0.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  transition: background 0.15s;
+
+  svg {
+    width: 1.3rem;
+    height: 1.3rem;
+    fill: currentColor;
+  }
+
+  &:hover {
+    background: rgb(48 51 65 / 6%);
+  }
+}
+
+.AiAvatar {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-hard), var(--primary-soft));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+    fill: white;
+  }
+}
+
+.HeaderInfo {
+  display: flex;
+  flex-direction: column;
+
+  span:first-child {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary-topography);
+  }
+
+  span:last-child {
+    font-size: 0.72rem;
+    color: var(--primary-grey);
+    letter-spacing: 0.02em;
+  }
+}
+
+.Messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--primary-blank);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+.EmptyState {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: 2rem;
+  text-align: center;
+
+  .EmptyIcon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: linear-gradient(
+      135deg,
+      var(--primary-hard),
+      var(--primary-soft)
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+
+    svg {
+      width: 1.4rem;
+      height: 1.4rem;
+      fill: white;
+    }
+  }
+
+  span:nth-child(2) {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--primary-topography);
+  }
+
+  span:last-child {
+    font-size: 0.8rem;
+    color: var(--primary-grey);
+    line-height: 1.4;
+    max-width: 14rem;
+  }
+}
+
+.MessageBubble {
+  max-width: 88%;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  animation: fadeIn 0.2s ease;
+}
+
+.UserBubble {
+  align-self: flex-end;
+  background: #e7eff7;
+  color: var(--primary-topography);
+  border-radius: 1.2rem 1.2rem 0.3rem 1.2rem;
+}
+
+.AiBubble {
+  align-self: flex-start;
+  background: linear-gradient(135deg, var(--primary-hard), var(--primary-soft));
+  color: white;
+  border-radius: 1.2rem 1.2rem 1.2rem 0.3rem;
+}
+
+.TypingIndicator {
+  align-self: flex-start;
+  background: linear-gradient(135deg, var(--primary-hard), var(--primary-soft));
+  padding: 0.7rem 1rem;
+  border-radius: 1.2rem 1.2rem 1.2rem 0.3rem;
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+
+  span {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.7);
+    animation: bounce 1.2s infinite ease-in-out;
+
+    &:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+  }
+}
+
+.ErrorBubble {
+  align-self: center;
+  background: rgb(216 59 76 / 10%);
+  color: #d83b4c;
+  font-size: 0.78rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.8rem;
+}
+
+.InputArea {
+  padding: 0.7rem 0.8rem;
+  border-top: 1px solid rgb(48 51 65 / 10%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.7),
+    rgba(230, 240, 250, 0.4)
+  );
+}
+
+.InputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.35rem 0.35rem 0.9rem;
+  background: white;
+  border: 1px solid rgb(48 51 65 / 11%);
+  border-radius: 1.5rem;
+  box-shadow: inset 0 1px 2px rgb(47 61 80 / 4%);
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: var(--primary-soft);
+  }
+}
+
+.InputField {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.82rem;
+  color: var(--primary-topography);
+  font-family: inherit;
+  resize: none;
+  min-height: 1.4rem;
+  max-height: 4rem;
+  line-height: 1.4;
+
+  &::placeholder {
+    color: var(--primary-blank);
+  }
+}
+
+.SendButton {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--primary-hard), var(--primary-soft));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgb(109 84 229 / 25%);
+
+  svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    fill: white;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    box-shadow: none;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+}

@@ -8,6 +8,7 @@ type PublicConversationProps = {
   data: Message[];
   fetchMessages: () => void;
   hasMore: boolean;
+  onToggleAi: () => void;
 };
 const PublicConversation = ({
   isLoading,
@@ -15,6 +16,7 @@ const PublicConversation = ({
   data,
   fetchMessages,
   hasMore,
+  onToggleAi,
 }: PublicConversationProps) => {
   return (
     <motion.div
@@ -24,7 +26,7 @@ const PublicConversation = ({
       exit="exit" */
       className={c.PublicConversation}
     >
-      <ChatHeader />
+      <ChatHeader onToggleAi={onToggleAi} />
       <ChatHandler
         data={data}
         isLoading={isLoading}

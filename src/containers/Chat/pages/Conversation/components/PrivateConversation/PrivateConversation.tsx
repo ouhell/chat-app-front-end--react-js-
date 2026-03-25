@@ -11,6 +11,7 @@ type PrivateConversationProps = {
   fetchMessages: () => void;
   hasMore: boolean;
   conversation?: Conversation;
+  onToggleAi: () => void;
 };
 
 function PrivateConversation({
@@ -20,6 +21,7 @@ function PrivateConversation({
   fetchMessages,
   hasMore,
   conversation,
+  onToggleAi,
 }: PrivateConversationProps) {
   const { contactId } = useParams();
   const isBlocked = !!conversation?.blocked.find((user) => user === contactId);
@@ -31,7 +33,7 @@ function PrivateConversation({
       exit="exit" */
       className={classes.PrivateConversation}
     >
-      <ContactHeader isBlocked={isBlocked} />
+      <ContactHeader isBlocked={isBlocked} onToggleAi={onToggleAi} />
       <ChatHandler
         isLoading={isLoading}
         isError={isError}
