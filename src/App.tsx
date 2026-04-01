@@ -11,6 +11,7 @@ import { apiRefresh } from "./client/ApiClient";
 import { AxiosError, HttpStatusCode } from "axios";
 import { useDispatch } from "react-redux";
 import { AuthActions } from "./store/slices/AuthSlice";
+import { useQuery } from "@tanstack/react-query";
 
 /* const Home = lazy(() => {
   return import("./containers/Home/Home");
@@ -23,22 +24,17 @@ function App() {
   const userData = useAppSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
 
+  const { data } = useQuery({
+    queryKey: ["refresh"],
+    queryFn: () => apiRefresh(),
+    select: (res) => res.data,
+  });
+
   React.useEffect(() => {
-    console.log("refreshing");
-    apiRefresh()
-      .then((res) => {
-        console.log("refreshed");
-        dispatch(AuthActions.login(res.data));
-      })
-      .catch((err: AxiosError) => {
-        console.log(err);
-        if (err.status == HttpStatusCode.Forbidden)
-          dispatch(AuthActions.logout());
-      });
-  }, []);
+    if (data) dispatch(AuthActions.login(data));
+  }, [data]);
 
   const MainElement = userData ? <Chat /> : <Home />;
-
   return (
     <div className={classes.App}>
       <Suspense fallback={<Loading />}>

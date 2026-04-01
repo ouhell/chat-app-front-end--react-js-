@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Route, Routes, useParams } from "react-router-dom";
 import { getConversation } from "../../../../client/ApiClient";
 import { ChatActions } from "../../../../store/slices/ChatSlice";
@@ -13,9 +13,12 @@ import { useAppDispatch } from "../../../../store/ReduxHooks";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../../../client/queryKeys";
 import { flattenConversationMessages } from "../../../../client/queryHelpers";
+import AiChatBox from "../../components/AiChatBox/AiChatBox";
 const Conversation = () => {
   const { conversationId = "undefined" } = useParams();
   const dispatch = useAppDispatch();
+  const [showAiPanel, setShowAiPanel] = useState(false);
+  const toggleAiPanel = () => setShowAiPanel((v) => !v);
 
   const conversationQuery = useInfiniteQuery({
     queryKey: queryKeys.conversation(conversationId),
@@ -46,7 +49,10 @@ const Conversation = () => {
     if (conversationQuery.isError || !conversationQuery.data) {
       return conversationQuery.refetch();
     }
-    if (conversationQuery.hasNextPage && !conversationQuery.isFetchingNextPage) {
+    if (
+      conversationQuery.hasNextPage &&
+      !conversationQuery.isFetchingNextPage
+    ) {
       return conversationQuery.fetchNextPage();
     }
     return Promise.resolve();
@@ -66,9 +72,11 @@ const Conversation = () => {
               fetchMessages={fetchMessages}
               isError={conversationQuery.isError}
               isLoading={
-                conversationQuery.isLoading || conversationQuery.isFetchingNextPage
+                conversationQuery.isLoading ||
+                conversationQuery.isFetchingNextPage
               }
               hasMore={!!conversationQuery.hasNextPage}
+              onToggleAi={toggleAiPanel}
             />
           }
           path="/"
@@ -80,9 +88,11 @@ const Conversation = () => {
               fetchMessages={fetchMessages}
               isError={conversationQuery.isError}
               isLoading={
-                conversationQuery.isLoading || conversationQuery.isFetchingNextPage
+                conversationQuery.isLoading ||
+                conversationQuery.isFetchingNextPage
               }
               hasMore={!!conversationQuery.hasNextPage}
+              onToggleAi={toggleAiPanel}
             />
           }
           path="/group"
@@ -94,10 +104,12 @@ const Conversation = () => {
               fetchMessages={fetchMessages}
               isError={conversationQuery.isError}
               isLoading={
-                conversationQuery.isLoading || conversationQuery.isFetchingNextPage
+                conversationQuery.isLoading ||
+                conversationQuery.isFetchingNextPage
               }
               hasMore={!!conversationQuery.hasNextPage}
               conversation={conversationQuery.data?.pages?.[0]?.conversation}
+              onToggleAi={toggleAiPanel}
             />
           }
           path="/:contactId/private"
@@ -108,6 +120,11 @@ const Conversation = () => {
         sendAllowed={!conversationQuery.isError}
         conversationId={conversationId}
       />
+      {showAiPanel && (
+        <div className={C.AiPanelOverlay}>
+          <AiChatBox onClose={() => setShowAiPanel(false)} />
+        </div>
+      )}
     </motion.div>
   );
 };

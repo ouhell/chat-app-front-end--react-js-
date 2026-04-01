@@ -8,6 +8,7 @@ type GroupConversationProps = {
   data: Message[];
   fetchMessages: () => void;
   hasMore: boolean;
+  onToggleAi: () => void;
 };
 const GroupConversation = ({
   isLoading,
@@ -15,6 +16,7 @@ const GroupConversation = ({
   data,
   fetchMessages,
   hasMore,
+  onToggleAi,
 }: GroupConversationProps) => {
   return (
     <motion.div
@@ -24,7 +26,7 @@ const GroupConversation = ({
       exit="exit" */
       className={c.GroupConversation}
     >
-      <ChatHeader />
+      <ChatHeader onToggleAi={onToggleAi} />
       <ChatHandler
         data={data}
         isLoading={isLoading}
